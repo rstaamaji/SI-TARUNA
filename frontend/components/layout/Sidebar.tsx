@@ -209,10 +209,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-taruna-dark truncate">
-                Karang Taruna Springin
+                Karang Taruna Setya Bakti
               </p>
               <p className="text-[11px] text-gray-500 truncate">
-                Kecamatan Jumantono
+                Tuk Uluh, Sringin, Jumantono
               </p>
             </div>
           </div>

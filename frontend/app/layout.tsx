@@ -3,8 +3,8 @@ import './globals.css';
 import { ToastProvider } from '@/components/ui/Toast';
 
 export const metadata: Metadata = {
-  title: 'SI-TARUNA | Karang Taruna Springin - Jumantono',
-  description: 'Sistem Informasi Karang Taruna Springin - Jumantono',
+  title: 'SI-TARUNA | Karang Taruna Setya Bakti - Tuk Uluh, Sringin, Jumantono',
+  description: 'Sistem Informasi Karang Taruna Setya Bakti - Tuk Uluh, Sringin, Jumantono',
 };
 
 export default function RootLayout({
