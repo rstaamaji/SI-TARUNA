@@ -81,16 +81,16 @@ export const Logo: React.FC<LogoProps> = ({
 
       {/* Brand Text */}
       {showText && (
-        <div className="flex flex-col text-left">
-          <div className="flex items-center gap-1.5">
-            <span className="font-extrabold text-base sm:text-lg tracking-tight text-taruna-dark leading-none group-hover:text-taruna-yellow-600 transition-colors">
+        <div className="flex flex-col text-left min-w-0">
+          <div className="flex items-center gap-1.5 flex-nowrap">
+            <span className="font-black text-base sm:text-lg tracking-tight text-taruna-yellow-500 dark:text-taruna-yellow-400 whitespace-nowrap leading-none group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
               SI-TARUNA
             </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded font-bold bg-taruna-yellow-100 text-taruna-yellow-800">
+            <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold bg-taruna-yellow-100 dark:bg-amber-950/80 text-taruna-yellow-900 dark:text-amber-300 border border-taruna-yellow-200 dark:border-amber-800/60 whitespace-nowrap shrink-0">
               SETYA BAKTI
             </span>
           </div>
-          <span className="text-[11px] font-semibold text-taruna-red-600 tracking-wide mt-1">
+          <span className="text-[11px] font-bold text-taruna-red-600 dark:text-red-400 tracking-wide mt-1 whitespace-nowrap truncate">
             {subtitle}
           </span>
         </div>

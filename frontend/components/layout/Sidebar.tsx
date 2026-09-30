@@ -47,7 +47,7 @@ export const navigationItems: NavItem[] = [
   },
   {
     name: 'Anggota',
-    href: '/dashboard/anggota',
+    href: '/admin/members',
     icon: Users,
     badge: null,
   },

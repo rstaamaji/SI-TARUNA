@@ -1,0 +1,179 @@
+{
+  "info": {
+    "_postman_id": "si-taruna-members-module07",
+    "name": "SI-TARUNA - Module 07 Member Management",
+    "description": "Koleksi Postman untuk pengujian CRUD Manajemen Anggota Karang Taruna Setya Bakti.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "memberToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sampleMemberId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Auth - Login ADMIN",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();",
+              "if (res.success && res.data && res.data.token) {",
+              "    pm.collectionVariables.set('adminToken', res.data.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+      }
+    },
+    {
+      "name": "2. Members - List Semua Anggota (Pagination)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();",
+              "if (res.success && res.data.members.length > 0) {",
+              "    pm.collectionVariables.set('sampleMemberId', res.data.members[0].id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/members?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "members"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "3. Members - Cari Anggota (Search)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/members?search=Wahyu",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "members"],
+          "query": [{ "key": "search", "value": "Wahyu" }]
+        }
+      }
+    },
+    {
+      "name": "4. Members - Filter Status (ACTIVE)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/members?status=ACTIVE",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "members"],
+          "query": [{ "key": "status", "value": "ACTIVE" }]
+        }
+      }
+    },
+    {
+      "name": "5. Members - Detail Anggota by ID",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/members/{{sampleMemberId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "members", "{{sampleMemberId}}"]
+        }
+      }
+    },
+    {
+      "name": "6. Members - Tambah Anggota Baru (ADMIN)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Galang Wicaksono\",\n  \"gender\": \"MALE\",\n  \"phone\": \"081234567890\",\n  \"address\": \"RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin\",\n  \"status\": \"ACTIVE\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/members", "host": ["{{baseUrl}}"], "path": ["api", "members"] }
+      }
+    },
+    {
+      "name": "7. Members - Ubah Data Anggota (ADMIN)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"089876543210\",\n  \"address\": \"RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/members/{{sampleMemberId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "members", "{{sampleMemberId}}"]
+        }
+      }
+    },
+    {
+      "name": "8. Members - Ubah Status Anggota (ADMIN)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"INACTIVE\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/members/{{sampleMemberId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "members", "{{sampleMemberId}}", "status"]
+        }
+      }
+    }
+  ]
+}

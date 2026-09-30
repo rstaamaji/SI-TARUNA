@@ -37,10 +37,10 @@ export const Dialog: React.FC<DialogProps> = ({
   };
 
   const iconBgs = {
-    danger: 'bg-red-50 ring-red-100',
-    warning: 'bg-amber-50 ring-amber-100',
-    info: 'bg-blue-50 ring-blue-100',
-    success: 'bg-emerald-50 ring-emerald-100',
+    danger: 'bg-red-50 dark:bg-red-950/50 ring-red-100 dark:ring-red-900/40',
+    warning: 'bg-amber-50 dark:bg-amber-950/50 ring-amber-100 dark:ring-amber-900/40',
+    info: 'bg-blue-50 dark:bg-blue-950/50 ring-blue-100 dark:ring-blue-900/40',
+    success: 'bg-emerald-50 dark:bg-emerald-950/50 ring-emerald-100 dark:ring-emerald-900/40',
   };
 
   return (
@@ -64,7 +64,7 @@ export const Dialog: React.FC<DialogProps> = ({
         </>
       }
     >
-      <div className="flex items-start gap-4 pt-1">
+      <div className="flex items-start gap-4 pt-1 text-left">
         <div
           className={cn(
             'p-3 rounded-2xl ring-4 shrink-0 flex items-center justify-center',
@@ -73,9 +73,9 @@ export const Dialog: React.FC<DialogProps> = ({
         >
           {icons[variant]}
         </div>
-        <div className="flex-1">
-          <h4 className="font-bold text-base text-taruna-dark">{title}</h4>
-          <p className="mt-1 text-sm text-gray-600 leading-relaxed">{message}</p>
+        <div className="flex-1 min-w-0">
+          <h4 className="font-bold text-base text-taruna-dark dark:text-white">{title}</h4>
+          <p className="mt-1 text-sm text-gray-600 dark:text-slate-300 leading-relaxed">{message}</p>
         </div>
       </div>
     </Modal>

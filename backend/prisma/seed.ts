@@ -37,7 +37,7 @@ async function main() {
   const dummyMembersData = [
     {
       memberNumber: 'KT-SB-001',
-      name: 'Rustam Aji Prabowo',
+      name: 'Anggota 1',
       gender: Gender.MALE,
       phone: '081234567801',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -47,7 +47,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-002',
-      name: 'Bambang Sudiro',
+      name: 'Anggota 2',
       gender: Gender.MALE,
       phone: '081234567802',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -57,7 +57,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-003',
-      name: 'Dewi Lestari',
+      name: 'Anggota 3',
       gender: Gender.FEMALE,
       phone: '081234567803',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -66,7 +66,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-004',
-      name: 'Fajar Nugroho',
+      name: 'Anggota 4',
       gender: Gender.MALE,
       phone: '081234567804',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -75,7 +75,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-005',
-      name: 'Anggita Putri Wardani',
+      name: 'Anggota 5',
       gender: Gender.FEMALE,
       phone: '081234567805',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -84,7 +84,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-006',
-      name: 'Dimas Wahyu Saputro',
+      name: 'Anggota 6',
       gender: Gender.MALE,
       phone: '081234567806',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -93,7 +93,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-007',
-      name: 'Rian Pratama Kusuma',
+      name: 'Anggota 7',
       gender: Gender.MALE,
       phone: '081234567807',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -102,7 +102,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-008',
-      name: 'Siti Nurhaliza',
+      name: 'Anggota 8',
       gender: Gender.FEMALE,
       phone: '081234567808',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -111,7 +111,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-009',
-      name: 'Bayu Aji Pamungkas',
+      name: 'Anggota 9',
       gender: Gender.MALE,
       phone: '081234567809',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -120,7 +120,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-010',
-      name: 'Tri Wibowo Handoko',
+      name: 'Anggota 10',
       gender: Gender.MALE,
       phone: '081234567810',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -129,7 +129,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-011',
-      name: 'Anisa Rahmawati',
+      name: 'Anggota 11',
       gender: Gender.FEMALE,
       phone: '081234567811',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -138,7 +138,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-012',
-      name: 'Arif Kurniawan',
+      name: 'Anggota 12',
       gender: Gender.MALE,
       phone: '081234567812',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -147,7 +147,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-013',
-      name: 'Dita Permatasari',
+      name: 'Anggota 13',
       gender: Gender.FEMALE,
       phone: '081234567813',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -156,7 +156,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-014',
-      name: 'Galih Saputra',
+      name: 'Anggota 14',
       gender: Gender.MALE,
       phone: '081234567814',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -165,7 +165,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-015',
-      name: 'Indah Permata Sari',
+      name: 'Anggota 15',
       gender: Gender.FEMALE,
       phone: '081234567815',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -174,7 +174,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-016',
-      name: 'Joko Susilo',
+      name: 'Anggota 16',
       gender: Gender.MALE,
       phone: '081234567816',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -183,7 +183,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-017',
-      name: 'Maya Anggraini',
+      name: 'Anggota 17',
       gender: Gender.FEMALE,
       phone: '081234567817',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -192,7 +192,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-018',
-      name: 'Rizky Ramadhan',
+      name: 'Anggota 18',
       gender: Gender.MALE,
       phone: '081234567818',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -201,7 +201,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-019',
-      name: 'Nabila Safitri',
+      name: 'Anggota 19',
       gender: Gender.FEMALE,
       phone: '081234567819',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -210,7 +210,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-020',
-      name: 'Wahyu Hidayat',
+      name: 'Anggota 20',
       gender: Gender.MALE,
       phone: '081234567820',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -219,7 +219,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-021',
-      name: 'Putri Melati Suci',
+      name: 'Anggota 21',
       gender: Gender.FEMALE,
       phone: '081234567821',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -228,7 +228,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-022',
-      name: 'Yoga Pamungkas',
+      name: 'Anggota 22',
       gender: Gender.MALE,
       phone: '081234567822',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -237,7 +237,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-023',
-      name: 'Rina Septiana',
+      name: 'Anggota 23',
       gender: Gender.FEMALE,
       phone: '081234567823',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -246,7 +246,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-024',
-      name: 'Hendra Wijaya',
+      name: 'Anggota 24',
       gender: Gender.MALE,
       phone: '081234567824',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -255,7 +255,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-025',
-      name: 'Tyas Ningrum',
+      name: 'Anggota 25',
       gender: Gender.FEMALE,
       phone: '081234567825',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -268,7 +268,7 @@ async function main() {
   for (const m of dummyMembersData) {
     const member = await prisma.member.upsert({
       where: { memberNumber: m.memberNumber },
-      update: {},
+      update: { name: m.name },
       create: m,
     });
     createdMembers.push(member);

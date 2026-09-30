@@ -106,7 +106,7 @@ export default function UnifiedMainPage() {
       if (trimmedUser === 'admin' && passwordInput === 'admin123') {
         const user: CurrentUser = {
           id: 'admin-id',
-          name: 'Rustam Aji Prabowo',
+          name: 'Anggota 1',
           role: 'ADMIN',
           username: 'admin',
         };
@@ -115,7 +115,7 @@ export default function UnifiedMainPage() {
       } else if (trimmedUser === 'member' && passwordInput === 'member123') {
         const user: CurrentUser = {
           id: 'member-id',
-          name: 'Bambang Sudiro',
+          name: 'Anggota 2',
           role: 'MEMBER',
           username: 'member',
         };
@@ -277,7 +277,7 @@ export default function UnifiedMainPage() {
                     />
                   </div>
                 </div>
-                <h1 className="text-2xl font-black text-taruna-dark dark:text-white tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-black text-taruna-yellow-500 dark:text-taruna-yellow-400 tracking-tight">
                   SI-TARUNA
                 </h1>
                 <p className="text-xs font-bold text-taruna-red-600 dark:text-red-400 uppercase tracking-wider mt-0.5">

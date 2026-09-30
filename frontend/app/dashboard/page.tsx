@@ -44,32 +44,32 @@ export default function DashboardPage() {
       value: '64 Pemuda',
       change: '+4 bulan ini',
       isPositive: true,
-      icon: <Users className="w-5 h-5 text-taruna-yellow-600" />,
-      bg: 'bg-taruna-yellow-50',
+      icon: <Users className="w-5 h-5 text-taruna-yellow-600 dark:text-taruna-yellow-400" />,
+      bg: 'bg-taruna-yellow-50 dark:bg-slate-800',
     },
     {
       title: 'Saldo Kas Organisasi',
       value: 'Rp 8.450.000',
       change: '+Rp 650.000',
       isPositive: true,
-      icon: <Wallet className="w-5 h-5 text-emerald-600" />,
-      bg: 'bg-emerald-50',
+      icon: <Wallet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />,
+      bg: 'bg-emerald-50 dark:bg-slate-800',
     },
     {
       title: 'Kehadiran Rapat Terakhir',
       value: '88%',
       change: '56 dari 64 hadir',
       isPositive: true,
-      icon: <CalendarCheck2 className="w-5 h-5 text-taruna-red-600" />,
-      bg: 'bg-taruna-red-50',
+      icon: <CalendarCheck2 className="w-5 h-5 text-taruna-red-600 dark:text-red-400" />,
+      bg: 'bg-taruna-red-50 dark:bg-slate-800',
     },
     {
       title: 'Jimpitan Terkumpul',
       value: 'Rp 920.000',
       change: 'Target Rp 1.000.000',
       isPositive: false,
-      icon: <Coins className="w-5 h-5 text-amber-600" />,
-      bg: 'bg-amber-50',
+      icon: <Coins className="w-5 h-5 text-amber-600 dark:text-amber-400" />,
+      bg: 'bg-amber-50 dark:bg-slate-800',
     },
   ];
 
@@ -149,7 +149,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8 pb-12">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-taruna-border shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs transition-colors">
         <div className="flex items-start gap-4">
           <div className="w-14 h-14 rounded-2xl bg-taruna-dark ring-2 ring-taruna-yellow-500/60 overflow-hidden shrink-0 flex items-center justify-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -162,14 +162,14 @@ export default function DashboardPage() {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2.5 h-2.5 rounded-full bg-taruna-yellow-500 animate-pulse" />
-              <span className="text-xs font-bold uppercase tracking-wider text-taruna-yellow-700">
+              <span className="text-xs font-bold uppercase tracking-wider text-taruna-yellow-700 dark:text-taruna-yellow-400">
                 Karang Taruna Setya Bakti
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
               Dashboard Utama
             </h1>
-            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-0.5">
               Dusun Tuk Uluh, Desa Sringin, Kecamatan Jumantono
             </p>
           </div>
@@ -179,7 +179,7 @@ export default function DashboardPage() {
           <Button
             variant="secondary"
             size="sm"
-            leftIcon={<FileSpreadsheet className="w-4 h-4 text-emerald-600" />}
+            leftIcon={<FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
             onClick={() => toast.info('Fitur ekspor laporan kas akan aktif pada modul kas.')}
           >
             Ekspor Laporan
@@ -198,27 +198,27 @@ export default function DashboardPage() {
       {/* Metric Statistic Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {stats.map((item, idx) => (
-          <Card key={idx} hoverable className="border-taruna-border">
+          <Card key={idx} hoverable>
             <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-              <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                 {item.title}
               </span>
-              <div className={`p-2.5 rounded-2xl ${item.bg} ring-2 ring-black/5`}>
+              <div className={`p-2.5 rounded-2xl ${item.bg} ring-2 ring-black/5 dark:ring-white/10`}>
                 {item.icon}
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-black text-taruna-dark tracking-tight">
+              <div className="text-2xl font-black text-taruna-dark dark:text-white tracking-tight">
                 {item.value}
               </div>
               <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold">
                 {item.isPositive ? (
-                  <span className="inline-flex items-center text-emerald-600">
+                  <span className="inline-flex items-center text-emerald-600 dark:text-emerald-400">
                     <ArrowUpRight className="w-3.5 h-3.5" />
                     {item.change}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center text-taruna-red-600">
+                  <span className="inline-flex items-center text-taruna-red-600 dark:text-red-400">
                     <ArrowDownRight className="w-3.5 h-3.5" />
                     {item.change}
                   </span>
@@ -235,7 +235,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex-row items-center justify-between pb-3">
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-taruna-yellow-50 text-taruna-yellow-700">
+              <div className="p-2 rounded-xl bg-taruna-yellow-50 dark:bg-slate-800 text-taruna-yellow-700 dark:text-taruna-yellow-400">
                 <CalendarDays className="w-5 h-5" />
               </div>
               <div>
@@ -249,25 +249,25 @@ export default function DashboardPage() {
             {upcomingEvents.map((event, idx) => (
               <div
                 key={idx}
-                className="p-4 rounded-2xl border border-taruna-border bg-taruna-surface/50 hover:bg-taruna-surface transition flex flex-col gap-2"
+                className="p-4 rounded-2xl border border-taruna-border dark:border-slate-800 bg-taruna-surface/50 dark:bg-slate-800/50 hover:bg-taruna-surface dark:hover:bg-slate-800 transition flex flex-col gap-2"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-taruna-dark">{event.title}</span>
+                  <span className="font-bold text-sm text-taruna-dark dark:text-white">{event.title}</span>
                   <Badge variant={event.color === 'primary' ? 'primary' : 'accent'} size="sm">
                     {event.tag}
                   </Badge>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
+                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-400 flex-wrap">
                   <span className="inline-flex items-center gap-1">
-                    <CalendarDays className="w-3.5 h-3.5 text-taruna-yellow-600" />
+                    <CalendarDays className="w-3.5 h-3.5 text-taruna-yellow-600 dark:text-taruna-yellow-400" />
                     {event.date}
                   </span>
                   <span className="inline-flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-gray-400" />
+                    <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500" />
                     {event.time}
                   </span>
                   <span className="inline-flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-taruna-red-600" />
+                    <MapPin className="w-3.5 h-3.5 text-taruna-red-600 dark:text-red-400" />
                     {event.location}
                   </span>
                 </div>
@@ -280,7 +280,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex-row items-center justify-between pb-3">
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-taruna-red-50 text-taruna-red-600">
+              <div className="p-2 rounded-xl bg-taruna-red-50 dark:bg-slate-800 text-taruna-red-600 dark:text-red-400">
                 <Megaphone className="w-5 h-5" />
               </div>
               <div>
@@ -294,16 +294,16 @@ export default function DashboardPage() {
             {announcements.map((item, idx) => (
               <div
                 key={idx}
-                className="p-4 rounded-2xl border border-taruna-border bg-white hover:border-taruna-yellow-300 transition flex flex-col gap-1.5"
+                className="p-4 rounded-2xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900/80 hover:border-taruna-yellow-300 dark:hover:border-taruna-yellow-500/50 transition flex flex-col gap-1.5"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-sm text-taruna-dark">{item.title}</h4>
-                  <span className="text-[11px] text-gray-400">{item.date}</span>
+                  <h4 className="font-bold text-sm text-taruna-dark dark:text-white">{item.title}</h4>
+                  <span className="text-[11px] text-gray-400 dark:text-slate-500">{item.date}</span>
                 </div>
-                <p className="text-xs text-gray-600 leading-relaxed">{item.desc}</p>
-                <div className="pt-2 flex items-center justify-between text-[11px] text-gray-400 border-t border-taruna-border/50">
-                  <span>Oleh: <strong className="text-taruna-dark">{item.author}</strong></span>
-                  <span className="text-taruna-yellow-700 font-semibold inline-flex items-center cursor-pointer hover:underline">
+                <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed">{item.desc}</p>
+                <div className="pt-2 flex items-center justify-between text-[11px] text-gray-400 dark:text-slate-500 border-t border-taruna-border/50 dark:border-slate-800">
+                  <span>Oleh: <strong className="text-taruna-dark dark:text-slate-200">{item.author}</strong></span>
+                  <span className="text-taruna-yellow-700 dark:text-taruna-yellow-400 font-semibold inline-flex items-center cursor-pointer hover:underline">
                     Baca Detail <ChevronRight className="w-3 h-3" />
                   </span>
                 </div>
@@ -315,7 +315,7 @@ export default function DashboardPage() {
 
       {/* Table Kas & Jimpitan Setya Bakti */}
       <Card>
-        <CardHeader className="flex-row items-center justify-between">
+        <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle>Riwayat Transaksi Kas &amp; Jimpitan</CardTitle>
             <CardDescription>
@@ -340,11 +340,11 @@ export default function DashboardPage() {
             <TableBody>
               {recentTransactions.map((trx) => (
                 <TableRow key={trx.id}>
-                  <TableCell className="font-mono font-bold text-xs text-taruna-yellow-800">
+                  <TableCell className="font-mono font-bold text-xs text-taruna-yellow-800 dark:text-taruna-yellow-400">
                     {trx.id}
                   </TableCell>
-                  <TableCell className="text-xs text-gray-500">{trx.date}</TableCell>
-                  <TableCell className="font-medium">{trx.desc}</TableCell>
+                  <TableCell className="text-xs text-gray-500 dark:text-slate-400">{trx.date}</TableCell>
+                  <TableCell className="font-medium text-taruna-dark dark:text-slate-100">{trx.desc}</TableCell>
                   <TableCell>
                     <Badge
                       variant={
@@ -362,19 +362,19 @@ export default function DashboardPage() {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Avatar name={trx.user} size="xs" />
-                      <span className="text-xs font-semibold">{trx.user}</span>
+                      <span className="text-xs font-semibold text-taruna-dark dark:text-slate-200">{trx.user}</span>
                     </div>
                   </TableCell>
                   <TableCell
                     className={`text-right font-bold text-sm ${
-                      trx.amount.startsWith('+') ? 'text-emerald-600' : 'text-taruna-red-600'
+                      trx.amount.startsWith('+') ? 'text-emerald-600 dark:text-emerald-400' : 'text-taruna-red-600 dark:text-red-400'
                     }`}
                   >
                     {trx.amount}
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
-                      <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                       {trx.status}
                     </span>
                   </TableCell>

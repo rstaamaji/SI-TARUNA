@@ -15,7 +15,8 @@ router.use('/auth', authRoutes);
 // 3. Admin Protected Routes: /api/admin
 router.use('/admin', adminRoutes);
 
-// 4. Member Protected Routes: /api/member
+// 4. Member Management CRUD: /api/members (and /api/member)
+router.use('/members', memberRoutes);
 router.use('/member', memberRoutes);
 
 export default router;
