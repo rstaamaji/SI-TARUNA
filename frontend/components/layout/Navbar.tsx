@@ -5,6 +5,7 @@ import { Menu, Bell, Search, LogOut, User, Settings } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { Logo } from '@/components/ui/Logo';
+import { ThemeToggle } from '@/components/theme/ThemeProvider';
 
 export interface NavbarProps {
   onMenuToggle: () => void;
@@ -28,34 +29,37 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [showNotifMenu, setShowNotifMenu] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 h-20 bg-white/95 backdrop-blur border-b border-taruna-border px-4 sm:px-8 flex items-center justify-between">
+    <header className="sticky top-0 z-30 h-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-taruna-border dark:border-slate-800 px-4 sm:px-8 flex items-center justify-between transition-colors">
       {/* Left: Mobile hamburger & Logo on mobile */}
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuToggle}
-          className="p-2 rounded-xl text-gray-500 hover:text-taruna-dark hover:bg-taruna-surface lg:hidden transition"
+          className="p-2 rounded-xl text-gray-500 hover:text-taruna-dark dark:text-slate-400 dark:hover:text-white hover:bg-taruna-surface dark:hover:bg-slate-800 lg:hidden transition"
           aria-label="Buka Menu"
         >
           <Menu className="w-6 h-6" />
         </button>
 
         <div className="lg:hidden">
-          <Logo size={36} showText={false} href="/dashboard" />
+          <Logo size={36} showText={false} href="/" />
         </div>
 
         {/* Search input desktop */}
         <div className="hidden sm:flex items-center relative w-64 lg:w-80">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 pointer-events-none" />
+          <Search className="w-4 h-4 text-gray-400 dark:text-slate-500 absolute left-3.5 pointer-events-none" />
           <input
             type="text"
             placeholder="Cari data anggota, kas, kegiatan..."
-            className="w-full text-xs sm:text-sm pl-10 pr-4 py-2 rounded-xl bg-taruna-surface border border-taruna-border focus:bg-white focus:border-taruna-yellow-500 focus:ring-2 focus:ring-taruna-yellow-100 outline-none transition"
+            className="w-full text-xs sm:text-sm pl-10 pr-4 py-2 rounded-xl bg-taruna-surface dark:bg-slate-800/80 border border-taruna-border dark:border-slate-700 text-taruna-dark dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:border-taruna-yellow-500 focus:ring-2 focus:ring-taruna-yellow-500/20 outline-none transition"
           />
         </div>
       </div>
 
-      {/* Right: Notifications & User profile */}
-      <div className="flex items-center gap-3 sm:gap-4">
+      {/* Right: Theme Toggle, Notifications & User profile */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Theme Toggle Button (Light / Dark) */}
+        <ThemeToggle />
+
         {/* Notification Bell */}
         <div className="relative">
           <button
@@ -63,12 +67,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               setShowNotifMenu(!showNotifMenu);
               setShowProfileMenu(false);
             }}
-            className="p-2.5 rounded-xl border border-taruna-border hover:bg-taruna-surface text-gray-600 hover:text-taruna-dark transition relative"
+            className="p-2.5 rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-taruna-surface dark:hover:bg-slate-800 text-gray-600 dark:text-slate-300 hover:text-taruna-dark dark:hover:text-white transition relative"
             aria-label="Notifikasi"
           >
             <Bell className="w-5 h-5" />
             {notificationCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-taruna-red-600 text-[10px] font-bold text-white ring-2 ring-white">
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-taruna-red-600 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-900">
                 {notificationCount}
               </span>
             )}
@@ -76,30 +80,30 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Notification Dropdown */}
           {showNotifMenu && (
-            <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white border border-taruna-border shadow-xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-              <div className="flex items-center justify-between pb-3 border-b border-taruna-border">
-                <p className="font-bold text-sm text-taruna-dark">Notifikasi Terbaru</p>
-                <span className="text-xs text-taruna-red-600 font-semibold cursor-pointer hover:underline">
+            <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 shadow-xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="flex items-center justify-between pb-3 border-b border-taruna-border dark:border-slate-800">
+                <p className="font-bold text-sm text-taruna-dark dark:text-white">Notifikasi Terbaru</p>
+                <span className="text-xs text-taruna-red-600 dark:text-red-400 font-semibold cursor-pointer hover:underline">
                   Tandai Dibaca
                 </span>
               </div>
               <div className="mt-3 space-y-2.5">
-                <div className="p-2.5 rounded-xl bg-taruna-yellow-50/60 border border-taruna-yellow-100 flex items-start gap-2.5">
+                <div className="p-2.5 rounded-xl bg-taruna-yellow-50/60 dark:bg-slate-800/80 border border-taruna-yellow-100 dark:border-slate-700 flex items-start gap-2.5">
                   <div className="w-2 h-2 rounded-full bg-taruna-yellow-500 mt-1.5 shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-taruna-dark leading-snug">
+                    <p className="text-xs font-semibold text-taruna-dark dark:text-slate-100 leading-snug">
                       Pertemuan Rutin Karang Taruna
                     </p>
-                    <p className="text-[11px] text-gray-500 mt-0.5">Minggu ini pukul 19:30 WIB di Balai Dusun</p>
+                    <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">Minggu ini pukul 19:30 WIB di Balai Dusun</p>
                   </div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-taruna-surface border border-taruna-border flex items-start gap-2.5">
+                <div className="p-2.5 rounded-xl bg-taruna-surface dark:bg-slate-800/40 border border-taruna-border dark:border-slate-800 flex items-start gap-2.5">
                   <div className="w-2 h-2 rounded-full bg-taruna-red-500 mt-1.5 shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-taruna-dark leading-snug">
+                    <p className="text-xs font-semibold text-taruna-dark dark:text-slate-100 leading-snug">
                       Pencatatan Jimpitan RT 02
                     </p>
-                    <p className="text-[11px] text-gray-500 mt-0.5">Iuran telah terekap Rp 145.000</p>
+                    <p className="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">Iuran telah terekap Rp 145.000</p>
                   </div>
                 </div>
               </div>
@@ -114,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               setShowProfileMenu(!showProfileMenu);
               setShowNotifMenu(false);
             }}
-            className="flex items-center gap-2.5 p-1.5 pl-2 sm:pr-3 rounded-2xl hover:bg-taruna-surface border border-transparent hover:border-taruna-border transition"
+            className="flex items-center gap-2.5 p-1.5 pl-2 sm:pr-3 rounded-2xl hover:bg-taruna-surface dark:hover:bg-slate-800 border border-transparent hover:border-taruna-border dark:hover:border-slate-800 transition"
           >
             <Avatar
               name={user.name}
@@ -123,10 +127,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               status="online"
             />
             <div className="hidden md:flex flex-col text-left">
-              <span className="text-xs font-bold text-taruna-dark leading-none">
+              <span className="text-xs font-bold text-taruna-dark dark:text-white leading-none">
                 {user.name}
               </span>
-              <span className="text-[10px] font-semibold text-taruna-red-600 mt-1">
+              <span className="text-[10px] font-semibold text-taruna-red-600 dark:text-red-400 mt-1">
                 {user.role}
               </span>
             </div>
@@ -134,9 +138,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* User Profile Dropdown */}
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-taruna-border shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-              <div className="p-3 border-b border-taruna-border">
-                <p className="text-sm font-bold text-taruna-dark truncate">{user.name}</p>
+            <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="p-3 border-b border-taruna-border dark:border-slate-800">
+                <p className="text-sm font-bold text-taruna-dark dark:text-white truncate">{user.name}</p>
                 <div className="mt-1">
                   <Badge variant={user.role === 'ADMIN' ? 'accent' : 'primary'} size="sm">
                     {user.role}
@@ -145,26 +149,32 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
               <div className="py-1">
                 <a
-                  href="/dashboard/profil"
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 rounded-xl hover:bg-taruna-surface hover:text-taruna-dark transition"
+                  href="#profile"
+                  onClick={(e) => e.preventDefault()}
+                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 rounded-xl hover:bg-taruna-surface dark:hover:bg-slate-800 hover:text-taruna-dark dark:hover:text-white transition"
                 >
-                  <User className="w-4 h-4 text-gray-400" />
+                  <User className="w-4 h-4 text-gray-400 dark:text-slate-500" />
                   Profil Saya
                 </a>
                 <a
-                  href="/dashboard"
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 rounded-xl hover:bg-taruna-surface hover:text-taruna-dark transition"
+                  href="#settings"
+                  onClick={(e) => e.preventDefault()}
+                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 rounded-xl hover:bg-taruna-surface dark:hover:bg-slate-800 hover:text-taruna-dark dark:hover:text-white transition"
                 >
-                  <Settings className="w-4 h-4 text-gray-400" />
+                  <Settings className="w-4 h-4 text-gray-400 dark:text-slate-500" />
                   Pengaturan
                 </a>
               </div>
-              <div className="pt-1 border-t border-taruna-border">
+              <div className="pt-1 border-t border-taruna-border dark:border-slate-800">
                 <a
-                  href="/login"
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-taruna-red-600 rounded-xl hover:bg-red-50 transition"
+                  href="#logout"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.location.reload();
+                  }}
+                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-taruna-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 transition"
                 >
-                  <LogOut className="w-4 h-4 text-taruna-red-600" />
+                  <LogOut className="w-4 h-4 text-taruna-red-600 dark:text-red-400" />
                   Keluar Akun
                 </a>
               </div>

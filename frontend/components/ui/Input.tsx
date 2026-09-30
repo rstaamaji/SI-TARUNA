@@ -32,14 +32,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-xs sm:text-sm font-semibold text-taruna-dark"
+            className="text-xs sm:text-sm font-semibold text-taruna-dark dark:text-slate-200"
           >
             {label}
           </label>
         )}
         <div className="relative flex items-center">
           {leftIcon && (
-            <div className="absolute left-3.5 flex items-center justify-center text-gray-400 pointer-events-none">
+            <div className="absolute left-3.5 flex items-center justify-center text-gray-400 dark:text-slate-500 pointer-events-none">
               {leftIcon}
             </div>
           )}
@@ -49,14 +49,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             disabled={disabled}
             className={cn(
-              'w-full rounded-xl bg-white border text-sm text-taruna-dark placeholder:text-gray-400 transition-colors duration-200',
+              'w-full rounded-xl bg-white dark:bg-slate-900 border text-sm text-taruna-dark dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 transition-colors duration-200',
               'py-2.5 px-3.5',
               leftIcon ? 'pl-10' : 'pl-3.5',
               rightIcon ? 'pr-10' : 'pr-3.5',
               error
-                ? 'border-taruna-red-500 focus:border-taruna-red-600 focus:ring-2 focus:ring-taruna-red-100 outline-none'
-                : 'border-taruna-border hover:border-gray-400 focus:border-taruna-yellow-500 focus:ring-2 focus:ring-taruna-yellow-100 outline-none',
-              disabled && 'bg-gray-100 cursor-not-allowed opacity-60',
+                ? 'border-taruna-red-500 focus:border-taruna-red-600 focus:ring-2 focus:ring-taruna-red-500/20 outline-none'
+                : 'border-taruna-border dark:border-slate-800 hover:border-gray-400 dark:hover:border-slate-700 focus:border-taruna-yellow-500 focus:ring-2 focus:ring-taruna-yellow-500/20 outline-none',
+              disabled && 'bg-gray-100 dark:bg-slate-800/60 cursor-not-allowed opacity-60',
               className
             )}
             {...props}

@@ -144,16 +144,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar Container */}
       <aside
         className={cn(
-          'fixed top-0 bottom-0 left-0 z-40 w-72 bg-white border-r border-taruna-border flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static',
+          'fixed top-0 bottom-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-taruna-border dark:border-slate-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static',
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         )}
       >
         {/* Sidebar Header with Logo */}
-        <div className="h-20 px-6 flex items-center justify-between border-b border-taruna-border bg-gradient-to-b from-taruna-yellow-50/40 to-white">
+        <div className="h-20 px-6 flex items-center justify-between border-b border-taruna-border dark:border-slate-800 bg-gradient-to-b from-taruna-yellow-50/40 dark:from-slate-900 to-white dark:to-slate-900">
           <Logo size={42} href="/" />
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-gray-400 hover:text-taruna-dark hover:bg-taruna-surface lg:hidden transition"
+            className="p-2 rounded-xl text-gray-400 hover:text-taruna-dark dark:hover:text-white hover:bg-taruna-surface dark:hover:bg-slate-800 lg:hidden transition"
             aria-label="Tutup Menu"
           >
             <X className="w-5 h-5" />
@@ -163,15 +163,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Navigation List */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
           <div className="flex items-center justify-between px-3 pb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500">
               Menu Utama
             </span>
             <span
               className={cn(
                 'text-[10px] font-bold px-1.5 py-0.5 rounded uppercase',
                 userRole === 'ADMIN'
-                  ? 'bg-taruna-red-100 text-taruna-red-700'
-                  : 'bg-taruna-yellow-100 text-taruna-yellow-800'
+                  ? 'bg-taruna-red-100 dark:bg-taruna-red-950/60 text-taruna-red-700 dark:text-red-400'
+                  : 'bg-taruna-yellow-100 dark:bg-taruna-yellow-950/60 text-taruna-yellow-800 dark:text-taruna-yellow-300'
               )}
             >
               {userRole}
@@ -199,8 +199,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className={cn(
                   'group flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200',
                   isActive
-                    ? 'bg-taruna-yellow-50 text-taruna-yellow-800 font-semibold shadow-sm border border-taruna-yellow-200/80'
-                    : 'text-gray-600 hover:bg-taruna-surface hover:text-taruna-dark'
+                    ? 'bg-taruna-yellow-50 dark:bg-taruna-yellow-500/15 text-taruna-yellow-800 dark:text-taruna-yellow-400 font-semibold shadow-xs border border-taruna-yellow-200/80 dark:border-taruna-yellow-500/30'
+                    : 'text-gray-600 dark:text-slate-300 hover:bg-taruna-surface dark:hover:bg-slate-800 hover:text-taruna-dark dark:hover:text-white'
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -208,8 +208,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     className={cn(
                       'p-1.5 rounded-lg transition-colors',
                       isActive
-                        ? 'bg-taruna-yellow-500 text-white shadow-sm'
-                        : 'text-gray-400 group-hover:text-taruna-yellow-600 group-hover:bg-taruna-yellow-50'
+                        ? 'bg-taruna-yellow-500 text-white shadow-xs'
+                        : 'text-gray-400 dark:text-slate-500 group-hover:text-taruna-yellow-600 dark:group-hover:text-taruna-yellow-400 group-hover:bg-taruna-yellow-50 dark:group-hover:bg-slate-800'
                     )}
                   >
                     <Icon className="w-4 h-4" />
@@ -225,15 +225,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         item.adminOnly
                           ? 'bg-taruna-red-600 text-white'
                           : item.name === 'Pengumuman'
-                          ? 'bg-taruna-red-100 text-taruna-red-700'
-                          : 'bg-taruna-yellow-100 text-taruna-yellow-800'
+                          ? 'bg-taruna-red-100 dark:bg-taruna-red-950/60 text-taruna-red-700 dark:text-red-400'
+                          : 'bg-taruna-yellow-100 dark:bg-taruna-yellow-950/60 text-taruna-yellow-800 dark:text-taruna-yellow-300'
                       )}
                     >
                       {badgeValue}
                     </span>
                   )}
                   {isActive && (
-                    <ChevronRight className="w-3.5 h-3.5 text-taruna-yellow-600" />
+                    <ChevronRight className="w-3.5 h-3.5 text-taruna-yellow-600 dark:text-taruna-yellow-400" />
                   )}
                 </div>
               </Link>
@@ -242,16 +242,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Sidebar Footer Organization Badge */}
-        <div className="p-4 border-t border-taruna-border bg-taruna-surface/80 m-3 rounded-2xl">
+        <div className="p-4 border-t border-taruna-border dark:border-slate-800 bg-taruna-surface/80 dark:bg-slate-800/40 m-3 rounded-2xl">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-white border border-taruna-border shadow-xs text-taruna-red-600">
+            <div className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-700 shadow-xs text-taruna-red-600 dark:text-red-400">
               <ShieldAlert className="w-4 h-4" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-taruna-dark truncate">
+              <p className="text-xs font-bold text-taruna-dark dark:text-white truncate">
                 Karang Taruna Setya Bakti
               </p>
-              <p className="text-[11px] text-gray-500 truncate">
+              <p className="text-[11px] text-gray-500 dark:text-slate-400 truncate">
                 Tuk Uluh, Sringin, Jumantono
               </p>
             </div>

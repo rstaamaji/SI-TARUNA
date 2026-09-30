@@ -24,19 +24,26 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   const variants = {
     // Yellow/Gold Primary
-    primary: 'bg-taruna-yellow-100 text-taruna-yellow-800 border-taruna-yellow-200',
+    primary:
+      'bg-taruna-yellow-100 dark:bg-taruna-yellow-950/60 text-taruna-yellow-800 dark:text-taruna-yellow-300 border-taruna-yellow-200 dark:border-taruna-yellow-800/60',
     // Red Accent
-    accent: 'bg-taruna-red-100 text-taruna-red-800 border-taruna-red-200',
+    accent:
+      'bg-taruna-red-100 dark:bg-taruna-red-950/60 text-taruna-red-800 dark:text-taruna-red-300 border-taruna-red-200 dark:border-taruna-red-800/60',
     // Green Success
-    success: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    success:
+      'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60',
     // Amber Warning
-    warning: 'bg-amber-100 text-amber-800 border-amber-200',
+    warning:
+      'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/60',
     // Blue Info
-    info: 'bg-blue-100 text-blue-800 border-blue-200',
+    info:
+      'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800/60',
     // Neutral Gray
-    neutral: 'bg-gray-100 text-gray-700 border-gray-200',
+    neutral:
+      'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 border-gray-200 dark:border-slate-700',
     // Outline
-    outline: 'bg-transparent text-taruna-dark border-taruna-border',
+    outline:
+      'bg-transparent text-taruna-dark dark:text-slate-200 border-taruna-border dark:border-slate-700',
   };
 
   const dotColors = {

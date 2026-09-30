@@ -38,7 +38,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="text-xs sm:text-sm font-semibold text-taruna-dark"
+            className="text-xs sm:text-sm font-semibold text-taruna-dark dark:text-slate-200"
           >
             {label}
           </label>
@@ -49,12 +49,12 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             ref={ref}
             disabled={disabled}
             className={cn(
-              'w-full appearance-none rounded-xl bg-white border text-sm text-taruna-dark transition-colors duration-200',
+              'w-full appearance-none rounded-xl bg-white dark:bg-slate-900 border text-sm text-taruna-dark dark:text-slate-100 transition-colors duration-200',
               'py-2.5 pl-3.5 pr-10',
               error
-                ? 'border-taruna-red-500 focus:border-taruna-red-600 focus:ring-2 focus:ring-taruna-red-100 outline-none'
-                : 'border-taruna-border hover:border-gray-400 focus:border-taruna-yellow-500 focus:ring-2 focus:ring-taruna-yellow-100 outline-none',
-              disabled && 'bg-gray-100 cursor-not-allowed opacity-60',
+                ? 'border-taruna-red-500 focus:border-taruna-red-600 focus:ring-2 focus:ring-taruna-red-500/20 outline-none'
+                : 'border-taruna-border dark:border-slate-800 hover:border-gray-400 dark:hover:border-slate-700 focus:border-taruna-yellow-500 focus:ring-2 focus:ring-taruna-yellow-500/20 outline-none',
+              disabled && 'bg-gray-100 dark:bg-slate-800/60 cursor-not-allowed opacity-60',
               className
             )}
             {...props}

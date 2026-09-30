@@ -9,18 +9,22 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', hoverable = false, ...props }, ref) => {
     const variants = {
-      default: 'bg-white border border-taruna-border shadow-sm',
-      flat: 'bg-taruna-surface border border-taruna-border shadow-none',
-      bordered: 'bg-white border-2 border-taruna-border shadow-none',
+      default:
+        'bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 shadow-xs',
+      flat:
+        'bg-taruna-surface dark:bg-slate-800/60 border border-taruna-border dark:border-slate-800 shadow-none',
+      bordered:
+        'bg-white dark:bg-slate-900 border-2 border-taruna-border dark:border-slate-700 shadow-none',
     };
 
     return (
       <div
         ref={ref}
         className={cn(
-          'rounded-2xl transition-all duration-200 overflow-hidden text-taruna-dark',
+          'rounded-2xl transition-all duration-200 overflow-hidden text-taruna-dark dark:text-slate-100',
           variants[variant],
-          hoverable && 'hover:shadow-md hover:border-taruna-yellow-300 hover:-translate-y-0.5',
+          hoverable &&
+            'hover:shadow-md hover:border-taruna-yellow-300 dark:hover:border-taruna-yellow-500/50 hover:-translate-y-0.5',
           className
         )}
         {...props}
@@ -49,7 +53,7 @@ export const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      'text-lg font-bold text-taruna-dark tracking-tight leading-none',
+      'text-lg font-bold text-taruna-dark dark:text-white tracking-tight leading-none',
       className
     )}
     {...props}
@@ -63,7 +67,7 @@ export const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-xs sm:text-sm text-gray-500', className)}
+    className={cn('text-xs sm:text-sm text-gray-500 dark:text-slate-400', className)}
     {...props}
   />
 ));

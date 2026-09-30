@@ -61,27 +61,27 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Modal Card */}
       <div
         className={cn(
-          'relative w-full rounded-2xl bg-white shadow-2xl border border-taruna-border z-10 transition-all transform scale-100 overflow-hidden flex flex-col max-h-[90vh]',
+          'relative w-full rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-taruna-border dark:border-slate-800 z-10 transition-all transform scale-100 overflow-hidden flex flex-col max-h-[90vh]',
           sizes[size]
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-taruna-border">
+        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-taruna-border dark:border-slate-800">
           <div>
             {title && (
-              <h3 className="text-lg font-bold text-taruna-dark leading-snug">
+              <h3 className="text-lg font-bold text-taruna-dark dark:text-white leading-snug">
                 {title}
               </h3>
             )}
             {description && (
-              <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
                 {description}
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-gray-400 hover:text-taruna-dark hover:bg-taruna-surface transition"
+            className="p-1.5 rounded-xl text-gray-400 hover:text-taruna-dark dark:hover:text-white hover:bg-taruna-surface dark:hover:bg-slate-800 transition"
             aria-label="Tutup Modal"
           >
             <X className="w-5 h-5" />
@@ -89,13 +89,13 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-5 sm:p-6 overflow-y-auto text-sm text-gray-600 space-y-4">
+        <div className="p-5 sm:p-6 overflow-y-auto text-sm text-gray-600 dark:text-slate-300 space-y-4">
           {children}
         </div>
 
         {/* Footer */}
         {footer && (
-          <div className="p-4 sm:p-5 bg-taruna-surface border-t border-taruna-border flex items-center justify-end gap-3">
+          <div className="p-4 sm:p-5 bg-taruna-surface dark:bg-slate-800/80 border-t border-taruna-border dark:border-slate-800 flex items-center justify-end gap-3">
             {footer}
           </div>
         )}
