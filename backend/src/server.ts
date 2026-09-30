@@ -1,50 +1,60 @@
 import http from 'http';
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { config } from './utils/config';
+import prisma from './utils/prisma';
+import apiRoutes from './routes';
+import { requestLogger } from './middleware/logger.middleware';
+import { notFoundHandler } from './middleware/notFound.middleware';
+import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
 const server = http.createServer(app);
 
-const PORT = process.env.PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
-
-// Middleware
-app.use(cors({ origin: CLIENT_URL, credentials: true }));
+// 1. Basic Middleware
+app.use(
+  cors({
+    origin: config.clientUrl,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health Check Endpoint
-app.get('/api/health', (_req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    message: 'SI-TARUNA API is running',
-  });
-});
+// 2. Request Logger Middleware
+app.use(requestLogger);
 
-// Global 404 handler
-app.use((req: Request, res: Response) => {
-  res.status(404).json({
-    success: false,
-    message: `Route ${req.originalUrl} not found`,
-  });
-});
+// 3. API Routes
+app.use('/api', apiRoutes);
 
-// Global error handler
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error('[Error]', err.stack);
-  res.status(500).json({
-    success: false,
-    message: err.message || 'Internal Server Error',
-  });
-});
+// 4. 404 Not Found Middleware
+app.use(notFoundHandler);
 
+// 5. Centralized Error Handler Middleware
+app.use(errorHandler);
+
+// 6. Server Initialization & Graceful Shutdown
 if (process.env.NODE_ENV !== 'test') {
-  server.listen(PORT, () => {
-    console.log(`🚀 SI-TARUNA Backend server listening on port ${PORT}`);
+  server.listen(config.port, () => {
+    console.log(`===============================================`);
+    console.log(`🚀 SI-TARUNA Backend API Server`);
+    console.log(`📡 Port: ${config.port} | Mode: ${config.env}`);
+    console.log(`🔗 Health: http://localhost:${config.port}/api/health`);
+    console.log(`===============================================`);
   });
+
+  const handleShutdown = async (signal: string) => {
+    console.log(`\n[${signal}] Received. Shutting down gracefully...`);
+    server.close(async () => {
+      console.log('HTTP server closed.');
+      await prisma.$disconnect();
+      console.log('Database connection closed.');
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGINT', () => handleShutdown('SIGINT'));
+  process.on('SIGTERM', () => handleShutdown('SIGTERM'));
 }
 
 export { app, server };
