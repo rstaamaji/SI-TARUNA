@@ -20,15 +20,25 @@ import {
   X,
   ChevronRight,
   ShieldAlert,
+  ShieldCheck,
 } from 'lucide-react';
 
 export interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   notificationCount?: number;
+  userRole?: 'ADMIN' | 'MEMBER';
 }
 
-export const navigationItems = [
+export interface NavItem {
+  name: string;
+  href: string;
+  icon: any;
+  badge?: string | null;
+  adminOnly?: boolean;
+}
+
+export const navigationItems: NavItem[] = [
   {
     name: 'Dashboard',
     href: '/dashboard',
@@ -84,6 +94,13 @@ export const navigationItems = [
     badge: null,
   },
   {
+    name: 'Kelola Pengurus',
+    href: '/dashboard/pengurus',
+    icon: ShieldCheck,
+    badge: 'Admin',
+    adminOnly: true, // Khusus ADMIN, disembunyikan dari MEMBER
+  },
+  {
     name: 'Notifikasi',
     href: '/dashboard/notifikasi',
     icon: Bell,
@@ -101,8 +118,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
   notificationCount = 3,
+  userRole = 'MEMBER',
 }) => {
   const pathname = usePathname();
+
+  // Filter menu: sembunyikan menu adminOnly jika bukan ADMIN
+  const visibleItems = navigationItems.filter((item) => {
+    if (item.adminOnly && userRole !== 'ADMIN') {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <>
@@ -124,7 +150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         {/* Sidebar Header with Logo */}
         <div className="h-20 px-6 flex items-center justify-between border-b border-taruna-border bg-gradient-to-b from-taruna-yellow-50/40 to-white">
-          <Logo size={40} href="/dashboard" />
+          <Logo size={42} href="/" />
           <button
             onClick={onClose}
             className="p-2 rounded-xl text-gray-400 hover:text-taruna-dark hover:bg-taruna-surface lg:hidden transition"
@@ -136,11 +162,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Navigation List */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-          <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-            Menu Utama
+          <div className="flex items-center justify-between px-3 pb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              Menu Utama
+            </span>
+            <span
+              className={cn(
+                'text-[10px] font-bold px-1.5 py-0.5 rounded uppercase',
+                userRole === 'ADMIN'
+                  ? 'bg-taruna-red-100 text-taruna-red-700'
+                  : 'bg-taruna-yellow-100 text-taruna-yellow-800'
+              )}
+            >
+              {userRole}
+            </span>
           </div>
 
-          {navigationItems.map((item) => {
+          {visibleItems.map((item) => {
             const isActive =
               pathname === item.href ||
               (item.href !== '/dashboard' && pathname.startsWith(item.href));
@@ -184,7 +222,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <span
                       className={cn(
                         'text-[10px] font-bold px-2 py-0.5 rounded-full',
-                        item.name === 'Pengumuman'
+                        item.adminOnly
+                          ? 'bg-taruna-red-600 text-white'
+                          : item.name === 'Pengumuman'
                           ? 'bg-taruna-red-100 text-taruna-red-700'
                           : 'bg-taruna-yellow-100 text-taruna-yellow-800'
                       )}

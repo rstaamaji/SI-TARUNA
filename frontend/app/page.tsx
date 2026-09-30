@@ -45,9 +45,11 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Logo } from '@/components/ui/Logo';
 
 interface CurrentUser {
+  id: string;
   name: string;
   role: 'ADMIN' | 'MEMBER';
   username: string;
+  token?: string;
 }
 
 export default function UnifiedMainPage() {
@@ -64,46 +66,67 @@ export default function UnifiedMainPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Handle Login Submission
-  const handleLogin = (e?: React.FormEvent) => {
+  // Real backend login request with fallback
+  const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setLoginError('');
     setIsLoggingIn(true);
 
-    setTimeout(() => {
-      setIsLoggingIn(false);
-      const trimmedUser = usernameInput.trim().toLowerCase();
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: usernameInput.trim(),
+          password: passwordInput,
+        }),
+      });
 
+      const json = await res.json();
+
+      if (res.ok && json.success) {
+        const user: CurrentUser = {
+          id: json.data.user.id,
+          name: json.data.user.member?.name || json.data.user.username,
+          role: json.data.user.role,
+          username: json.data.user.username,
+          token: json.data.token,
+        };
+        setCurrentUser(user);
+        toast.success(`Berhasil masuk sebagai ${user.role}!`);
+      } else {
+        const errMsg = json.message || 'Username atau password salah.';
+        setLoginError(errMsg);
+        toast.error(errMsg);
+      }
+    } catch {
+      // Local fallback if backend temporarily unreachable
+      const trimmedUser = usernameInput.trim().toLowerCase();
       if (trimmedUser === 'admin' && passwordInput === 'admin123') {
         const user: CurrentUser = {
-          name: 'Rustam Aji (Admin)',
+          id: 'admin-id',
+          name: 'Rustam Aji Prabowo',
           role: 'ADMIN',
           username: 'admin',
         };
         setCurrentUser(user);
-        toast.success('Selamat datang, Pengurus Karang Taruna Setya Bakti!');
+        toast.success('Login sebagai ADMIN (Sesi Lokal)');
       } else if (trimmedUser === 'member' && passwordInput === 'member123') {
         const user: CurrentUser = {
+          id: 'member-id',
           name: 'Bambang Sudiro',
           role: 'MEMBER',
           username: 'member',
         };
         setCurrentUser(user);
-        toast.success('Selamat datang di portal anggota Karang Taruna Setya Bakti!');
-      } else if (trimmedUser && passwordInput) {
-        const isAdm = trimmedUser.includes('admin');
-        const user: CurrentUser = {
-          name: usernameInput,
-          role: isAdm ? 'ADMIN' : 'MEMBER',
-          username: trimmedUser,
-        };
-        setCurrentUser(user);
-        toast.success(`Berhasil masuk sebagai ${user.role}!`);
+        toast.success('Login sebagai MEMBER (Sesi Lokal)');
       } else {
-        setLoginError('Username dan password wajib diisi.');
-        toast.error('Gagal masuk. Periksa username dan password Anda.');
+        setLoginError('Kredensial tidak valid');
+        toast.error('Gagal masuk');
       }
-    }, 300);
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const handleLogout = () => {
@@ -114,8 +137,8 @@ export default function UnifiedMainPage() {
   const stats = [
     {
       title: 'Total Anggota Aktif',
-      value: '64 Pemuda',
-      change: '+4 bulan ini',
+      value: '25 Pemuda',
+      change: 'Terdaftar di Database',
       isPositive: true,
       icon: <Users className="w-5 h-5 text-taruna-yellow-600" />,
       bg: 'bg-taruna-yellow-50',
@@ -130,8 +153,8 @@ export default function UnifiedMainPage() {
     },
     {
       title: 'Kehadiran Rapat Terakhir',
-      value: '88%',
-      change: '56 dari 64 hadir',
+      value: '92%',
+      change: '23 dari 25 hadir',
       isPositive: true,
       icon: <CalendarCheck2 className="w-5 h-5 text-taruna-red-600" />,
       bg: 'bg-taruna-red-50',
@@ -139,8 +162,8 @@ export default function UnifiedMainPage() {
     {
       title: 'Jimpitan Terkumpul',
       value: 'Rp 920.000',
-      change: 'Target Rp 1.000.000',
-      isPositive: false,
+      change: '7 Kelompok RT',
+      isPositive: true,
       icon: <Coins className="w-5 h-5 text-amber-600" />,
       bg: 'bg-amber-50',
     },
@@ -148,7 +171,7 @@ export default function UnifiedMainPage() {
 
   const upcomingEvents = [
     {
-      title: 'Pertemuan Rutin & Arisan Pemuda',
+      title: 'Pertemuan Rutin & Arisan Pemuda Oktober',
       date: 'Minggu, 05 Okt 2026',
       time: '19:30 WIB',
       location: 'Balai Dusun Tuk Uluh',
@@ -156,7 +179,7 @@ export default function UnifiedMainPage() {
       color: 'primary',
     },
     {
-      title: 'Kerja Bakti Bersih Lingkungan Dusun',
+      title: 'Kerja Bakti Bersih Selokan & Gapura Tuk Uluh',
       date: 'Minggu, 12 Okt 2026',
       time: '06:30 WIB',
       location: 'Area Lapangan & Gapura Tuk Uluh',
@@ -173,10 +196,10 @@ export default function UnifiedMainPage() {
       author: 'Bendahara Setya Bakti',
     },
     {
-      title: 'Hasil Keputusan Rapat Pleno Dusun Tuk Uluh',
+      title: 'Pelaksanaan Kerja Bakti Dusun Tuk Uluh',
       date: '24 Sep 2026',
-      desc: 'Telah disepakati rencana pengadaan seragam karang taruna serta pembaruan jadwal ronda malam.',
-      author: 'Sekretariat',
+      desc: 'Seluruh pemuda diharapkan hadir membawa alat kerja bakti pada hari Minggu pagi di area gapura dusun.',
+      author: 'Ketua Karang Taruna',
     },
   ];
 
@@ -184,7 +207,7 @@ export default function UnifiedMainPage() {
     {
       id: 'TRX-001',
       date: '28 Sep 2026',
-      desc: 'Iuran Wajib Bulanan September',
+      desc: 'Iuran wajib anggota periode September 2026',
       category: 'Pemasukan',
       amount: '+Rp 640.000',
       status: 'SELESAI',
@@ -193,7 +216,7 @@ export default function UnifiedMainPage() {
     {
       id: 'TRX-002',
       date: '25 Sep 2026',
-      desc: 'Pembelian Cat Gapura & Konsumsi Kerja Bakti',
+      desc: 'Pembelian cat gapura & konsumsi rapat koordinasi',
       category: 'Pengeluaran',
       amount: '-Rp 350.000',
       status: 'SELESAI',
@@ -202,20 +225,20 @@ export default function UnifiedMainPage() {
     {
       id: 'TRX-003',
       date: '20 Sep 2026',
-      desc: 'Hasil Jimpitan RT 01 & RT 02 Dusun Tuk Uluh',
+      desc: 'Setoran jimpitan seluruh kelompok RT 01-RT 03 Dusun Tuk Uluh',
       category: 'Jimpitan',
-      amount: '+Rp 460.000',
+      amount: '+Rp 920.000',
       status: 'SELESAI',
       user: 'Eko Prasetyo',
     },
     {
       id: 'TRX-004',
       date: '15 Sep 2026',
-      desc: 'Uang Keluar Penyerahan Pemenang Arisan',
+      desc: 'Uang keluar penyerahan pemenang arisan periode September',
       category: 'Arisan',
       amount: '-Rp 500.000',
       status: 'SELESAI',
-      user: 'Siti Rahma',
+      user: 'Bambang Sudiro',
     },
   ];
 
@@ -272,7 +295,7 @@ export default function UnifiedMainPage() {
                 )}
 
                 <Input
-                  label="Username"
+                  label="Username atau Email"
                   placeholder="Masukkan username Anda"
                   value={usernameInput}
                   onChange={(e) => setUsernameInput(e.target.value)}
@@ -305,7 +328,7 @@ export default function UnifiedMainPage() {
               <div className="mt-6 pt-5 border-t border-taruna-border">
                 <div className="flex items-center gap-1.5 mb-3 text-xs font-bold text-gray-400 uppercase tracking-wider">
                   <Info className="w-3.5 h-3.5 text-taruna-yellow-600" />
-                  Akses Cepat Pengujian:
+                  Akses Cepat Pengujian Role:
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -313,18 +336,11 @@ export default function UnifiedMainPage() {
                     onClick={() => {
                       setUsernameInput('admin');
                       setPasswordInput('admin123');
-                      const user: CurrentUser = {
-                        name: 'Rustam Aji (Admin)',
-                        role: 'ADMIN',
-                        username: 'admin',
-                      };
-                      setCurrentUser(user);
-                      toast.success('Login sebagai ADMIN berhasil!');
                     }}
                     className="p-2.5 rounded-xl border border-taruna-yellow-200 bg-taruna-yellow-50 hover:bg-taruna-yellow-100 text-left transition flex flex-col group"
                   >
                     <span className="text-xs font-bold text-taruna-yellow-900 flex items-center justify-between">
-                      Akun Admin
+                      Akun ADMIN
                       <ShieldCheck className="w-3.5 h-3.5 text-taruna-red-600" />
                     </span>
                     <span className="text-[11px] text-taruna-yellow-700 font-mono mt-0.5">
@@ -337,18 +353,11 @@ export default function UnifiedMainPage() {
                     onClick={() => {
                       setUsernameInput('member');
                       setPasswordInput('member123');
-                      const user: CurrentUser = {
-                        name: 'Bambang Sudiro',
-                        role: 'MEMBER',
-                        username: 'member',
-                      };
-                      setCurrentUser(user);
-                      toast.success('Login sebagai MEMBER berhasil!');
                     }}
                     className="p-2.5 rounded-xl border border-taruna-border bg-taruna-surface hover:bg-gray-100 text-left transition flex flex-col group"
                   >
                     <span className="text-xs font-bold text-taruna-dark flex items-center justify-between">
-                      Akun Member
+                      Akun MEMBER
                       <User className="w-3.5 h-3.5 text-gray-400" />
                     </span>
                     <span className="text-[11px] text-gray-500 font-mono mt-0.5">
@@ -370,15 +379,16 @@ export default function UnifiedMainPage() {
   }
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // 2. TAMPILAN DASHBOARD RESMI
+  // 2. TAMPILAN DASHBOARD RESMI DENGAN ROLE-BASED ACCESS CONTROL (RBAC)
   // ─────────────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex bg-taruna-surface text-taruna-dark">
-      {/* Sidebar Navigation */}
+      {/* Sidebar Navigation - Otomatis menyaring menu khusus ADMIN dari MEMBER */}
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         notificationCount={3}
+        userRole={currentUser.role}
       />
 
       {/* Main Container */}
@@ -398,10 +408,13 @@ export default function UnifiedMainPage() {
           <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold">
             <span className="w-2 h-2 rounded-full bg-white animate-ping shrink-0" />
             <span>
-              Sesi Aktif: <strong>{currentUser.name}</strong> (Peran: <strong>{currentUser.role}</strong>)
+              Sesi Aktif: <strong>{currentUser.name}</strong>
+            </span>
+            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-white text-taruna-dark">
+              Peran: {currentUser.role}
             </span>
             <span className="hidden md:inline text-white/80">
-              — Wilayah Tuk Uluh, Sringin, Jumantono
+              — Dusun Tuk Uluh, Sringin, Jumantono
             </span>
           </div>
 
@@ -435,6 +448,9 @@ export default function UnifiedMainPage() {
                   <span className="text-xs font-bold uppercase tracking-wider text-taruna-yellow-700">
                     Karang Taruna Setya Bakti
                   </span>
+                  <Badge variant={currentUser.role === 'ADMIN' ? 'accent' : 'primary'} size="sm">
+                    {currentUser.role}
+                  </Badge>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark tracking-tight">
                   Dashboard Utama
@@ -445,24 +461,31 @@ export default function UnifiedMainPage() {
               </div>
             </div>
 
+            {/* Tombol aksi khusus ADMIN (disembunyikan dari MEMBER) */}
             <div className="flex items-center gap-2.5 flex-wrap">
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<FileSpreadsheet className="w-4 h-4 text-emerald-600" />}
-                onClick={() => toast.info('Fitur ekspor laporan kas akan aktif pada modul kas.')}
-              >
-                Ekspor Laporan
-              </Button>
-              {currentUser.role === 'ADMIN' && (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  leftIcon={<Plus className="w-4 h-4" />}
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  Tambah Kegiatan
-                </Button>
+              {currentUser.role === 'ADMIN' ? (
+                <>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    leftIcon={<FileSpreadsheet className="w-4 h-4 text-emerald-600" />}
+                    onClick={() => toast.info('Fitur ekspor laporan kas aktif untuk Admin.')}
+                  >
+                    Ekspor Laporan
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    leftIcon={<Plus className="w-4 h-4" />}
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    Tambah Kegiatan
+                  </Button>
+                </>
+              ) : (
+                <div className="text-xs text-gray-500 bg-taruna-surface px-3 py-1.5 rounded-xl border border-taruna-border">
+                  Mode Anggota (Akses Baca Saja)
+                </div>
               )}
             </div>
           </div>
@@ -576,7 +599,7 @@ export default function UnifiedMainPage() {
                     <div className="pt-2 flex items-center justify-between text-[11px] text-gray-400 border-t border-taruna-border/50">
                       <span>Oleh: <strong className="text-taruna-dark">{item.author}</strong></span>
                       <span className="text-taruna-yellow-700 font-semibold inline-flex items-center cursor-pointer hover:underline">
-                        Baca Notulensi <ChevronRight className="w-3 h-3" />
+                        Baca Detail <ChevronRight className="w-3 h-3" />
                       </span>
                     </div>
                   </div>
@@ -659,47 +682,49 @@ export default function UnifiedMainPage() {
         </main>
       </div>
 
-      {/* Modal Dialog Form Tambah Kegiatan */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Tambah Jadwal Kegiatan Setya Bakti"
-        description="Kegiatan baru akan otomatis tampil pada jadwal seluruh pemuda Dusun Tuk Uluh."
-        footer={
-          <>
-            <Button variant="secondary" size="sm" onClick={() => setIsModalOpen(false)}>
-              Batal
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => {
-                setIsModalOpen(false);
-                toast.success('Agenda kegiatan berhasil ditambahkan!');
-              }}
-            >
-              Simpan Jadwal
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-4 text-left">
-          <Input label="Nama Kegiatan" placeholder="Contoh: Kerja Bakti Lapangan Dusun Tuk Uluh" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Input label="Tanggal" type="date" />
-            <Input label="Waktu" type="time" />
+      {/* Modal Dialog Form Tambah Kegiatan (Hanya untuk Admin) */}
+      {currentUser.role === 'ADMIN' && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="Tambah Jadwal Kegiatan Setya Bakti"
+          description="Kegiatan baru akan otomatis tampil pada jadwal seluruh pemuda Dusun Tuk Uluh."
+          footer={
+            <>
+              <Button variant="secondary" size="sm" onClick={() => setIsModalOpen(false)}>
+                Batal
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  toast.success('Agenda kegiatan berhasil ditambahkan!');
+                }}
+              >
+                Simpan Jadwal
+              </Button>
+            </>
+          }
+        >
+          <div className="space-y-4 text-left">
+            <Input label="Nama Kegiatan" placeholder="Contoh: Kerja Bakti Lapangan Dusun Tuk Uluh" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Input label="Tanggal" type="date" />
+              <Input label="Waktu" type="time" />
+            </div>
+            <Select
+              label="Lokasi"
+              placeholder="Pilih Lokasi Pertemuan"
+              options={[
+                { value: 'balai', label: 'Balai Dusun Tuk Uluh' },
+                { value: 'posko', label: 'Pos Ronda RT 01' },
+                { value: 'lapangan', label: 'Lapangan Sringin' },
+              ]}
+            />
           </div>
-          <Select
-            label="Lokasi"
-            placeholder="Pilih Lokasi Pertemuan"
-            options={[
-              { value: 'balai', label: 'Balai Dusun Tuk Uluh' },
-              { value: 'posko', label: 'Pos Ronda RT 01' },
-              { value: 'lapangan', label: 'Lapangan Sringin' },
-            ]}
-          />
-        </div>
-      </Modal>
+        </Modal>
+      )}
     </div>
   );
 }

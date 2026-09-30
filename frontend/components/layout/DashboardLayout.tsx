@@ -6,27 +6,36 @@ import { Navbar } from './Navbar';
 
 export interface DashboardLayoutProps {
   children: React.ReactNode;
+  user?: {
+    name: string;
+    role: 'ADMIN' | 'MEMBER';
+    avatarUrl?: string;
+  };
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
+  children,
+  user = {
+    name: 'Pengurus Taruna',
+    role: 'ADMIN',
+  },
+}) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex bg-taruna-surface text-taruna-dark">
-      {/* Sidebar Navigation */}
+      {/* Sidebar Navigation with RBAC */}
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        userRole={user.role}
       />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar
           onMenuToggle={() => setSidebarOpen(true)}
-          user={{
-            name: 'Aji (Admin Taruna)',
-            role: 'ADMIN',
-          }}
+          user={user}
           notificationCount={3}
         />
 
