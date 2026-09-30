@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { ToastProvider } from '@/components/ui/Toast';
 
 export const metadata: Metadata = {
   title: 'SI-TARUNA | Karang Taruna Springin - Jumantono',
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className="min-h-screen bg-white text-taruna-dark antialiased">
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );
