@@ -1,0 +1,22 @@
+{
+  "name": "si-taruna",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistem Informasi Karang Taruna Springin - Jumantono",
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:backend": "npm run build --prefix backend",
+    "lint:frontend": "npm run lint --prefix frontend",
+    "lint:backend": "npm run lint --prefix backend"
+  },
+  "keywords": [
+    "karang-taruna",
+    "nextjs",
+    "express",
+    "typescript"
+  ],
+  "author": "Karang Taruna Springin",
+  "license": "ISC"
+}

@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "lint": "eslint src",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
   },
@@ -26,6 +27,9 @@
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.13.5",
+    "@typescript-eslint/eslint-plugin": "^8.71.0",
+    "@typescript-eslint/parser": "^8.71.0",
+    "eslint": "^9.39.5",
     "prisma": "^6.4.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"
