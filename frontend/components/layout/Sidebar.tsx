@@ -20,6 +20,7 @@ import {
   X,
   ChevronRight,
   ShieldCheck,
+  Banknote,
 } from 'lucide-react';
 
 export interface SidebarProps {
@@ -54,6 +55,12 @@ export const navigationItems: NavItem[] = [
     name: 'Keuangan',
     href: '/finance',
     icon: Wallet,
+    badge: null,
+  },
+  {
+    name: 'Pengambilan Kas',
+    href: '/finance/withdrawal',
+    icon: Banknote,
     badge: null,
   },
   {

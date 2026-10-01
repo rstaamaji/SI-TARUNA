@@ -305,6 +305,14 @@ export class FinanceService {
       throw new AppError('Transaksi kas tidak ditemukan.', 404);
     }
 
+    const linkedWithdrawal = await prisma.cashWithdrawal.findUnique({
+      where: { financeTransactionId: id },
+      select: { id: true },
+    });
+    if (linkedWithdrawal) {
+      throw new AppError('Pengeluaran ini dikelola melalui catatan pengambilan kas.', 400);
+    }
+
     if (data.amount !== undefined && (isNaN(data.amount) || data.amount <= 0)) {
       throw new AppError('Jumlah transaksi harus lebih besar dari 0.', 400);
     }
@@ -349,6 +357,14 @@ export class FinanceService {
     const existing = await prisma.financeTransaction.findUnique({ where: { id } });
     if (!existing) {
       throw new AppError('Transaksi kas tidak ditemukan.', 404);
+    }
+
+    const linkedWithdrawal = await prisma.cashWithdrawal.findUnique({
+      where: { financeTransactionId: id },
+      select: { id: true },
+    });
+    if (linkedWithdrawal) {
+      throw new AppError('Pengeluaran ini dikelola melalui catatan pengambilan kas.', 400);
     }
 
     await prisma.financeTransaction.delete({ where: { id } });

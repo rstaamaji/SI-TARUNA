@@ -413,13 +413,6 @@ async function main() {
         createdById: adminUser.id,
       },
       {
-        type: TransactionType.EXPENSE,
-        amount: 500000,
-        description: 'Uang keluar penyerahan pemenang arisan periode September',
-        transactionDate: new Date('2026-09-15'),
-        createdById: adminUser.id,
-      },
-      {
         type: TransactionType.INCOME,
         amount: 2500000,
         description: 'Bantuan dana pembinaan kepemudaan dari Kas Desa Sringin',
@@ -429,19 +422,34 @@ async function main() {
     ],
   });
 
-  console.log('✅ Seeded 5 Finance Transactions.');
+  // 8. Cash Withdrawal and its single linked expense
+  await prisma.$transaction(async (tx) => {
+    const expense = await tx.financeTransaction.create({
+      data: {
+        type: TransactionType.EXPENSE,
+        amount: 500000,
+        description: '[Pengambilan Kas] Anggota 2 - Penerimaan hak arisan anggota',
+        category: 'Pengambilan Kas',
+        transactionDate: new Date('2026-09-15'),
+        createdById: adminUser.id,
+      },
+    });
 
-  // 8. Cash Withdrawal
-  await prisma.cashWithdrawal.create({
-    data: {
-      memberId: createdMembers[1].id,
-      amount: 500000,
-      withdrawalDate: new Date('2026-09-15'),
-      purpose: 'Penerimaan hak arisan anggota',
-      description: 'Pemenang undian arisan putaran ke-8',
-      createdById: adminUser.id,
-    },
+    await tx.cashWithdrawal.create({
+      data: {
+        withdrawerName: createdMembers[1].name,
+        memberId: createdMembers[1].id,
+        amount: 500000,
+        withdrawalDate: new Date('2026-09-15'),
+        purpose: 'Penerimaan hak arisan anggota',
+        description: 'Pemenang undian arisan putaran ke-8',
+        financeTransactionId: expense.id,
+        createdById: adminUser.id,
+      },
+    });
   });
+
+  console.log('✅ Seeded 5 Finance Transactions.');
 
   // 9. Announcements
   await prisma.announcement.createMany({

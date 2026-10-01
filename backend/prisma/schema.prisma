@@ -110,21 +110,26 @@ model FinanceTransaction {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
+  cashWithdrawal  CashWithdrawal? @relation("WithdrawalTransaction")
+
   @@map("finance_transactions")
 }
 
 model CashWithdrawal {
-  id             String   @id @default(uuid())
-  memberId       String
-  member         Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  amount         Decimal  @db.Decimal(12, 2)
-  withdrawalDate DateTime @default(now())
-  purpose        String
-  description    String?
-  createdById    String
-  createdBy      User     @relation("CreatedWithdrawal", fields: [createdById], references: [id])
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                    String    @id @default(uuid())
+  withdrawerName        String    @default("Anggota") // Nama pengambil
+  memberId              String?   // Opsional: link ke anggota jika pengambil adalah anggota terdaftar
+  member                Member?   @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  amount                Decimal   @db.Decimal(12, 2)
+  withdrawalDate        DateTime  @default(now())
+  purpose               String    // Keperluan pengambilan kas
+  description           String?   // Keterangan tambahan
+  financeTransactionId  String?   @unique // Link ke FinanceTransaction EXPENSE (satu-satu, no double count)
+  financeTransaction    FinanceTransaction? @relation("WithdrawalTransaction", fields: [financeTransactionId], references: [id], onDelete: SetNull)
+  createdById           String
+  createdBy             User      @relation("CreatedWithdrawal", fields: [createdById], references: [id])
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   @@map("cash_withdrawals")
 }

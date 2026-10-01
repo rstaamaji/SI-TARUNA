@@ -7,6 +7,7 @@ import memberDashboardRoutes from './memberDashboard.routes';
 import eventRoutes from './event.routes';
 import announcementRoutes from './announcement.routes';
 import financeRoutes from './finance.routes';
+import cashWithdrawalRoutes from './cashWithdrawal.routes';
 
 const router = Router();
 
@@ -36,8 +37,12 @@ router.use('/announcement', announcementRoutes);
 router.use('/members', memberRoutes);
 router.use('/member', memberRoutes);
 
-// 8. Financial Transparency Overview (Module 10): /api/finance & /api/finances
+// 8. Financial Transparency Overview (Module 10-12): /api/finance & /api/finances
 router.use('/finance', financeRoutes);
 router.use('/finances', financeRoutes);
 
+// 9. Cash Withdrawal Records (Module 13): /api/withdrawals
+router.use('/withdrawals', cashWithdrawalRoutes);
+
 export default router;
+
