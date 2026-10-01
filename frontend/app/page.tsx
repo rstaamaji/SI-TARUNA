@@ -2,16 +2,6 @@
 
 import React, { useState } from 'react';
 import {
-  Users,
-  Wallet,
-  CalendarCheck2,
-  Coins,
-  ArrowUpRight,
-  ArrowDownRight,
-  Plus,
-  Sparkles,
-  CheckCircle,
-  FileSpreadsheet,
   Lock,
   User,
   ShieldCheck,
@@ -20,26 +10,13 @@ import {
   Info,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
-import { Modal } from '@/components/ui/Modal';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-} from '@/components/ui/Table';
-import { Avatar } from '@/components/ui/Avatar';
 import { useToast } from '@/components/ui/Toast';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
 import { Logo } from '@/components/ui/Logo';
 import { MemberDashboard } from '@/components/dashboard/MemberDashboard';
-import { AdminEventsAndAnnouncements } from '@/components/dashboard/AdminEventsAndAnnouncements';
+import { AdminDashboard } from '@/components/dashboard/AdminDashboard';
 import { ThemeToggle } from '@/components/theme/ThemeProvider';
 
 interface CurrentUser {
@@ -62,7 +39,6 @@ export default function UnifiedMainPage() {
 
   // Dashboard UI State
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Real backend login request with fallback
   const handleLogin = async (e?: React.FormEvent) => {
@@ -132,204 +108,114 @@ export default function UnifiedMainPage() {
     toast.info('Anda telah keluar dari sistem.');
   };
 
-  const stats = [
-    {
-      title: 'Total Anggota Aktif',
-      value: '25 Pemuda',
-      change: 'Terdaftar di Database',
-      isPositive: true,
-      icon: <Users className="w-5 h-5 text-taruna-yellow-600" />,
-      bg: 'bg-taruna-yellow-50',
-    },
-    {
-      title: 'Saldo Kas Organisasi',
-      value: 'Rp 8.450.000',
-      change: '+Rp 650.000',
-      isPositive: true,
-      icon: <Wallet className="w-5 h-5 text-emerald-600" />,
-      bg: 'bg-emerald-50',
-    },
-    {
-      title: 'Kehadiran Rapat Terakhir',
-      value: '92%',
-      change: '23 dari 25 hadir',
-      isPositive: true,
-      icon: <CalendarCheck2 className="w-5 h-5 text-taruna-red-600" />,
-      bg: 'bg-taruna-red-50',
-    },
-    {
-      title: 'Jimpitan Terkumpul',
-      value: 'Rp 920.000',
-      change: '7 Kelompok RT',
-      isPositive: true,
-      icon: <Coins className="w-5 h-5 text-amber-600" />,
-      bg: 'bg-amber-50',
-    },
-  ];
-
-  const recentTransactions = [
-    {
-      id: 'TRX-001',
-      date: '28 Sep 2026',
-      desc: 'Iuran wajib anggota periode September 2026',
-      category: 'Pemasukan',
-      amount: '+Rp 640.000',
-      status: 'SELESAI',
-      user: 'Bambang Sudiro',
-    },
-    {
-      id: 'TRX-002',
-      date: '25 Sep 2026',
-      desc: 'Pembelian cat gapura & konsumsi rapat koordinasi',
-      category: 'Pengeluaran',
-      amount: '-Rp 350.000',
-      status: 'SELESAI',
-      user: 'Rustam Aji',
-    },
-    {
-      id: 'TRX-003',
-      date: '20 Sep 2026',
-      desc: 'Setoran jimpitan seluruh kelompok RT 01-RT 03 Dusun Tuk Uluh',
-      category: 'Jimpitan',
-      amount: '+Rp 920.000',
-      status: 'SELESAI',
-      user: 'Eko Prasetyo',
-    },
-    {
-      id: 'TRX-004',
-      date: '15 Sep 2026',
-      desc: 'Uang keluar penyerahan pemenang arisan periode September',
-      category: 'Arisan',
-      amount: '-Rp 500.000',
-      status: 'SELESAI',
-      user: 'Bambang Sudiro',
-    },
-  ];
-
   // ─────────────────────────────────────────────────────────────────────────────
-  // 1. TAMPILAN LOGIN (PORTAL RESMI)
+  // 1. TAMPILAN HALAMAN LOGIN (JIKA BELUM TERAUTENTIKASI)
   // ─────────────────────────────────────────────────────────────────────────────
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex flex-col justify-between bg-gradient-to-br from-taruna-surface via-white to-taruna-yellow-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
-        {/* Header Branding */}
-        <header className="px-4 sm:px-8 py-4 border-b border-taruna-border/60 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur sticky top-0 z-10 flex items-center justify-between">
-          <Logo size={44} subtitle="Tuk Uluh, Sringin, Jumantono" />
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-taruna-yellow-100 dark:bg-taruna-yellow-950/60 text-taruna-yellow-800 dark:text-taruna-yellow-300 border border-taruna-yellow-200 dark:border-taruna-yellow-800/60">
-              <Sparkles className="w-3.5 h-3.5 text-taruna-red-600 dark:text-red-400" />
-              Sistem Informasi Digital
+      <div className="min-h-screen flex flex-col bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
+        {/* Navbar Ringkas */}
+        <header className="border-b border-taruna-border dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-4 flex items-center justify-between">
+          <Logo size={40} />
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-gray-500 dark:text-slate-400 hidden sm:inline">
+              Sistem Informasi Karang Taruna
             </span>
             <ThemeToggle />
           </div>
         </header>
 
-        {/* Main Login Card Section */}
-        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-          <div className="max-w-md w-full">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xl shadow-taruna-dark/5 dark:shadow-black/50 p-6 sm:p-8">
-              {/* Logo & Headline */}
-              <div className="text-center mb-6">
-                <div className="inline-block p-1.5 rounded-3xl bg-taruna-surface dark:bg-slate-800 border border-taruna-border dark:border-slate-700 shadow-inner mb-3">
-                  <div className="w-20 h-20 rounded-2xl bg-taruna-dark ring-2 ring-taruna-yellow-500/60 overflow-hidden flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/assets/logo.png"
-                      alt="Logo Karang Taruna Setya Bakti"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                </div>
-                <h1 className="text-2xl sm:text-3xl font-black text-taruna-yellow-500 dark:text-taruna-yellow-400 tracking-tight">
-                  SI-TARUNA
-                </h1>
-                <p className="text-xs font-bold text-taruna-red-600 dark:text-red-400 uppercase tracking-wider mt-0.5">
-                  Karang Taruna Setya Bakti
-                </p>
-                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
-                  Dusun Tuk Uluh, Desa Sringin, Kec. Jumantono
-                </p>
+        {/* Content Box Login */}
+        <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
+          <div className="max-w-md w-full bg-white dark:bg-slate-900 p-8 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xl space-y-6">
+            <div className="text-center space-y-2">
+              <div className="inline-flex p-3 rounded-2xl bg-taruna-yellow-50 dark:bg-slate-800 text-taruna-yellow-700 dark:text-taruna-yellow-400 mb-1">
+                <Lock className="w-6 h-6" />
               </div>
+              <h2 className="text-2xl font-black text-taruna-dark dark:text-white tracking-tight">
+                Masuk ke SI-TARUNA
+              </h2>
+              <p className="text-xs text-gray-500 dark:text-slate-400">
+                Karang Taruna Setya Bakti — Tuk Uluh, Sringin, Jumantono
+              </p>
+            </div>
 
-              {/* Login Form */}
-              <form onSubmit={handleLogin} className="space-y-4">
-                {loginError && (
-                  <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/60 text-xs font-semibold text-taruna-red-600 dark:text-red-400">
-                    {loginError}
-                  </div>
-                )}
+            {loginError && (
+              <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/60 text-xs text-red-600 dark:text-red-300 flex items-center gap-2">
+                <Info className="w-4 h-4 shrink-0" />
+                <span>{loginError}</span>
+              </div>
+            )}
 
-                <Input
-                  label="Username atau Email"
-                  placeholder="Masukkan username Anda"
-                  value={usernameInput}
-                  onChange={(e) => setUsernameInput(e.target.value)}
-                  leftIcon={<User className="w-4 h-4" />}
-                  required
-                />
+            <form onSubmit={handleLogin} className="space-y-4">
+              <Input
+                label="Username"
+                type="text"
+                placeholder="Masukkan username (admin / member)"
+                value={usernameInput}
+                onChange={(e) => setUsernameInput(e.target.value)}
+                required
+              />
 
-                <Input
-                  label="Password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                  leftIcon={<Lock className="w-4 h-4" />}
-                  required
-                />
+              <Input
+                label="Kata Sandi"
+                type="password"
+                placeholder="Masukkan password"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                required
+              />
 
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="w-full mt-2"
-                  isLoading={isLoggingIn}
-                  rightIcon={<ArrowRight className="w-4 h-4" />}
+              <Button
+                type="submit"
+                variant="primary"
+                className="w-full justify-center text-sm font-bold py-2.5"
+                isLoading={isLoggingIn}
+                rightIcon={<ArrowRight className="w-4 h-4" />}
+              >
+                Masuk ke Dashboard
+              </Button>
+            </form>
+
+            {/* Quick Demo Credentials Helper */}
+            <div className="pt-4 border-t border-taruna-border dark:border-slate-800 text-center">
+              <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 mb-2">
+                Akun Demo Cepat:
+              </p>
+              <div className="grid grid-cols-2 gap-2 text-left">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsernameInput('admin');
+                    setPasswordInput('admin123');
+                  }}
+                  className="p-2.5 rounded-xl border border-taruna-yellow-200 dark:border-taruna-yellow-800/40 bg-taruna-yellow-50 dark:bg-taruna-yellow-950/30 hover:bg-taruna-yellow-100 dark:hover:bg-taruna-yellow-900/40 text-left transition flex flex-col group"
                 >
-                  Masuk ke Sistem
-                </Button>
-              </form>
+                  <span className="text-xs font-bold text-taruna-yellow-900 dark:text-taruna-yellow-300 flex items-center justify-between">
+                    Akun ADMIN
+                    <ShieldCheck className="w-3.5 h-3.5 text-taruna-red-600 dark:text-red-400" />
+                  </span>
+                  <span className="text-[11px] text-taruna-yellow-700 dark:text-taruna-yellow-400 font-mono mt-0.5">
+                    admin / admin123
+                  </span>
+                </button>
 
-              {/* Quick Login Shortcut for Instant Testing */}
-              <div className="mt-6 pt-5 border-t border-taruna-border dark:border-slate-800">
-                <div className="flex items-center gap-1.5 mb-3 text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">
-                  <Info className="w-3.5 h-3.5 text-taruna-yellow-600 dark:text-taruna-yellow-400" />
-                  Akses Cepat Pengujian Role:
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUsernameInput('admin');
-                      setPasswordInput('admin123');
-                    }}
-                    className="p-2.5 rounded-xl border border-taruna-yellow-200 dark:border-taruna-yellow-800/40 bg-taruna-yellow-50 dark:bg-taruna-yellow-950/30 hover:bg-taruna-yellow-100 dark:hover:bg-taruna-yellow-900/40 text-left transition flex flex-col group"
-                  >
-                    <span className="text-xs font-bold text-taruna-yellow-900 dark:text-taruna-yellow-300 flex items-center justify-between">
-                      Akun ADMIN
-                      <ShieldCheck className="w-3.5 h-3.5 text-taruna-red-600 dark:text-red-400" />
-                    </span>
-                    <span className="text-[11px] text-taruna-yellow-700 dark:text-taruna-yellow-400 font-mono mt-0.5">
-                      admin / admin123
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUsernameInput('member');
-                      setPasswordInput('member123');
-                    }}
-                    className="p-2.5 rounded-xl border border-taruna-border dark:border-slate-800 bg-taruna-surface dark:bg-slate-800/60 hover:bg-gray-100 dark:hover:bg-slate-800 text-left transition flex flex-col group"
-                  >
-                    <span className="text-xs font-bold text-taruna-dark dark:text-slate-200 flex items-center justify-between">
-                      Akun MEMBER
-                      <User className="w-3.5 h-3.5 text-gray-400 dark:text-slate-400" />
-                    </span>
-                    <span className="text-[11px] text-gray-500 dark:text-slate-400 font-mono mt-0.5">
-                      member / member123
-                    </span>
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsernameInput('member');
+                    setPasswordInput('member123');
+                  }}
+                  className="p-2.5 rounded-xl border border-taruna-border dark:border-slate-800 bg-taruna-surface dark:bg-slate-800/60 hover:bg-gray-100 dark:hover:bg-slate-800 text-left transition flex flex-col group"
+                >
+                  <span className="text-xs font-bold text-taruna-dark dark:text-slate-200 flex items-center justify-between">
+                    Akun MEMBER
+                    <User className="w-3.5 h-3.5 text-gray-400 dark:text-slate-400" />
+                  </span>
+                  <span className="text-[11px] text-gray-500 dark:text-slate-400 font-mono mt-0.5">
+                    member / member123
+                  </span>
+                </button>
               </div>
             </div>
           </div>
@@ -399,222 +285,10 @@ export default function UnifiedMainPage() {
           {currentUser.role === 'MEMBER' ? (
             <MemberDashboard />
           ) : (
-            <>
-              {/* Welcome Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
-            <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-taruna-dark ring-2 ring-taruna-yellow-500/60 overflow-hidden shrink-0 flex items-center justify-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/assets/logo.png"
-                  alt="Logo Karang Taruna Setya Bakti"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="w-2.5 h-2.5 rounded-full bg-taruna-yellow-500 animate-pulse" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-taruna-yellow-700 dark:text-taruna-yellow-400">
-                    Karang Taruna Setya Bakti
-                  </span>
-                  <Badge variant={currentUser.role === 'ADMIN' ? 'accent' : 'primary'} size="sm">
-                    {currentUser.role}
-                  </Badge>
-                </div>
-                <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
-                  Dashboard Utama
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-0.5">
-                  Dusun Tuk Uluh, Desa Sringin, Kecamatan Jumantono
-                </p>
-              </div>
-            </div>
-
-            {/* Tombol aksi khusus ADMIN (disembunyikan dari MEMBER) */}
-            <div className="flex items-center gap-2.5 flex-wrap">
-              {currentUser.role === 'ADMIN' ? (
-                <>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    leftIcon={<FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
-                    onClick={() => toast.info('Fitur ekspor laporan kas aktif untuk Admin.')}
-                  >
-                    Ekspor Laporan
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    leftIcon={<Plus className="w-4 h-4" />}
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    Tambah Kegiatan
-                  </Button>
-                </>
-              ) : (
-                <div className="text-xs text-gray-500 dark:text-slate-400 bg-taruna-surface dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-taruna-border dark:border-slate-700">
-                  Mode Anggota (Akses Baca Saja)
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Metric Statistic Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {stats.map((item, idx) => (
-              <Card key={idx} hoverable>
-                <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                  <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                    {item.title}
-                  </span>
-                  <div className={`p-2.5 rounded-2xl ${item.bg} dark:bg-slate-800 ring-2 ring-black/5 dark:ring-white/5`}>
-                    {item.icon}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-black text-taruna-dark dark:text-white tracking-tight">
-                    {item.value}
-                  </div>
-                  <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold">
-                    {item.isPositive ? (
-                      <span className="inline-flex items-center text-emerald-600 dark:text-emerald-400">
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                        {item.change}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center text-taruna-red-600 dark:text-red-400">
-                        <ArrowDownRight className="w-3.5 h-3.5" />
-                        {item.change}
-                      </span>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Agenda & Pengumuman Grid (Full CRUD Real-Time Synchronized) */}
-          <AdminEventsAndAnnouncements />
-
-          {/* Table Kas & Jimpitan Setya Bakti */}
-          <Card>
-            <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
-              <div>
-                <CardTitle>Riwayat Transaksi Kas &amp; Jimpitan</CardTitle>
-                <CardDescription>
-                  Pencatatan kas masuk, pengeluaran kegiatan, dan rekapitulasi jimpitan warga Tuk Uluh.
-                </CardDescription>
-              </div>
-              <Badge variant="success" dot>Transparan &amp; Akuntabel</Badge>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Kode</TableHead>
-                    <TableHead>Tanggal</TableHead>
-                    <TableHead>Uraian Transaksi</TableHead>
-                    <TableHead>Kategori</TableHead>
-                    <TableHead>Penanggung Jawab</TableHead>
-                    <TableHead className="text-right">Nominal</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentTransactions.map((trx) => (
-                    <TableRow key={trx.id}>
-                      <TableCell className="font-mono font-bold text-xs text-taruna-yellow-800 dark:text-taruna-yellow-400">
-                        {trx.id}
-                      </TableCell>
-                      <TableCell className="text-xs text-gray-500 dark:text-slate-400">{trx.date}</TableCell>
-                      <TableCell className="font-medium text-taruna-dark dark:text-slate-200">{trx.desc}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            trx.category === 'Pemasukan'
-                              ? 'success'
-                              : trx.category === 'Pengeluaran'
-                              ? 'accent'
-                              : 'primary'
-                          }
-                          size="sm"
-                        >
-                          {trx.category}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Avatar name={trx.user} size="xs" />
-                          <span className="text-xs font-semibold text-taruna-dark dark:text-slate-200">{trx.user}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        className={`text-right font-bold text-sm ${
-                          trx.amount.startsWith('+') ? 'text-emerald-600 dark:text-emerald-400' : 'text-taruna-red-600 dark:text-red-400'
-                        }`}
-                      >
-                        {trx.amount}
-                      </TableCell>
-                      <TableCell>
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                          <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                          {trx.status}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-            </>
+            <AdminDashboard />
           )}
         </main>
       </div>
-
-      {/* Modal Dialog Form Tambah Kegiatan (Hanya untuk Admin) */}
-      {currentUser.role === 'ADMIN' && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          title="Tambah Jadwal Kegiatan Setya Bakti"
-          description="Kegiatan baru akan otomatis tampil pada jadwal seluruh pemuda Dusun Tuk Uluh."
-          footer={
-            <>
-              <Button variant="secondary" size="sm" onClick={() => setIsModalOpen(false)}>
-                Batal
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => {
-                  setIsModalOpen(false);
-                  toast.success('Agenda kegiatan berhasil ditambahkan!');
-                }}
-              >
-                Simpan Jadwal
-              </Button>
-            </>
-          }
-        >
-          <div className="space-y-4 text-left">
-            <Input label="Nama Kegiatan" placeholder="Contoh: Kerja Bakti Lapangan Dusun Tuk Uluh" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Input label="Tanggal" type="date" />
-              <Input label="Waktu" type="time" />
-            </div>
-            <Select
-              label="Lokasi"
-              placeholder="Pilih Lokasi Pertemuan"
-              options={[
-                { value: 'balai', label: 'Balai Dusun Tuk Uluh' },
-                { value: 'posko', label: 'Pos Ronda RT 01' },
-                { value: 'lapangan', label: 'Lapangan Sringin' },
-              ]}
-            />
-          </div>
-        </Modal>
-      )}
     </div>
   );
 }

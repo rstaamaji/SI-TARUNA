@@ -15,8 +15,9 @@ router.use('/', healthRoutes);
 // 2. Authentication: /api/auth (login, me)
 router.use('/auth', authRoutes);
 
-// 3. Admin Protected Routes: /api/admin
+// 3. Admin Protected Routes: /api/admin & /api/dashboard/admin
 router.use('/admin', adminRoutes);
+router.use('/dashboard/admin', adminRoutes);
 
 // 4. Member Dashboard: /api/member/dashboard & /api/dashboard/member
 router.use('/member/dashboard', memberDashboardRoutes);

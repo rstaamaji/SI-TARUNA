@@ -1,11 +1,18 @@
 import { Router, Request, Response } from 'express';
 import { authenticate, requireAdmin } from '../middleware/auth.middleware';
 import { sendSuccess } from '../utils/response';
+import { AdminDashboardController } from '../controllers/adminDashboard.controller';
 
 const router = Router();
 
 // Seluruh endpoint di bawah ini WAJIB lolos authenticate dan requireAdmin
 router.use(authenticate, requireAdmin);
+
+/**
+ * GET /api/admin/dashboard
+ * Endpoint ringkasan overview organisasi untuk Admin Dashboard
+ */
+router.get('/dashboard', AdminDashboardController.getOverview);
 
 /**
  * GET /api/admin/management-data
