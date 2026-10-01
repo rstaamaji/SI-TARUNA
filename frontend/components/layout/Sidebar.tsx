@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   Banknote,
   BarChart3,
+  ClipboardList,
 } from 'lucide-react';
 
 export interface SidebarProps {
@@ -75,6 +76,13 @@ export const navigationItems: NavItem[] = [
     href: '/dashboard/absensi',
     icon: CalendarCheck2,
     badge: null,
+  },
+  {
+    name: 'Kelola Absensi',
+    href: '/admin/attendance',
+    icon: ClipboardList,
+    badge: null,
+    adminOnly: true,
   },
   {
     name: 'Pengumuman',

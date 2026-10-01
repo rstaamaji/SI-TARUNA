@@ -8,6 +8,7 @@ import eventRoutes from './event.routes';
 import announcementRoutes from './announcement.routes';
 import financeRoutes from './finance.routes';
 import cashWithdrawalRoutes from './cashWithdrawal.routes';
+import attendanceRoutes from './attendance.routes';
 
 const router = Router();
 
@@ -43,6 +44,9 @@ router.use('/finances', financeRoutes);
 
 // 9. Cash Withdrawal Records (Module 13): /api/withdrawals
 router.use('/withdrawals', cashWithdrawalRoutes);
+
+// 10. Attendance Management (Module 15): /api/attendance
+router.use('/attendance', attendanceRoutes);
 
 export default router;
 
