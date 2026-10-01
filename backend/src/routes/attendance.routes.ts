@@ -10,7 +10,10 @@ router.use(authenticate);
 // 1. GET /api/attendance/my-history - Riwayat absensi pribadi pengguna login (MEMBER & ADMIN)
 router.get('/my-history', AttendanceController.getMyHistory);
 
-// 2. GET /api/attendance/events - Daftar kegiatan dengan ringkasan kehadiran (MEMBER & ADMIN)
+// 2. GET /api/attendance/statistics - Statistik keaktifan seluruh anggota (KHUSUS ADMIN)
+router.get('/statistics', requireAdmin, AttendanceController.getStatistics);
+
+// 3. GET /api/attendance/events - Daftar kegiatan dengan ringkasan kehadiran (MEMBER & ADMIN)
 router.get('/events', AttendanceController.getEvents);
 
 // 3. POST /api/attendance/events - Buat kegiatan baru cepat (KHUSUS ADMIN)

@@ -23,6 +23,7 @@ import {
   Banknote,
   BarChart3,
   ClipboardList,
+  BarChart2,
 } from 'lucide-react';
 
 export interface SidebarProps {
@@ -81,6 +82,13 @@ export const navigationItems: NavItem[] = [
     name: 'Kelola Absensi',
     href: '/admin/attendance',
     icon: ClipboardList,
+    badge: null,
+    adminOnly: true,
+  },
+  {
+    name: 'Statistik Keaktifan',
+    href: '/admin/statistics',
+    icon: BarChart2,
     badge: null,
     adminOnly: true,
   },

@@ -290,6 +290,151 @@ export class AttendanceService {
   }
 
   /**
+   * 7. Get aggregated activity statistics for ALL members (Admin only)
+   * Used for Module 16: Member Activity Statistics
+   */
+  static async getMemberActivityStatistics() {
+    // Total events ever held
+    const totalEvents = await prisma.event.count();
+
+    // Include inactive members so the report preserves each member's history.
+    const members = await prisma.member.findMany({
+      orderBy: { memberNumber: 'asc' },
+      select: {
+        id: true,
+        memberNumber: true,
+        name: true,
+        gender: true,
+        phone: true,
+        joinDate: true,
+        attendances: {
+          select: {
+            status: true,
+            event: {
+              select: {
+                id: true,
+                title: true,
+                eventDate: true,
+                type: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Per-member stats
+    const memberStats = members.map((member) => {
+      const totalAttended = member.attendances.length;
+      const presentCount = member.attendances.filter(
+        (a) => a.status === AttendanceStatus.PRESENT
+      ).length;
+      const absentCount = member.attendances.filter(
+        (a) => a.status === AttendanceStatus.ABSENT
+      ).length;
+      const excusedCount = member.attendances.filter(
+        (a) => a.status === AttendanceStatus.EXCUSED
+      ).length;
+      const attendanceRate =
+        totalEvents > 0 ? Math.round((presentCount / totalEvents) * 100) : 0;
+
+      return {
+        memberId: member.id,
+        memberNumber: member.memberNumber,
+        name: member.name,
+        gender: member.gender,
+        joinDate: member.joinDate?.toISOString() || null,
+        stats: {
+          totalEvents,
+          totalRecorded: totalAttended,
+          presentCount,
+          absentCount,
+          excusedCount,
+          attendanceRate,
+        },
+      };
+    });
+
+    // Rank by attendance count; use the member name only to keep ties stable.
+    const ranked = [...memberStats].sort((a, b) => {
+      if (b.stats.presentCount !== a.stats.presentCount) {
+        return b.stats.presentCount - a.stats.presentCount;
+      }
+      return a.name.localeCompare(b.name);
+    });
+
+    // Overall summary
+    const totalPresent = memberStats.reduce((s, m) => s + m.stats.presentCount, 0);
+    const totalAbsent = memberStats.reduce((s, m) => s + m.stats.absentCount, 0);
+    const totalExcused = memberStats.reduce((s, m) => s + m.stats.excusedCount, 0);
+    const totalAttendanceOpportunities = totalEvents * members.length;
+    const overallRate = totalAttendanceOpportunities > 0
+      ? Math.round((totalPresent / totalAttendanceOpportunities) * 100)
+      : 0;
+
+    // Monthly chart data: include empty months in the last six calendar months.
+    const now = new Date();
+    const chartStart = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+    const chartEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    const recentAttendances = await prisma.attendance.findMany({
+      where: {
+        event: {
+          eventDate: { gte: chartStart, lt: chartEnd },
+        },
+      },
+      include: {
+        event: { select: { eventDate: true } },
+      },
+    });
+
+    // Group by month
+    const monthMap = new Map<string, { hadir: number; izin: number; tidakHadir: number }>();
+    for (let offset = 0; offset < 6; offset += 1) {
+      const monthDate = new Date(chartStart.getFullYear(), chartStart.getMonth() + offset, 1);
+      const key = `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, '0')}`;
+      monthMap.set(key, { hadir: 0, izin: 0, tidakHadir: 0 });
+    }
+    recentAttendances.forEach((a) => {
+      const d = new Date(a.event.eventDate);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      if (!monthMap.has(key)) {
+        monthMap.set(key, { hadir: 0, izin: 0, tidakHadir: 0 });
+      }
+      const entry = monthMap.get(key)!;
+      if (a.status === AttendanceStatus.PRESENT) entry.hadir++;
+      else if (a.status === AttendanceStatus.EXCUSED) entry.izin++;
+      else if (a.status === AttendanceStatus.ABSENT) entry.tidakHadir++;
+    });
+
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const chartData = Array.from(monthMap.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, val]) => {
+        const [year, month] = key.split('-');
+        return {
+          month: `${monthNames[parseInt(month) - 1]} ${year}`,
+          hadir: val.hadir,
+          izin: val.izin,
+          tidakHadir: val.tidakHadir,
+        };
+      });
+
+    return {
+      summary: {
+        totalEvents,
+        totalMembers: members.length,
+        totalPresent,
+        totalAbsent,
+        totalExcused,
+        overallRate,
+      },
+      ranking: ranked,
+      chartData,
+    };
+  }
+
+  /**
    * 6. Quick create event (Admin)
    */
   static async createEvent(data: CreateEventDto) {

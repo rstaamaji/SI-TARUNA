@@ -101,4 +101,17 @@ export class AttendanceController {
       next(error);
     }
   }
+
+  /**
+   * GET /api/attendance/statistics
+   * Statistik keaktifan seluruh anggota (Admin only)
+   */
+  static async getStatistics(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const stats = await AttendanceService.getMemberActivityStatistics();
+      sendSuccess(res, 'Berhasil memuat statistik keaktifan anggota', stats, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
