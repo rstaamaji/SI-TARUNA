@@ -52,7 +52,7 @@ export const navigationItems: NavItem[] = [
   },
   {
     name: 'Keuangan',
-    href: '/dashboard/keuangan',
+    href: '/finance',
     icon: Wallet,
     badge: null,
   },
