@@ -23,6 +23,11 @@ import {
   Sparkles,
   Layers,
   TrendingUp,
+  Coffee,
+  Package,
+  HandHeart,
+  Settings,
+  Receipt,
 } from 'lucide-react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
@@ -42,6 +47,7 @@ import {
 } from '@/components/ui/Table';
 import { useToast } from '@/components/ui/Toast';
 
+// ─── Types ───────────────────────────────────────────────────────────────────
 export interface FinanceSummary {
   totalKas: number;
   totalPemasukan: number;
@@ -55,11 +61,13 @@ export interface FinanceTransactionItem {
   type: 'INCOME' | 'EXPENSE';
   amount: number;
   source?: string;
+  category?: string;
   description: string;
   transactionDate: string;
   creatorName: string;
 }
 
+// ─── Constants ───────────────────────────────────────────────────────────────
 const MONTH_OPTIONS = [
   { value: '', label: 'Semua Bulan' },
   { value: '1', label: 'Januari' },
@@ -90,13 +98,24 @@ const TYPE_OPTIONS = [
 ];
 
 const SOURCE_OPTIONS = [
-  { value: '', label: 'Semua Sumber Pemasukan' },
-  { value: 'iuran anggota', label: 'Iuran Anggota' },
-  { value: 'donasi', label: 'Donasi' },
-  { value: 'kegiatan', label: 'Kegiatan' },
-  { value: 'lainnya', label: 'Lainnya' },
+  { value: '', label: 'Semua Sumber' },
+  { value: 'Iuran Anggota', label: 'Iuran Anggota' },
+  { value: 'Donasi', label: 'Donasi' },
+  { value: 'Kegiatan', label: 'Kegiatan' },
+  { value: 'Lainnya', label: 'Lainnya' },
 ];
 
+const CATEGORY_OPTIONS = [
+  { value: '', label: 'Semua Kategori' },
+  { value: 'Kegiatan', label: 'Kegiatan' },
+  { value: 'Konsumsi', label: 'Konsumsi' },
+  { value: 'Perlengkapan', label: 'Perlengkapan' },
+  { value: 'Sosial', label: 'Sosial' },
+  { value: 'Operasional', label: 'Operasional' },
+  { value: 'Lainnya', label: 'Lainnya' },
+];
+
+// Income source presets
 const PRESET_SOURCES = [
   { value: 'Iuran Anggota', label: 'Iuran Anggota', icon: Coins, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800' },
   { value: 'Donasi', label: 'Donasi', icon: HeartHandshake, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800' },
@@ -104,66 +123,72 @@ const PRESET_SOURCES = [
   { value: 'Lainnya', label: 'Lainnya', icon: Layers, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800' },
 ];
 
-const formatRupiah = (value: number): string => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-  }).format(value);
-};
+// Expense category presets
+const PRESET_CATEGORIES = [
+  { value: 'Kegiatan', label: 'Kegiatan', icon: Sparkles, color: 'text-violet-600 bg-violet-50 dark:bg-violet-950/40 border-violet-200 dark:border-violet-800' },
+  { value: 'Konsumsi', label: 'Konsumsi', icon: Coffee, color: 'text-orange-600 bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800' },
+  { value: 'Perlengkapan', label: 'Perlengkapan', icon: Package, color: 'text-sky-600 bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800' },
+  { value: 'Sosial', label: 'Sosial', icon: HandHeart, color: 'text-pink-600 bg-pink-50 dark:bg-pink-950/40 border-pink-200 dark:border-pink-800' },
+  { value: 'Operasional', label: 'Operasional', icon: Settings, color: 'text-gray-600 bg-gray-50 dark:bg-gray-950/40 border-gray-200 dark:border-gray-700' },
+  { value: 'Lainnya', label: 'Lainnya', icon: Receipt, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800' },
+];
 
+const formatRupiah = (value: number): string =>
+  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
+
+// ─── Component ───────────────────────────────────────────────────────────────
 export default function FinanceOverviewPage() {
   const toast = useToast();
 
-  // User Session & Role
-  const [currentUser, setCurrentUser] = useState<{
-    id: string;
-    name: string;
-    role: 'ADMIN' | 'MEMBER';
-  }>({
-    id: 'user-default',
-    name: 'Pengurus Setya Bakti',
-    role: 'MEMBER',
+  // ── Auth & Session ──
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: 'ADMIN' | 'MEMBER' }>({
+    id: 'user-default', name: 'Pengurus Setya Bakti', role: 'MEMBER',
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Active Tab: ALL | INCOME | EXPENSE
+  // ── Tab: ALL | INCOME | EXPENSE ──
   const [activeTab, setActiveTab] = useState<'ALL' | 'INCOME' | 'EXPENSE'>('ALL');
 
-  // Filter States
-  const [selectedMonth, setSelectedMonth] = useState<string>('');
-  const [selectedYear, setSelectedYear] = useState<string>('2026');
-  const [selectedType, setSelectedType] = useState<string>('ALL');
-  const [selectedSource, setSelectedSource] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  // ── Filters ──
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('2026');
+  const [selectedType, setSelectedType] = useState('ALL');
+  const [selectedSource, setSelectedSource] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Data States
+  // ── Data ──
   const [summary, setSummary] = useState<FinanceSummary>({
-    totalKas: 6420000,
-    totalPemasukan: 8120000,
-    totalPengeluaran: 1700000,
-    saldoSaatIni: 6420000,
+    totalKas: 0, totalPemasukan: 0, totalPengeluaran: 0, saldoSaatIni: 0,
     formula: 'saldo = total pemasukan - total pengeluaran',
   });
   const [transactions, setTransactions] = useState<FinanceTransactionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Admin Modal States (CRUD)
+  // ── Modal states ──
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [activeTransaction, setActiveTransaction] = useState<FinanceTransactionItem | null>(null);
 
-  // Form State
+  // ── Form ──
   const [formType, setFormType] = useState<'INCOME' | 'EXPENSE'>('INCOME');
-  const [formSource, setFormSource] = useState<string>('Iuran Anggota');
-  const [formAmount, setFormAmount] = useState<string>('');
-  const [formDescription, setFormDescription] = useState<string>('');
-  const [formDate, setFormDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [formSource, setFormSource] = useState('Iuran Anggota');
+  const [formCategory, setFormCategory] = useState('Kegiatan');
+  const [formAmount, setFormAmount] = useState('');
+  const [formDescription, setFormDescription] = useState('');
+  const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 1. Load User Session & URL Tab
+  const isAdmin = currentUser.role === 'ADMIN';
+
+  const getAuthToken = (): string | null => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('si_taruna_token');
+  };
+
+  // ── 1. Load User Session & URL tab ──
   useEffect(() => {
     try {
       const stored = localStorage.getItem('si_taruna_user');
@@ -175,102 +200,89 @@ export default function FinanceOverviewPage() {
           role: parsed.role === 'ADMIN' ? 'ADMIN' : 'MEMBER',
         });
       }
-    } catch {
-      // Default to MEMBER if fails
-    }
+    } catch { /* default MEMBER */ }
 
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const tab = params.get('tab');
-      if (tab === 'income') {
-        setActiveTab('INCOME');
-      } else if (tab === 'expense') {
-        setActiveTab('EXPENSE');
-      }
+      if (tab === 'income') setActiveTab('INCOME');
+      else if (tab === 'expense') setActiveTab('EXPENSE');
     }
   }, []);
 
-  const getAuthToken = (): string | null => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('si_taruna_token');
-  };
-
-  // Sync activeTab with selectedType filter
+  // ── 2. Sync tab → type filter ──
   useEffect(() => {
-    if (activeTab === 'ALL') {
-      setSelectedType('ALL');
-    } else if (activeTab === 'INCOME') {
-      setSelectedType('INCOME');
-    } else if (activeTab === 'EXPENSE') {
-      setSelectedType('EXPENSE');
-    }
+    setSelectedType(activeTab === 'ALL' ? 'ALL' : activeTab);
+    setSelectedSource('');
+    setSelectedCategory('');
   }, [activeTab]);
 
-  // 2. Fetch Finance Summary & Transactions
+  // ── 3. Fetch data ──
   const fetchFinanceData = useCallback(async (isManualRefresh = false) => {
     if (isManualRefresh) setIsRefreshing(true);
     else setIsLoading(true);
-
     try {
       const token = getAuthToken();
       const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      // Build query string
       const params = new URLSearchParams();
       if (selectedMonth) params.append('month', selectedMonth);
       if (selectedYear) params.append('year', selectedYear);
       if (selectedType && selectedType !== 'ALL') params.append('type', selectedType);
-      if (selectedSource && selectedSource !== 'ALL') params.append('source', selectedSource);
+      if (selectedSource) params.append('source', selectedSource);
+      if (selectedCategory) params.append('category', selectedCategory);
       if (searchQuery.trim()) params.append('search', searchQuery.trim());
 
-      // Fetch summary
-      const summaryUrl = `http://localhost:5000/api/finance/overview?${params.toString()}`;
-      const listUrl = `http://localhost:5000/api/finance?${params.toString()}`;
-
       const [summaryRes, listRes] = await Promise.all([
-        fetch(summaryUrl, { headers }),
-        fetch(listUrl, { headers }),
+        fetch(`http://localhost:5000/api/finance/overview?${params}`, { headers }),
+        fetch(`http://localhost:5000/api/finance?${params}`, { headers }),
       ]);
-
       const summaryJson = await summaryRes.json();
       const listJson = await listRes.json();
-
-      if (summaryRes.ok && summaryJson.success && summaryJson.data) {
-        setSummary(summaryJson.data);
-      }
-      if (listRes.ok && listJson.success && listJson.data) {
-        setTransactions(listJson.data);
-      }
-
-      if (isManualRefresh) {
-        toast.success('Data keuangan berhasil diperbarui.');
-      }
+      if (summaryRes.ok && summaryJson.success && summaryJson.data) setSummary(summaryJson.data);
+      if (listRes.ok && listJson.success && listJson.data) setTransactions(listJson.data);
+      if (isManualRefresh) toast.success('Data keuangan berhasil diperbarui.');
     } catch {
-      toast.error('Gagal mengambil data dari server, menampilkan data lokal.');
+      toast.error('Gagal mengambil data dari server.');
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [selectedMonth, selectedYear, selectedType, selectedSource, searchQuery, toast]);
+  }, [selectedMonth, selectedYear, selectedType, selectedSource, selectedCategory, searchQuery, toast]);
 
-  useEffect(() => {
-    fetchFinanceData();
-  }, [fetchFinanceData]);
+  useEffect(() => { fetchFinanceData(); }, [fetchFinanceData]);
 
-  // Reset Filters
-  const handleResetFilter = () => {
-    setSelectedMonth('');
-    setSelectedYear('');
-    setSelectedType(activeTab === 'ALL' ? 'ALL' : activeTab);
-    setSelectedSource('');
-    setSearchQuery('');
-  };
+  // ── 4. Computed stats ──
+  const incomeStats = useMemo(() => {
+    const items = transactions.filter(t => t.type === 'INCOME');
+    const bySource: Record<string, number> = { 'Iuran Anggota': 0, 'Donasi': 0, 'Kegiatan': 0, 'Lainnya': 0 };
+    items.forEach(item => {
+      const src = item.source || 'Lainnya';
+      const key = Object.keys(bySource).find(k => k.toLowerCase() === src.toLowerCase()) ?? 'Lainnya';
+      bySource[key] = (bySource[key] || 0) + item.amount;
+    });
+    return { totalCount: items.length, bySource };
+  }, [transactions]);
 
-  // 3. Admin CRUD Handlers
-  const handleOpenCreateModal = (defaultType: 'INCOME' | 'EXPENSE' = 'INCOME') => {
+  const expenseStats = useMemo(() => {
+    const items = transactions.filter(t => t.type === 'EXPENSE');
+    const byCategory: Record<string, number> = {
+      'Kegiatan': 0, 'Konsumsi': 0, 'Perlengkapan': 0, 'Sosial': 0, 'Operasional': 0, 'Lainnya': 0,
+    };
+    items.forEach(item => {
+      const cat = item.category || 'Lainnya';
+      const key = Object.keys(byCategory).find(k => k.toLowerCase() === cat.toLowerCase()) ?? 'Lainnya';
+      byCategory[key] = (byCategory[key] || 0) + item.amount;
+    });
+    return { totalCount: items.length, byCategory };
+  }, [transactions]);
+
+  // ── 5. Modal handlers ──
+  const handleOpenCreateModal = (defaultType: 'INCOME' | 'EXPENSE' = activeTab === 'EXPENSE' ? 'EXPENSE' : 'INCOME') => {
     setFormType(defaultType);
     setFormSource('Iuran Anggota');
+    setFormCategory('Kegiatan');
     setFormAmount('');
     setFormDescription('');
     setFormDate(new Date().toISOString().split('T')[0]);
@@ -281,6 +293,7 @@ export default function FinanceOverviewPage() {
     setActiveTransaction(item);
     setFormType(item.type);
     setFormSource(item.source || 'Lainnya');
+    setFormCategory(item.category || 'Lainnya');
     setFormAmount(String(item.amount));
     setFormDescription(item.description);
     setFormDate(item.transactionDate.split('T')[0]);
@@ -292,480 +305,290 @@ export default function FinanceOverviewPage() {
     setIsDeleteModalOpen(true);
   };
 
+  const resetFilters = () => {
+    setSelectedMonth('');
+    setSelectedYear('');
+    setSelectedSource('');
+    setSelectedCategory('');
+    setSearchQuery('');
+    setSelectedType(activeTab === 'ALL' ? 'ALL' : activeTab);
+  };
+
+  // ── 6. CRUD operations ──
   const handleSaveCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formDescription.trim()) {
-      toast.error('Keterangan transaksi wajib diisi.');
-      return;
-    }
     const numAmount = Number(formAmount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      toast.error('Jumlah transaksi harus lebih besar dari 0.');
-      return;
-    }
+    if (isNaN(numAmount) || numAmount <= 0) { toast.error('Jumlah harus lebih besar dari 0.'); return; }
+    if (!formDescription.trim()) { toast.error('Keterangan wajib diisi.'); return; }
 
     setIsSubmitting(true);
     try {
       const token = getAuthToken();
+      const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+
       const endpoint = formType === 'INCOME'
         ? 'http://localhost:5000/api/finance/incomes'
-        : 'http://localhost:5000/api/finance';
+        : 'http://localhost:5000/api/finance/expenses';
 
-      const bodyPayload = formType === 'INCOME'
-        ? {
-            amount: numAmount,
-            source: formSource.trim() || 'Lainnya',
-            description: formDescription.trim(),
-            transactionDate: new Date(formDate).toISOString(),
-          }
-        : {
-            type: formType,
-            amount: numAmount,
-            source: formSource.trim() || 'Lainnya',
-            description: formDescription.trim(),
-            transactionDate: new Date(formDate).toISOString(),
-          };
+      const body = formType === 'INCOME'
+        ? { amount: numAmount, source: formSource.trim() || 'Lainnya', description: formDescription.trim(), transactionDate: new Date(formDate).toISOString() }
+        : { amount: numAmount, category: formCategory.trim() || 'Lainnya', description: formDescription.trim(), transactionDate: new Date(formDate).toISOString() };
 
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(bodyPayload),
-      });
-
+      const res = await fetch(endpoint, { method: 'POST', headers, body: JSON.stringify(body) });
       const json = await res.json();
       if (res.ok && json.success) {
-        toast.success(
-          formType === 'INCOME'
-            ? 'Pemasukan kas berhasil dicatat! Saldo otomatis diperbarui.'
-            : 'Transaksi kas berhasil dicatat!'
-        );
+        toast.success(formType === 'INCOME' ? 'Pemasukan kas berhasil dicatat! Saldo otomatis bertambah.' : 'Pengeluaran kas berhasil dicatat! Saldo otomatis berkurang.');
         setIsCreateModalOpen(false);
         fetchFinanceData();
       } else {
-        toast.error(json.message || 'Gagal menyimpan transaksi.');
+        toast.error(json.message || 'Gagal menyimpan.');
       }
-    } catch {
-      toast.error('Gagal terhubung ke backend API.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    } catch { toast.error('Gagal terhubung ke server.'); }
+    finally { setIsSubmitting(false); }
   };
 
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeTransaction) return;
-
-    if (!formDescription.trim()) {
-      toast.error('Keterangan transaksi wajib diisi.');
-      return;
-    }
     const numAmount = Number(formAmount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      toast.error('Jumlah transaksi harus lebih besar dari 0.');
-      return;
-    }
+    if (isNaN(numAmount) || numAmount <= 0) { toast.error('Jumlah harus lebih besar dari 0.'); return; }
+    if (!formDescription.trim()) { toast.error('Keterangan wajib diisi.'); return; }
 
     setIsSubmitting(true);
     try {
       const token = getAuthToken();
-      const endpoint = activeTransaction.type === 'INCOME' && formType === 'INCOME'
+      const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+
+      const endpoint = activeTransaction.type === 'INCOME'
         ? `http://localhost:5000/api/finance/incomes/${activeTransaction.id}`
-        : `http://localhost:5000/api/finance/${activeTransaction.id}`;
+        : `http://localhost:5000/api/finance/expenses/${activeTransaction.id}`;
 
-      const res = await fetch(endpoint, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          type: formType,
-          amount: numAmount,
-          source: formSource.trim() || 'Lainnya',
-          description: formDescription.trim(),
-          transactionDate: new Date(formDate).toISOString(),
-        }),
-      });
+      const body = activeTransaction.type === 'INCOME'
+        ? { amount: numAmount, source: formSource.trim() || 'Lainnya', description: formDescription.trim(), transactionDate: new Date(formDate).toISOString() }
+        : { amount: numAmount, category: formCategory.trim() || 'Lainnya', description: formDescription.trim(), transactionDate: new Date(formDate).toISOString() };
 
+      const res = await fetch(endpoint, { method: 'PUT', headers, body: JSON.stringify(body) });
       const json = await res.json();
       if (res.ok && json.success) {
-        toast.success('Transaksi kas berhasil diperbarui! Saldo otomatis dikalkulasi ulang.');
+        toast.success('Transaksi berhasil diperbarui! Saldo dikalkulasi ulang.');
         setIsEditModalOpen(false);
         setActiveTransaction(null);
         fetchFinanceData();
       } else {
-        toast.error(json.message || 'Gagal mengubah transaksi.');
+        toast.error(json.message || 'Gagal memperbarui.');
       }
-    } catch {
-      toast.error('Gagal terhubung ke backend API.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    } catch { toast.error('Gagal terhubung ke server.'); }
+    finally { setIsSubmitting(false); }
   };
 
   const handleConfirmDelete = async () => {
     if (!activeTransaction) return;
-
     setIsSubmitting(true);
     try {
       const token = getAuthToken();
+      const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+
       const endpoint = activeTransaction.type === 'INCOME'
         ? `http://localhost:5000/api/finance/incomes/${activeTransaction.id}`
-        : `http://localhost:5000/api/finance/${activeTransaction.id}`;
+        : `http://localhost:5000/api/finance/expenses/${activeTransaction.id}`;
 
-      const res = await fetch(endpoint, {
-        method: 'DELETE',
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
-
+      const res = await fetch(endpoint, { method: 'DELETE', headers });
       const json = await res.json();
       if (res.ok && json.success) {
-        toast.success('Transaksi kas berhasil dihapus! Saldo otomatis dikalkulasi ulang.');
+        toast.success(activeTransaction.type === 'INCOME'
+          ? 'Pemasukan berhasil dihapus! Saldo otomatis berkurang.'
+          : 'Pengeluaran berhasil dihapus! Saldo otomatis bertambah kembali.');
         setIsDeleteModalOpen(false);
         setActiveTransaction(null);
         fetchFinanceData();
       } else {
-        toast.error(json.message || 'Gagal menghapus transaksi.');
+        toast.error(json.message || 'Gagal menghapus.');
       }
-    } catch {
-      toast.error('Gagal terhubung ke backend API.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    } catch { toast.error('Gagal terhubung ke server.'); }
+    finally { setIsSubmitting(false); }
   };
 
-  const isAdmin = currentUser.role === 'ADMIN';
-
-  // Statistics for Income tab
-  const incomeStats = useMemo(() => {
-    const incomeItems = transactions.filter((t) => t.type === 'INCOME');
-    const bySource: Record<string, number> = {
-      'Iuran Anggota': 0,
-      'Donasi': 0,
-      'Kegiatan': 0,
-      'Lainnya': 0,
-    };
-
-    incomeItems.forEach((item) => {
-      const src = item.source || 'Lainnya';
-      const key = Object.keys(bySource).find((k) => k.toLowerCase() === src.toLowerCase()) || 'Lainnya';
-      bySource[key] = (bySource[key] || 0) + item.amount;
-    });
-
-    return {
-      totalCount: incomeItems.length,
-      bySource,
-    };
-  }, [transactions]);
-
-  // Helper badge color for source
+  // ── 7. Badge helpers ──
   const getSourceBadge = (source?: string) => {
     const s = (source || 'Lainnya').toLowerCase();
-    if (s.includes('iuran')) {
-      return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
-          <Coins className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-          Iuran Anggota
-        </span>
-      );
-    }
-    if (s.includes('donasi')) {
-      return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80">
-          <HeartHandshake className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-          Donasi
-        </span>
-      );
-    }
-    if (s.includes('kegiatan')) {
-      return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800/80">
-          <Sparkles className="w-3 h-3 text-purple-600 dark:text-purple-400" />
-          Kegiatan
-        </span>
-      );
-    }
-    return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-300 border border-gray-200 dark:border-slate-700">
-        <Layers className="w-3 h-3 text-gray-500 dark:text-slate-400" />
-        {source || 'Lainnya'}
-      </span>
-    );
+    if (s.includes('iuran')) return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80"><Coins className="w-3 h-3" />Iuran Anggota</span>;
+    if (s.includes('donasi')) return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80"><HeartHandshake className="w-3 h-3" />Donasi</span>;
+    if (s.includes('kegiatan')) return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800/80"><Sparkles className="w-3 h-3" />Kegiatan</span>;
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-slate-300 border border-gray-200 dark:border-slate-700"><Layers className="w-3 h-3" />{source || 'Lainnya'}</span>;
   };
+
+  const getCategoryBadge = (category?: string) => {
+    const c = (category || 'Lainnya').toLowerCase();
+    if (c.includes('kegiatan')) return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-violet-100 text-violet-800 dark:bg-violet-950/60 dark:text-violet-300 border border-violet-200 dark:border-violet-800/80"><Sparkles className="w-3 h-3" />Kegiatan</span>;
+    if (c.includes('konsumsi')) return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300 border border-orange-200 dark:border-orange-800/80"><Coffee className="w-3 h-3" />Konsumsi</span>;
+    if (c.includes('perlengkapan')) return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200 dark:border-sky-800/80"><Package className="w-3 h-3" />Perlengkapan</span>;
+    if (c.includes('sosial')) return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-pink-100 text-pink-800 dark:bg-pink-950/60 dark:text-pink-300 border border-pink-200 dark:border-pink-800/80"><HandHeart className="w-3 h-3" />Sosial</span>;
+    if (c.includes('operasional')) return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 dark:bg-slate-800 dark:text-slate-300 border border-gray-200 dark:border-slate-700"><Settings className="w-3 h-3" />Operasional</span>;
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80"><Receipt className="w-3 h-3" />{category || 'Lainnya'}</span>;
+  };
+
+  const hasActiveFilters = !!(selectedMonth || selectedYear || (activeTab === 'ALL' && selectedType !== 'ALL') || selectedSource || selectedCategory || searchQuery);
 
   return (
     <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
-      {/* Sidebar Navigation */}
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        userRole={currentUser.role}
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={currentUser.role} />
 
-      {/* Main Container */}
       <div className="flex-1 flex flex-col min-w-0">
-        <Navbar
-          onMenuToggle={() => setSidebarOpen(true)}
-          user={{
-            name: currentUser.name,
-            role: currentUser.role,
-          }}
-        />
+        <Navbar onMenuToggle={() => setSidebarOpen(true)} user={{ name: currentUser.name, role: currentUser.role }} />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-8">
-          {/* ─────────────────────────────────────────────────────────────────────────────
-              1. PAGE HEADER
-          ───────────────────────────────────────────────────────────────────────────── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs transition-colors">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+          {/* ── PAGE HEADER ── */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                  Transparansi Keuangan &amp; Manajemen Kas
+                  Transparansi Keuangan Organisasi
                 </span>
                 <Badge variant={isAdmin ? 'accent' : 'primary'} size="sm">
-                  {isAdmin ? (
-                    <>
-                      <ShieldCheck className="w-3 h-3 mr-1 inline" />
-                      ADMINISTRATOR (Kelola Pemasukan &amp; Pengeluaran)
-                    </>
-                  ) : (
-                    <>
-                      <User className="w-3 h-3 mr-1 inline" />
-                      MEMBER (Akses Transparansi Kas)
-                    </>
-                  )}
+                  {isAdmin ? <><ShieldCheck className="w-3 h-3 mr-1 inline" />ADMINISTRATOR</> : <><User className="w-3 h-3 mr-1 inline" />MEMBER</>}
                 </Badge>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
-                Laporan Kas &amp; Pemasukan
+                Kas &amp; Keuangan Organisasi
               </h1>
               <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
-                Pencatatan sumber kas masuk (iuran anggota, donasi, kegiatan), belanja kas, dan transparansi saldo terkini.
+                Pemasukan (iuran, donasi, kegiatan) dan pengeluaran (belanja, konsumsi, sosial) Karang Taruna Setya Bakti.
               </p>
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
-              <Button
-                variant="outline"
-                size="sm"
-                leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
-                onClick={() => fetchFinanceData(true)}
-                disabled={isRefreshing}
-              >
-                {isRefreshing ? 'Memuat...' : 'Segarkan Data'}
+              <Button variant="outline" size="sm" leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />} onClick={() => fetchFinanceData(true)} disabled={isRefreshing}>
+                {isRefreshing ? 'Memuat...' : 'Segarkan'}
               </Button>
-
               {isAdmin && (
                 <>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
-                    leftIcon={<Plus className="w-4 h-4" />}
-                    onClick={() => handleOpenCreateModal('INCOME')}
-                  >
+                  <Button variant="primary" size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" leftIcon={<Plus className="w-4 h-4" />} onClick={() => handleOpenCreateModal('INCOME')}>
                     Catat Pemasukan
                   </Button>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    leftIcon={<Plus className="w-4 h-4" />}
-                    onClick={() => handleOpenCreateModal('EXPENSE')}
-                  >
-                    Tambah Transaksi Lain
+                  <Button variant="secondary" size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={() => handleOpenCreateModal('EXPENSE')}>
+                    Catat Pengeluaran
                   </Button>
                 </>
               )}
             </div>
           </div>
 
-          {/* ─────────────────────────────────────────────────────────────────────────────
-              2. FINANCIAL SUMMARY CARDS
-              - TOTAL KAS
-              - TOTAL PEMASUKAN
-              - TOTAL PENGELUARAN
-              - SALDO SAAT INI (Formula: saldo = total pemasukan - total pengeluaran)
-          ───────────────────────────────────────────────────────────────────────────── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {/* Card 1: TOTAL KAS */}
+          {/* ── SUMMARY CARDS ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card hoverable className="border-t-4 border-t-emerald-500">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                  TOTAL KAS
-                </span>
-                <div className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 ring-2 ring-black/5 dark:ring-white/5">
-                  <Wallet className="w-5 h-5" />
-                </div>
+                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">TOTAL KAS</span>
+                <div className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 ring-2 ring-black/5 dark:ring-white/5"><Wallet className="w-5 h-5" /></div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
-                  {formatRupiah(summary.totalKas)}
-                </div>
+                <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">{formatRupiah(summary.totalKas)}</div>
                 <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-gray-500 dark:text-slate-400">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>Akumulasi Seluruh Kas Aktif</span>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /><span>Akumulasi Seluruh Kas</span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Card 2: TOTAL PEMASUKAN */}
-            <Card hoverable className="border-t-4 border-t-emerald-600">
+            <Card hoverable className="border-t-4 border-t-sky-500">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                  TOTAL PEMASUKAN
-                </span>
-                <div className="p-2.5 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 ring-2 ring-black/5 dark:ring-white/5">
-                  <ArrowDownLeft className="w-5 h-5" />
-                </div>
+                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">TOTAL PEMASUKAN</span>
+                <div className="p-2.5 rounded-2xl bg-sky-50 dark:bg-slate-800 text-sky-600 dark:text-sky-400 ring-2 ring-black/5 dark:ring-white/5"><ArrowDownLeft className="w-5 h-5" /></div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
-                  {formatRupiah(summary.totalPemasukan)}
-                </div>
-                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                  <ArrowDownLeft className="w-3.5 h-3.5" />
-                  <span>Iuran, donasi, kegiatan &amp; lainnya</span>
+                <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white">{formatRupiah(summary.totalPemasukan)}</div>
+                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-sky-600 dark:text-sky-400">
+                  <ArrowDownLeft className="w-3.5 h-3.5" /><span>Iuran, donasi &amp; lainnya</span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Card 3: TOTAL PENGELUARAN */}
-            <Card hoverable className="border-t-4 border-t-taruna-red-500">
+            <Card hoverable className="border-t-4 border-t-red-500">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                  TOTAL PENGELUARAN
-                </span>
-                <div className="p-2.5 rounded-2xl bg-taruna-red-50 dark:bg-slate-800 text-taruna-red-600 dark:text-red-400 ring-2 ring-black/5 dark:ring-white/5">
-                  <ArrowUpRight className="w-5 h-5" />
-                </div>
+                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">TOTAL PENGELUARAN</span>
+                <div className="p-2.5 rounded-2xl bg-red-50 dark:bg-slate-800 text-red-600 dark:text-red-400 ring-2 ring-black/5 dark:ring-white/5"><ArrowUpRight className="w-5 h-5" /></div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-taruna-red-600 dark:text-red-400 tracking-tight">
-                  {formatRupiah(summary.totalPengeluaran)}
-                </div>
+                <div className="text-2xl sm:text-3xl font-black text-red-600 dark:text-red-400">{formatRupiah(summary.totalPengeluaran)}</div>
                 <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-gray-500 dark:text-slate-400">
-                  <ArrowUpRight className="w-3.5 h-3.5 text-taruna-red-500" />
-                  <span>Belanja operasional kegiatan</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-red-500" /><span>Belanja &amp; operasional</span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Card 4: SALDO SAAT INI (Formula saldo = total pemasukan - total pengeluaran) */}
-            <Card hoverable className="border-t-4 border-t-taruna-yellow-500">
+            <Card hoverable className="border-t-4 border-t-amber-500">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-                  SALDO SAAT INI
-                </span>
-                <div className="p-2.5 rounded-2xl bg-taruna-yellow-50 dark:bg-slate-800 text-taruna-yellow-700 dark:text-taruna-yellow-400 ring-2 ring-black/5 dark:ring-white/5">
-                  <Scale className="w-5 h-5" />
-                </div>
+                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">SALDO SAAT INI</span>
+                <div className="p-2.5 rounded-2xl bg-amber-50 dark:bg-slate-800 text-amber-600 dark:text-amber-400 ring-2 ring-black/5 dark:ring-white/5"><Scale className="w-5 h-5" /></div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
-                  {formatRupiah(summary.saldoSaatIni)}
-                </div>
-                <div className="mt-2 text-[11px] font-mono font-medium text-taruna-yellow-800 dark:text-taruna-yellow-300 bg-taruna-yellow-50/80 dark:bg-slate-800/80 px-2 py-1 rounded-lg border border-taruna-yellow-200/60 dark:border-slate-700">
-                  saldo = total pemasukan - total pengeluaran
+                <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white">{formatRupiah(summary.saldoSaatIni)}</div>
+                <div className="mt-2 text-[11px] font-mono font-medium text-amber-800 dark:text-amber-300 bg-amber-50/80 dark:bg-slate-800/80 px-2 py-1 rounded-lg border border-amber-200/60 dark:border-slate-700">
+                  saldo = pemasukan - pengeluaran
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* ─────────────────────────────────────────────────────────────────────────────
-              3. TAB NAVIGATION (SEMUA TRANSAKSI | PEMASUKAN KAS | PENGELUARAN)
-          ───────────────────────────────────────────────────────────────────────────── */}
+          {/* ── TAB NAVIGATION ── */}
           <div className="flex items-center justify-between border-b border-taruna-border dark:border-slate-800 pb-2 flex-wrap gap-3">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setActiveTab('ALL')}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                  activeTab === 'ALL'
-                    ? 'bg-taruna-dark dark:bg-slate-100 text-white dark:text-slate-900 shadow-sm'
-                    : 'text-gray-500 hover:text-taruna-dark dark:text-slate-400 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800'
-                }`}
-              >
-                Semua Transaksi
-              </button>
-              <button
-                onClick={() => setActiveTab('INCOME')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                  activeTab === 'INCOME'
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-gray-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800'
-                }`}
-              >
-                <ArrowDownLeft className="w-4 h-4" />
-                Pemasukan Kas (Income)
-                <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'INCOME' ? 'bg-emerald-700 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300'}`}>
-                  {incomeStats.totalCount}
-                </span>
-              </button>
-              <button
-                onClick={() => setActiveTab('EXPENSE')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                  activeTab === 'EXPENSE'
-                    ? 'bg-taruna-red-600 text-white shadow-sm'
-                    : 'text-gray-500 hover:text-taruna-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-slate-800'
-                }`}
-              >
-                <ArrowUpRight className="w-4 h-4" />
-                Pengeluaran Kas
-              </button>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {([
+                { key: 'ALL', label: 'Semua Transaksi', icon: null, activeClass: 'bg-taruna-dark dark:bg-slate-100 text-white dark:text-slate-900' },
+                { key: 'INCOME', label: 'Pemasukan Kas', icon: ArrowDownLeft, activeClass: 'bg-emerald-600 text-white' },
+                { key: 'EXPENSE', label: 'Pengeluaran Kas', icon: ArrowUpRight, activeClass: 'bg-red-600 text-white' },
+              ] as const).map(tab => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key as 'ALL' | 'INCOME' | 'EXPENSE')}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === tab.key ? tab.activeClass + ' shadow-sm' : 'text-gray-500 hover:text-taruna-dark dark:text-slate-400 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800'}`}
+                >
+                  {tab.icon && <tab.icon className="w-4 h-4" />}
+                  {tab.label}
+                  {tab.key === 'INCOME' && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === 'INCOME' ? 'bg-emerald-700 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300'}`}>
+                      {incomeStats.totalCount}
+                    </span>
+                  )}
+                  {tab.key === 'EXPENSE' && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === 'EXPENSE' ? 'bg-red-700 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300'}`}>
+                      {expenseStats.totalCount}
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
 
-            {activeTab === 'INCOME' && isAdmin && (
+            {isAdmin && (
               <Button
                 variant="primary"
                 size="sm"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className={activeTab === 'INCOME' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : activeTab === 'EXPENSE' ? 'bg-red-600 hover:bg-red-700 text-white' : ''}
                 leftIcon={<Plus className="w-4 h-4" />}
-                onClick={() => handleOpenCreateModal('INCOME')}
+                onClick={() => handleOpenCreateModal(activeTab === 'EXPENSE' ? 'EXPENSE' : 'INCOME')}
               >
-                Catat Pemasukan Baru
+                {activeTab === 'EXPENSE' ? 'Catat Pengeluaran Baru' : 'Catat Pemasukan Baru'}
               </Button>
             )}
           </div>
 
-          {/* ─────────────────────────────────────────────────────────────────────────────
-              4. BREAKDOWN SUMBER PEMASUKAN (Khusus Tab Pemasukan atau saat ada transaksi)
-          ───────────────────────────────────────────────────────────────────────────── */}
+          {/* ── INCOME BREAKDOWN CARDS (only in INCOME tab) ── */}
           {activeTab === 'INCOME' && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              {PRESET_SOURCES.map((s) => {
-                const IconComponent = s.icon;
-                const totalSrc = incomeStats.bySource[s.value] || 0;
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {PRESET_SOURCES.map(s => {
+                const total = incomeStats.bySource[s.value] || 0;
                 const isSelected = selectedSource.toLowerCase() === s.value.toLowerCase();
-
                 return (
-                  <button
-                    key={s.value}
-                    onClick={() => setSelectedSource(isSelected ? '' : s.value)}
-                    className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden group ${
-                      isSelected
-                        ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-950/20'
-                        : 'border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-gray-300 dark:hover:border-slate-700'
-                    }`}
-                  >
+                  <button key={s.value} onClick={() => setSelectedSource(isSelected ? '' : s.value)}
+                    className={`p-3 sm:p-4 rounded-2xl border text-left transition-all ${isSelected ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-950/20' : 'border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-gray-300 dark:hover:border-slate-700'}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-gray-500 dark:text-slate-400">
-                        {s.label}
-                      </span>
-                      <div className={`p-1.5 rounded-lg border ${s.color}`}>
-                        <IconComponent className="w-3.5 h-3.5" />
-                      </div>
+                      <span className="text-xs font-bold text-gray-500 dark:text-slate-400">{s.label}</span>
+                      <div className={`p-1.5 rounded-lg border ${s.color}`}><s.icon className="w-3.5 h-3.5" /></div>
                     </div>
-                    <div className="text-base sm:text-lg font-black text-taruna-dark dark:text-white">
-                      {formatRupiah(totalSrc)}
-                    </div>
+                    <div className="text-base sm:text-lg font-black text-taruna-dark dark:text-white">{formatRupiah(total)}</div>
                     <div className="text-[11px] text-gray-400 mt-1 flex items-center gap-1">
                       <TrendingUp className="w-3 h-3 text-emerald-500" />
-                      {isSelected ? 'Filter Aktif (Klik batal)' : 'Klik untuk filter'}
+                      {isSelected ? 'Filter aktif (klik batal)' : 'Klik untuk filter'}
                     </div>
                   </button>
                 );
@@ -773,86 +596,67 @@ export default function FinanceOverviewPage() {
             </div>
           )}
 
-          {/* ─────────────────────────────────────────────────────────────────────────────
-              5. FILTER BAR (BULAN, TAHUN, JENIS TRANSAKSI, SUMBER, PENCARIAN)
-          ───────────────────────────────────────────────────────────────────────────── */}
+          {/* ── EXPENSE BREAKDOWN CARDS (only in EXPENSE tab) ── */}
+          {activeTab === 'EXPENSE' && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {PRESET_CATEGORIES.map(cat => {
+                const total = expenseStats.byCategory[cat.value] || 0;
+                const isSelected = selectedCategory.toLowerCase() === cat.value.toLowerCase();
+                return (
+                  <button key={cat.value} onClick={() => setSelectedCategory(isSelected ? '' : cat.value)}
+                    className={`p-3 rounded-2xl border text-left transition-all ${isSelected ? 'border-red-500 ring-2 ring-red-500/20 bg-red-50/50 dark:bg-red-950/20' : 'border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-gray-300 dark:hover:border-slate-700'}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className={`p-1.5 rounded-lg border ${cat.color}`}><cat.icon className="w-3.5 h-3.5" /></div>
+                    </div>
+                    <div className="text-xs font-bold text-gray-600 dark:text-slate-300 mb-1">{cat.label}</div>
+                    <div className="text-sm font-black text-red-600 dark:text-red-400">{formatRupiah(total)}</div>
+                    <div className="text-[10px] text-gray-400 mt-1">{isSelected ? 'Filter aktif' : 'Klik filter'}</div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ── FILTER BAR ── */}
           <Card>
             <CardContent className="p-4 sm:p-5">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 flex-1">
-                  {/* Filter Bulan */}
+              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+                <div className={`grid gap-3 flex-1 ${activeTab === 'ALL' ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'}`}>
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
-                      Filter Bulan:
-                    </label>
-                    <Select
-                      value={selectedMonth}
-                      onChange={(e) => setSelectedMonth(e.target.value)}
-                      options={MONTH_OPTIONS}
-                    />
+                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Filter Bulan:</label>
+                    <Select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} options={MONTH_OPTIONS} />
                   </div>
-
-                  {/* Filter Tahun */}
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
-                      Filter Tahun:
-                    </label>
-                    <Select
-                      value={selectedYear}
-                      onChange={(e) => setSelectedYear(e.target.value)}
-                      options={YEAR_OPTIONS}
-                    />
+                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Filter Tahun:</label>
+                    <Select value={selectedYear} onChange={e => setSelectedYear(e.target.value)} options={YEAR_OPTIONS} />
                   </div>
-
-                  {/* Filter Jenis Transaksi (Hanya jika di tab ALL) */}
-                  {activeTab === 'ALL' ? (
+                  {activeTab === 'ALL' && (
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
-                        Jenis Transaksi:
-                      </label>
-                      <Select
-                        value={selectedType}
-                        onChange={(e) => setSelectedType(e.target.value)}
-                        options={TYPE_OPTIONS}
-                      />
+                      <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Jenis:</label>
+                      <Select value={selectedType} onChange={e => setSelectedType(e.target.value)} options={TYPE_OPTIONS} />
                     </div>
-                  ) : null}
-
-                  {/* Filter Sumber Pemasukan */}
-                  <div className={activeTab !== 'ALL' ? 'sm:col-span-2' : ''}>
-                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
-                      Sumber Pemasukan:
-                    </label>
-                    <Select
-                      value={selectedSource}
-                      onChange={(e) => setSelectedSource(e.target.value)}
-                      options={SOURCE_OPTIONS}
-                    />
-                  </div>
+                  )}
+                  {activeTab === 'INCOME' && (
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Sumber Pemasukan:</label>
+                      <Select value={selectedSource} onChange={e => setSelectedSource(e.target.value)} options={SOURCE_OPTIONS} />
+                    </div>
+                  )}
+                  {activeTab === 'EXPENSE' && (
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Kategori Pengeluaran:</label>
+                      <Select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} options={CATEGORY_OPTIONS} />
+                    </div>
+                  )}
                 </div>
 
-                {/* Pencarian Uraian & Reset */}
                 <div className="flex items-end gap-2 flex-wrap sm:flex-nowrap">
-                  <div className="w-full sm:w-64">
-                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
-                      Cari Keterangan / Sumber:
-                    </label>
-                    <Input
-                      placeholder="Cari kata kunci..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      leftIcon={<Search className="w-4 h-4 text-gray-400" />}
-                    />
+                  <div className="w-full sm:w-60">
+                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Cari Keterangan:</label>
+                    <Input placeholder="Cari kata kunci..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} leftIcon={<Search className="w-4 h-4 text-gray-400" />} />
                   </div>
-
-                  {(selectedMonth || selectedYear || (activeTab === 'ALL' && selectedType !== 'ALL') || selectedSource || searchQuery) && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={handleResetFilter}
-                      className="whitespace-nowrap h-10"
-                      leftIcon={<X className="w-3.5 h-3.5" />}
-                    >
+                  {hasActiveFilters && (
+                    <Button variant="secondary" size="sm" onClick={resetFilters} className="whitespace-nowrap h-10" leftIcon={<X className="w-3.5 h-3.5" />}>
                       Reset
                     </Button>
                   )}
@@ -861,152 +665,96 @@ export default function FinanceOverviewPage() {
             </CardContent>
           </Card>
 
-          {/* ─────────────────────────────────────────────────────────────────────────────
-              6. TABEL TRANSAKSI KEUANGAN & PEMASUKAN
-              Kolom:
-              - Tanggal
-              - Jenis (PEMASUKAN / PENGELUARAN)
-              - Sumber Pemasukan (iuran anggota, donasi, kegiatan, lainnya)
-              - Keterangan
-              - Jumlah (> 0)
-              - Aksi (Admin Only: Edit & Delete)
-          ───────────────────────────────────────────────────────────────────────────── */}
+          {/* ── TRANSACTION TABLE ── */}
           <Card>
             <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
               <div>
                 <CardTitle>
-                  {activeTab === 'INCOME'
-                    ? 'Buku Pemasukan Kas (Income Records)'
-                    : activeTab === 'EXPENSE'
-                    ? 'Buku Pengeluaran Kas'
-                    : 'Buku Kas & Riwayat Transaksi'}
+                  {activeTab === 'INCOME' ? 'Buku Pemasukan Kas' : activeTab === 'EXPENSE' ? 'Buku Pengeluaran Kas' : 'Buku Kas & Riwayat Transaksi'}
                 </CardTitle>
                 <CardDescription>
-                  {activeTab === 'INCOME'
-                    ? 'Daftar seluruh penerimaan kas masuk dari iuran, donasi, kegiatan, dan sumber lainnya.'
-                    : 'Daftar transaksi kas masuk dan keluar Karang Taruna Setya Bakti.'}
+                  {activeTab === 'INCOME' ? 'Daftar penerimaan kas dari iuran, donasi, kegiatan, dan sumber lainnya.' : activeTab === 'EXPENSE' ? 'Daftar pengeluaran kas berdasarkan kategori (kegiatan, konsumsi, perlengkapan, dll).' : 'Semua transaksi kas masuk dan keluar organisasi.'}
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="success" dot>
-                  {transactions.length} Transaksi Tercatat
-                </Badge>
-              </div>
+              <Badge variant="success" dot>{transactions.length} Transaksi</Badge>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-36">Tanggal</TableHead>
-                      <TableHead className="w-32">Jenis</TableHead>
-                      <TableHead className="w-40">Sumber</TableHead>
+                      <TableHead className="w-32">Tanggal</TableHead>
+                      <TableHead className="w-28">Jenis</TableHead>
+                      <TableHead className="w-36">
+                        {activeTab === 'EXPENSE' ? 'Kategori' : activeTab === 'INCOME' ? 'Sumber' : 'Sumber / Kategori'}
+                      </TableHead>
                       <TableHead>Keterangan</TableHead>
-                      <TableHead className="text-right w-44">Jumlah</TableHead>
-                      {isAdmin && <TableHead className="text-center w-28">Aksi</TableHead>}
+                      <TableHead className="text-right w-40">Jumlah</TableHead>
+                      {isAdmin && <TableHead className="text-center w-24">Aksi</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
-                        <TableCell colSpan={isAdmin ? 6 : 5} className="text-center py-12 text-gray-400">
-                          <div className="flex flex-col items-center justify-center gap-2">
-                            <RefreshCw className="w-5 h-5 animate-spin text-taruna-yellow-600" />
-                            <span className="text-xs">Memuat data transaksi kas...</span>
+                        <TableCell colSpan={isAdmin ? 6 : 5} className="text-center py-12">
+                          <div className="flex flex-col items-center gap-2 text-gray-400">
+                            <RefreshCw className="w-5 h-5 animate-spin text-amber-500" />
+                            <span className="text-xs">Memuat data transaksi...</span>
                           </div>
                         </TableCell>
                       </TableRow>
                     ) : transactions.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={isAdmin ? 6 : 5} className="text-center py-12 text-gray-400">
-                          <div className="flex flex-col items-center justify-center gap-1.5">
-                            <Info className="w-6 h-6 text-gray-400" />
-                            <span className="text-sm font-semibold text-gray-600 dark:text-slate-300">
-                              Tidak ada catatan transaksi ditemukan
-                            </span>
-                            <span className="text-xs text-gray-400">
-                              Coba ubah filter bulan, tahun, sumber pemasukan, atau kata kunci pencarian.
-                            </span>
+                        <TableCell colSpan={isAdmin ? 6 : 5} className="text-center py-12">
+                          <div className="flex flex-col items-center gap-1.5 text-gray-400">
+                            <Info className="w-6 h-6" />
+                            <span className="text-sm font-semibold text-gray-600 dark:text-slate-300">Tidak ada transaksi ditemukan</span>
+                            <span className="text-xs">Coba ubah filter atau kata kunci pencarian.</span>
                           </div>
                         </TableCell>
                       </TableRow>
                     ) : (
-                      transactions.map((t) => (
+                      transactions.map(t => (
                         <TableRow key={t.id} className="hover:bg-taruna-surface/60 dark:hover:bg-slate-800/50">
-                          {/* 1. Tanggal */}
+                          {/* Tanggal */}
                           <TableCell className="text-xs font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">
                             <div className="flex items-center gap-1.5">
                               <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                              {new Date(t.transactionDate).toLocaleDateString('id-ID', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                              })}
+                              {new Date(t.transactionDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </div>
                           </TableCell>
 
-                          {/* 2. Jenis (PEMASUKAN / PENGELUARAN) */}
+                          {/* Jenis */}
                           <TableCell>
-                            <Badge
-                              variant={t.type === 'INCOME' ? 'success' : 'accent'}
-                              size="sm"
-                              className="font-bold uppercase tracking-wider text-[10px]"
-                            >
+                            <Badge variant={t.type === 'INCOME' ? 'success' : 'accent'} size="sm" className="font-bold uppercase tracking-wider text-[10px]">
                               {t.type === 'INCOME' ? 'PEMASUKAN' : 'PENGELUARAN'}
                             </Badge>
                           </TableCell>
 
-                          {/* 3. Sumber Pemasukan */}
+                          {/* Sumber / Kategori */}
                           <TableCell className="whitespace-nowrap">
-                            {t.type === 'INCOME' ? (
-                              getSourceBadge(t.source)
-                            ) : (
-                              <span className="text-xs text-gray-400 dark:text-slate-500 italic">
-                                Belanja Kas
-                              </span>
-                            )}
+                            {t.type === 'INCOME' ? getSourceBadge(t.source) : getCategoryBadge(t.category)}
                           </TableCell>
 
-                          {/* 4. Keterangan */}
+                          {/* Keterangan */}
                           <TableCell>
-                            <div className="space-y-0.5">
-                              <p className="font-semibold text-sm text-taruna-dark dark:text-white">
-                                {t.description}
-                              </p>
-                              <span className="text-[11px] text-gray-400 dark:text-slate-500">
-                                Dicatat oleh: {t.creatorName}
-                              </span>
-                            </div>
+                            <p className="font-semibold text-sm text-taruna-dark dark:text-white">{t.description}</p>
+                            <span className="text-[11px] text-gray-400 dark:text-slate-500">Dicatat: {t.creatorName}</span>
                           </TableCell>
 
-                          {/* 5. Jumlah */}
-                          <TableCell
-                            className={`text-right font-black text-sm whitespace-nowrap ${
-                              t.type === 'INCOME'
-                                ? 'text-emerald-600 dark:text-emerald-400'
-                                : 'text-taruna-red-600 dark:text-red-400'
-                            }`}
-                          >
-                            {t.type === 'INCOME' ? '+' : '-'}
-                            {formatRupiah(t.amount)}
+                          {/* Jumlah */}
+                          <TableCell className={`text-right font-black text-sm whitespace-nowrap ${t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                            {t.type === 'INCOME' ? '+' : '-'}{formatRupiah(t.amount)}
                           </TableCell>
 
-                          {/* 6. Aksi (Hanya untuk ADMIN) */}
+                          {/* Aksi */}
                           {isAdmin && (
                             <TableCell className="text-center">
                               <div className="flex items-center justify-center gap-1.5">
-                                <button
-                                  onClick={() => handleOpenEditModal(t)}
-                                  className="p-1.5 rounded-lg border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-taruna-surface dark:hover:bg-slate-800 text-gray-700 dark:text-slate-300 transition"
-                                  title="Ubah transaksi"
-                                >
-                                  <Pencil className="w-3.5 h-3.5 text-taruna-yellow-600" />
+                                <button onClick={() => handleOpenEditModal(t)} className="p-1.5 rounded-lg border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-amber-50 dark:hover:bg-slate-800 transition" title="Ubah">
+                                  <Pencil className="w-3.5 h-3.5 text-amber-600" />
                                 </button>
-                                <button
-                                  onClick={() => handleOpenDeleteModal(t)}
-                                  className="p-1.5 rounded-lg border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-red-50 dark:hover:bg-red-950/40 text-gray-700 dark:text-slate-300 transition"
-                                  title="Hapus transaksi"
-                                >
+                                <button onClick={() => handleOpenDeleteModal(t)} className="p-1.5 rounded-lg border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-red-50 dark:hover:bg-red-950/40 transition" title="Hapus">
                                   <Trash2 className="w-3.5 h-3.5 text-red-500" />
                                 </button>
                               </div>
@@ -1023,333 +771,243 @@ export default function FinanceOverviewPage() {
         </main>
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          MODAL TAMBAH TRANSAKSI / PEMASUKAN KAS (KHUSUS ADMIN)
-      ───────────────────────────────────────────────────────────────────────────── */}
+      {/* ═══════════════════════════════════════════════════════════════════════
+          MODAL: CREATE (Pemasukan atau Pengeluaran)
+      ═══════════════════════════════════════════════════════════════════════ */}
       {isAdmin && (
         <Modal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
-          title={formType === 'INCOME' ? 'Catat Pemasukan Kas Baru' : 'Tambah Transaksi Kas Baru'}
+          title={formType === 'INCOME' ? '💰 Catat Pemasukan Kas Baru' : '🧾 Catat Pengeluaran Kas Baru'}
           description={
             formType === 'INCOME'
-              ? 'Catat penerimaan kas masuk dari iuran anggota, donasi, kegiatan, atau sumber lainnya. Saldo kas akan otomatis bertambah.'
-              : 'Catat belanja atau pengeluaran operasional Karang Taruna Setya Bakti.'
+              ? 'Penerimaan dari iuran anggota, donasi, atau kegiatan. Saldo kas otomatis bertambah.'
+              : 'Belanja atau pengeluaran operasional organisasi. Saldo kas otomatis berkurang.'
           }
           footer={
             <>
+              <Button variant="secondary" size="sm" onClick={() => setIsCreateModalOpen(false)} disabled={isSubmitting}>Batal</Button>
               <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setIsCreateModalOpen(false)}
-                disabled={isSubmitting}
+                variant="primary" size="sm"
+                className={formType === 'INCOME' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-red-600 hover:bg-red-700 text-white'}
+                onClick={handleSaveCreate} isLoading={isSubmitting}
               >
-                Batal
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                className={formType === 'INCOME' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}
-                onClick={handleSaveCreate}
-                isLoading={isSubmitting}
-              >
-                {formType === 'INCOME' ? 'Simpan Pemasukan' : 'Simpan Transaksi'}
+                {formType === 'INCOME' ? 'Simpan Pemasukan' : 'Simpan Pengeluaran'}
               </Button>
             </>
           }
         >
           <form onSubmit={handleSaveCreate} className="space-y-4 text-left">
+            {/* Jenis Transaksi */}
             <div>
-              <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-1">
-                Jenis Transaksi <span className="text-red-500">*</span>
-              </label>
+              <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-1">Jenis Transaksi <span className="text-red-500">*</span></label>
               <Select
                 value={formType}
-                onChange={(e) => setFormType(e.target.value as 'INCOME' | 'EXPENSE')}
+                onChange={e => setFormType(e.target.value as 'INCOME' | 'EXPENSE')}
                 options={[
-                  { value: 'INCOME', label: 'PEMASUKAN (Kas Masuk)' },
-                  { value: 'EXPENSE', label: 'PENGELUARAN (Kas Keluar)' },
+                  { value: 'INCOME', label: '💰 PEMASUKAN (Kas Masuk)' },
+                  { value: 'EXPENSE', label: '🧾 PENGELUARAN (Kas Keluar)' },
                 ]}
               />
             </div>
 
-            {/* Sumber Pemasukan (Tampil jika PEMASUKAN) */}
+            {/* Sumber Pemasukan (jika INCOME) */}
             {formType === 'INCOME' && (
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-1">
-                  Sumber Pemasukan <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-2">Sumber Pemasukan <span className="text-red-500">*</span></label>
                 <div className="grid grid-cols-2 gap-2 mb-2">
-                  {PRESET_SOURCES.map((s) => (
-                    <button
-                      key={s.value}
-                      type="button"
-                      onClick={() => setFormSource(s.value)}
-                      className={`px-3 py-2 rounded-xl text-xs font-bold border text-left flex items-center gap-2 transition ${
-                        formSource.toLowerCase() === s.value.toLowerCase()
-                          ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20'
-                          : 'border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 hover:bg-taruna-surface'
-                      }`}
-                    >
-                      <s.icon className="w-3.5 h-3.5 text-emerald-600" />
-                      {s.label}
+                  {PRESET_SOURCES.map(s => (
+                    <button key={s.value} type="button" onClick={() => setFormSource(s.value)}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold border text-left flex items-center gap-2 transition ${formSource.toLowerCase() === s.value.toLowerCase() ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20' : 'border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 hover:bg-taruna-surface'}`}>
+                      <s.icon className="w-3.5 h-3.5" />{s.label}
                     </button>
                   ))}
                 </div>
-                <Input
-                  placeholder="Atau ketik sumber lainnya..."
-                  value={formSource}
-                  onChange={(e) => setFormSource(e.target.value)}
-                  required
-                />
+                <Input placeholder="Atau ketik sumber lain..." value={formSource} onChange={e => setFormSource(e.target.value)} required />
               </div>
             )}
 
-            {/* Jumlah / Nominal (> 0) */}
+            {/* Kategori Pengeluaran (jika EXPENSE) */}
+            {formType === 'EXPENSE' && (
+              <div>
+                <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-2">Kategori Pengeluaran <span className="text-red-500">*</span></label>
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  {PRESET_CATEGORIES.map(cat => (
+                    <button key={cat.value} type="button" onClick={() => setFormCategory(cat.value)}
+                      className={`px-2 py-2 rounded-xl text-xs font-bold border text-left flex items-center gap-1.5 transition ${formCategory.toLowerCase() === cat.value.toLowerCase() ? 'border-red-600 bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 ring-2 ring-red-500/20' : 'border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 hover:bg-taruna-surface'}`}>
+                      <cat.icon className="w-3.5 h-3.5 shrink-0" /><span className="truncate">{cat.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <Input placeholder="Atau ketik kategori lain..." value={formCategory} onChange={e => setFormCategory(e.target.value)} required />
+              </div>
+            )}
+
+            {/* Jumlah */}
             <div>
-              <Input
-                label="Jumlah (Nominal Kas)"
-                type="number"
-                min="1"
-                step="1"
-                placeholder="Contoh: 150000"
-                value={formAmount}
-                onChange={(e) => setFormAmount(e.target.value)}
-                required
-                helperText="* Jumlah harus lebih besar dari 0 (amount > 0)."
-              />
+              <Input label="Jumlah (Nominal)" type="number" min="1" step="1" placeholder="Contoh: 150000"
+                value={formAmount} onChange={e => setFormAmount(e.target.value)} required
+                helperText="* Jumlah harus lebih besar dari 0 (Rp)." />
               {Number(formAmount) > 0 && (
-                <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
-                  Terbilang: {formatRupiah(Number(formAmount))}
+                <p className={`text-xs font-semibold mt-1 ${formType === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                  = {formatRupiah(Number(formAmount))}
                 </p>
               )}
             </div>
 
             {/* Keterangan */}
-            <Input
-              label="Keterangan / Uraian"
-              placeholder={
-                formType === 'INCOME'
-                  ? 'Contoh: Iuran kas pemuda bulanan RT 02 Dusun Tuk Uluh'
-                  : 'Contoh: Pembelian sound system untuk tirakatan'
-              }
-              value={formDescription}
-              onChange={(e) => setFormDescription(e.target.value)}
-              required
-            />
+            <Input label="Keterangan / Uraian"
+              placeholder={formType === 'INCOME' ? 'Contoh: Iuran wajib Oktober 2026 RT 02' : 'Contoh: Beli konsumsi rapat rutin bulanan'}
+              value={formDescription} onChange={e => setFormDescription(e.target.value)} required />
 
             {/* Tanggal */}
-            <Input
-              label="Tanggal Transaksi"
-              type="date"
-              value={formDate}
-              onChange={(e) => setFormDate(e.target.value)}
-              required
-            />
+            <Input label="Tanggal Transaksi" type="date" value={formDate} onChange={e => setFormDate(e.target.value)} required />
           </form>
         </Modal>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          MODAL EDIT TRANSAKSI / PEMASUKAN KAS (KHUSUS ADMIN)
-      ───────────────────────────────────────────────────────────────────────────── */}
+      {/* ═══════════════════════════════════════════════════════════════════════
+          MODAL: EDIT
+      ═══════════════════════════════════════════════════════════════════════ */}
       {isAdmin && (
         <Modal
           isOpen={isEditModalOpen}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setActiveTransaction(null);
-          }}
-          title={formType === 'INCOME' ? 'Ubah Data Pemasukan Kas' : 'Ubah Transaksi Kas'}
-          description="Perbarui informasi catatan keuangan yang telah tersimpan. Saldo kas akan dihitung ulang secara otomatis."
+          onClose={() => { setIsEditModalOpen(false); setActiveTransaction(null); }}
+          title={formType === 'INCOME' ? '✏️ Ubah Data Pemasukan Kas' : '✏️ Ubah Data Pengeluaran Kas'}
+          description="Perbarui informasi catatan keuangan. Saldo kas dikalkulasi ulang secara otomatis."
           footer={
             <>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  setIsEditModalOpen(false);
-                  setActiveTransaction(null);
-                }}
-                disabled={isSubmitting}
-              >
-                Batal
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleSaveEdit}
-                isLoading={isSubmitting}
-              >
-                Simpan Perubahan
-              </Button>
+              <Button variant="secondary" size="sm" onClick={() => { setIsEditModalOpen(false); setActiveTransaction(null); }} disabled={isSubmitting}>Batal</Button>
+              <Button variant="primary" size="sm" onClick={handleSaveEdit} isLoading={isSubmitting}>Simpan Perubahan</Button>
             </>
           }
         >
           <form onSubmit={handleSaveEdit} className="space-y-4 text-left">
-            <div>
-              <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-1">
-                Jenis Transaksi <span className="text-red-500">*</span>
-              </label>
-              <Select
-                value={formType}
-                onChange={(e) => setFormType(e.target.value as 'INCOME' | 'EXPENSE')}
-                options={[
-                  { value: 'INCOME', label: 'PEMASUKAN (Kas Masuk)' },
-                  { value: 'EXPENSE', label: 'PENGELUARAN (Kas Keluar)' },
-                ]}
-              />
-            </div>
-
-            {/* Sumber Pemasukan */}
+            {/* Sumber (INCOME) */}
             {formType === 'INCOME' && (
               <div>
-                <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-1">
-                  Sumber Pemasukan <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-2">Sumber Pemasukan <span className="text-red-500">*</span></label>
                 <div className="grid grid-cols-2 gap-2 mb-2">
-                  {PRESET_SOURCES.map((s) => (
-                    <button
-                      key={s.value}
-                      type="button"
-                      onClick={() => setFormSource(s.value)}
-                      className={`px-3 py-2 rounded-xl text-xs font-bold border text-left flex items-center gap-2 transition ${
-                        formSource.toLowerCase() === s.value.toLowerCase()
-                          ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20'
-                          : 'border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 hover:bg-taruna-surface'
-                      }`}
-                    >
-                      <s.icon className="w-3.5 h-3.5 text-emerald-600" />
-                      {s.label}
+                  {PRESET_SOURCES.map(s => (
+                    <button key={s.value} type="button" onClick={() => setFormSource(s.value)}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold border text-left flex items-center gap-2 transition ${formSource.toLowerCase() === s.value.toLowerCase() ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20' : 'border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300'}`}>
+                      <s.icon className="w-3.5 h-3.5" />{s.label}
                     </button>
                   ))}
                 </div>
-                <Input
-                  value={formSource}
-                  onChange={(e) => setFormSource(e.target.value)}
-                  required
-                />
+                <Input value={formSource} onChange={e => setFormSource(e.target.value)} required />
               </div>
             )}
 
-            {/* Nominal / Jumlah */}
+            {/* Kategori (EXPENSE) */}
+            {formType === 'EXPENSE' && (
+              <div>
+                <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-2">Kategori Pengeluaran <span className="text-red-500">*</span></label>
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  {PRESET_CATEGORIES.map(cat => (
+                    <button key={cat.value} type="button" onClick={() => setFormCategory(cat.value)}
+                      className={`px-2 py-2 rounded-xl text-xs font-bold border text-left flex items-center gap-1.5 transition ${formCategory.toLowerCase() === cat.value.toLowerCase() ? 'border-red-600 bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 ring-2 ring-red-500/20' : 'border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300'}`}>
+                      <cat.icon className="w-3.5 h-3.5 shrink-0" /><span className="truncate">{cat.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <Input value={formCategory} onChange={e => setFormCategory(e.target.value)} required />
+              </div>
+            )}
+
+            {/* Jumlah */}
             <div>
-              <Input
-                label="Nominal Transaksi (Rp)"
-                type="number"
-                min="1"
-                step="1"
-                value={formAmount}
-                onChange={(e) => setFormAmount(e.target.value)}
-                required
-                helperText="* Jumlah harus lebih besar dari 0."
-              />
+              <Input label="Nominal (Rp)" type="number" min="1" step="1" value={formAmount} onChange={e => setFormAmount(e.target.value)} required helperText="* Harus lebih besar dari 0." />
               {Number(formAmount) > 0 && (
-                <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
-                  Terbilang: {formatRupiah(Number(formAmount))}
-                </p>
+                <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1">= {formatRupiah(Number(formAmount))}</p>
               )}
             </div>
 
-            <Input
-              label="Keterangan / Uraian"
-              value={formDescription}
-              onChange={(e) => setFormDescription(e.target.value)}
-              required
-            />
-
-            <Input
-              label="Tanggal Transaksi"
-              type="date"
-              value={formDate}
-              onChange={(e) => setFormDate(e.target.value)}
-              required
-            />
+            <Input label="Keterangan / Uraian" value={formDescription} onChange={e => setFormDescription(e.target.value)} required />
+            <Input label="Tanggal Transaksi" type="date" value={formDate} onChange={e => setFormDate(e.target.value)} required />
           </form>
         </Modal>
       )}
 
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          MODAL KONFIRMASI HAPUS TRANSAKSI / PEMASUKAN (KHUSUS ADMIN)
-      ───────────────────────────────────────────────────────────────────────────── */}
+      {/* ═══════════════════════════════════════════════════════════════════════
+          MODAL: DELETE CONFIRMATION
+      ═══════════════════════════════════════════════════════════════════════ */}
       {isAdmin && (
         <Modal
           isOpen={isDeleteModalOpen}
-          onClose={() => {
-            setIsDeleteModalOpen(false);
-            setActiveTransaction(null);
-          }}
-          title={activeTransaction?.type === 'INCOME' ? 'Hapus Catatan Pemasukan' : 'Hapus Catatan Transaksi'}
-          description="Apakah Anda yakin ingin menghapus catatan transaksi ini dari pembukuan kas?"
+          onClose={() => { setIsDeleteModalOpen(false); setActiveTransaction(null); }}
+          title={activeTransaction?.type === 'INCOME' ? '🗑️ Hapus Pemasukan Kas' : '🗑️ Hapus Pengeluaran Kas'}
+          description="Tindakan ini tidak dapat dibatalkan. Saldo kas akan dikalkulasi ulang secara otomatis."
           footer={
             <>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  setIsDeleteModalOpen(false);
-                  setActiveTransaction(null);
-                }}
-                disabled={isSubmitting}
-              >
+              <Button variant="secondary" size="sm" onClick={() => { setIsDeleteModalOpen(false); setActiveTransaction(null); }} disabled={isSubmitting}>
                 Batal
               </Button>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={handleConfirmDelete}
-                isLoading={isSubmitting}
-              >
-                Hapus Sekarang
+              <Button variant="danger" size="sm" onClick={handleConfirmDelete} isLoading={isSubmitting}>
+                Ya, Hapus Sekarang
               </Button>
             </>
           }
         >
           <div className="space-y-3 text-left">
+            {/* Warning banner */}
             <div className="p-3.5 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 flex items-start gap-3 text-xs text-red-700 dark:text-red-300">
               <AlertTriangle className="w-5 h-5 shrink-0 text-red-600 mt-0.5" />
               <div>
-                <p className="font-bold">Peringatan:</p>
+                <p className="font-bold mb-0.5">Konfirmasi Penghapusan</p>
                 <p>
-                  Penghapusan transaksi akan langsung memengaruhi perhitungan <strong>TOTAL KAS</strong> dan <strong>SALDO SAAT INI</strong> (saldo = total pemasukan - total pengeluaran).
+                  {activeTransaction?.type === 'INCOME'
+                    ? 'Menghapus pemasukan ini akan mengurangi TOTAL KAS dan SALDO SAAT INI.'
+                    : 'Menghapus pengeluaran ini akan menambah SALDO SAAT INI (kas kembali bertambah).'}
                 </p>
               </div>
             </div>
 
+            {/* Detail record */}
             {activeTransaction && (
               <div className="p-3 rounded-xl bg-taruna-surface dark:bg-slate-800 border border-taruna-border dark:border-slate-700 space-y-1.5 text-xs">
                 <p>
                   <strong className="text-gray-500">Uraian:</strong>{' '}
-                  <span className="font-semibold text-taruna-dark dark:text-white">
-                    {activeTransaction.description}
-                  </span>
+                  <span className="font-semibold text-taruna-dark dark:text-white">{activeTransaction.description}</span>
                 </p>
                 {activeTransaction.type === 'INCOME' && (
                   <p>
-                    <strong className="text-gray-500">Sumber Pemasukan:</strong>{' '}
-                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                      {activeTransaction.source || 'Lainnya'}
-                    </span>
+                    <strong className="text-gray-500">Sumber:</strong>{' '}
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">{activeTransaction.source || 'Lainnya'}</span>
+                  </p>
+                )}
+                {activeTransaction.type === 'EXPENSE' && (
+                  <p>
+                    <strong className="text-gray-500">Kategori:</strong>{' '}
+                    <span className="font-semibold text-red-600 dark:text-red-400">{activeTransaction.category || 'Lainnya'}</span>
                   </p>
                 )}
                 <p>
                   <strong className="text-gray-500">Nominal:</strong>{' '}
-                  <span className="font-black text-taruna-dark dark:text-white">
-                    {formatRupiah(activeTransaction.amount)} ({activeTransaction.type})
+                  <span className={`font-black ${activeTransaction.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                    {activeTransaction.type === 'INCOME' ? '+' : '-'}{formatRupiah(activeTransaction.amount)}
                   </span>
                 </p>
                 <p>
                   <strong className="text-gray-500">Tanggal:</strong>{' '}
-                  <span>
-                    {new Date(activeTransaction.transactionDate).toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })}
-                  </span>
+                  <span>{new Date(activeTransaction.transactionDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                </p>
+                <p>
+                  <strong className="text-gray-500">Dicatat oleh:</strong>{' '}
+                  <span>{activeTransaction.creatorName}</span>
                 </p>
               </div>
             )}
+
+            {/* Impact info */}
+            <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2">
+              <Info className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>
+                {activeTransaction?.type === 'INCOME'
+                  ? `Setelah dihapus, SALDO SAAT INI akan berkurang sebesar ${formatRupiah(activeTransaction?.amount || 0)}.`
+                  : `Setelah dihapus, SALDO SAAT INI akan bertambah sebesar ${formatRupiah(activeTransaction?.amount || 0)}.`}
+              </span>
+            </div>
           </div>
         </Modal>
       )}

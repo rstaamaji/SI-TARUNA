@@ -29,6 +29,25 @@ router.put('/incomes/:id', requireAdmin, FinanceController.updateIncome);
 router.delete('/incomes/:id', requireAdmin, FinanceController.deleteIncome);
 
 // ─────────────────────────────────────────────────────────────────────────────
+// MODULE 12: SPECIFIC EXPENSE ROUTES (/api/finance/expenses)
+// Kategori: kegiatan | konsumsi | perlengkapan | sosial | operasional | lainnya
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/finance/expenses - Daftar pengeluaran kas (MEMBER & ADMIN)
+router.get('/expenses', FinanceController.getExpenses);
+
+// GET /api/finance/expenses/:id - Detail pengeluaran kas (MEMBER & ADMIN)
+router.get('/expenses/:id', FinanceController.getExpenseById);
+
+// POST /api/finance/expenses - Catat pengeluaran kas baru (KHUSUS ADMIN)
+router.post('/expenses', requireAdmin, FinanceController.createExpense);
+
+// PUT /api/finance/expenses/:id - Ubah data pengeluaran kas (KHUSUS ADMIN)
+router.put('/expenses/:id', requireAdmin, FinanceController.updateExpense);
+
+// DELETE /api/finance/expenses/:id - Hapus pengeluaran kas (KHUSUS ADMIN)
+router.delete('/expenses/:id', requireAdmin, FinanceController.deleteExpense);
+
+// ─────────────────────────────────────────────────────────────────────────────
 // GENERAL FINANCE TRANSACTIONS ROUTES
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. GET /api/finance - Daftar transaksi dengan filter (MEMBER dan ADMIN dapat melihat)

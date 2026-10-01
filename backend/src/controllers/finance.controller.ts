@@ -231,4 +231,111 @@ export class FinanceController {
       next(error);
     }
   }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MODULE 12: EXPENSE MANAGEMENT CONTROLLERS
+  // Kategori: kegiatan | konsumsi | perlengkapan | sosial | operasional | lainnya
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * GET /api/finance/expenses
+   * READ: Daftar pengeluaran kas dengan filter kategori/bulan/tahun/pencarian (MEMBER & ADMIN)
+   */
+  static async getExpenses(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const month = req.query.month ? Number(req.query.month) : undefined;
+      const year = req.query.year ? Number(req.query.year) : undefined;
+      const category = req.query.category as string | undefined;
+      const search = req.query.search as string | undefined;
+
+      const expenses = await FinanceService.getExpenses({
+        month,
+        year,
+        category,
+        search,
+      });
+
+      sendSuccess(res, 'Berhasil memuat daftar pengeluaran kas', expenses, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/finance/expenses/:id
+   * READ: Detail pengeluaran kas berdasarkan ID (MEMBER & ADMIN)
+   */
+  static async getExpenseById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const expense = await FinanceService.getExpenseById(id as string);
+      sendSuccess(res, 'Berhasil memuat detail pengeluaran kas', expense, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/finance/expenses
+   * CREATE: Catat pengeluaran kas baru (KHUSUS ADMIN)
+   * Validasi: amount > 0, category, description wajib
+   */
+  static async createExpense(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        throw new AppError('Pengguna tidak terautentikasi.', 401);
+      }
+
+      const { amount, category, description, transactionDate } = req.body;
+      const created = await FinanceService.createExpense({
+        amount: Number(amount),
+        category,
+        description,
+        transactionDate,
+        createdById: userId,
+      });
+
+      sendSuccess(res, 'Pengeluaran kas berhasil dicatat', created, 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * PUT /api/finance/expenses/:id
+   * UPDATE: Perbarui data pengeluaran kas (KHUSUS ADMIN)
+   */
+  static async updateExpense(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { amount, category, description, transactionDate } = req.body;
+
+      const updated = await FinanceService.updateExpense(id as string, {
+        amount: amount !== undefined ? Number(amount) : undefined,
+        category,
+        description,
+        transactionDate,
+      });
+
+      sendSuccess(res, 'Pengeluaran kas berhasil diperbarui', updated, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * DELETE /api/finance/expenses/:id
+   * DELETE: Hapus pengeluaran kas (KHUSUS ADMIN)
+   * Saldo otomatis bertambah kembali setelah pengeluaran dihapus
+   */
+  static async deleteExpense(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const result = await FinanceService.deleteExpense(id as string);
+      sendSuccess(res, 'Pengeluaran kas berhasil dihapus', { id: result.id }, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

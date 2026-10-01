@@ -7,6 +7,7 @@ export interface FinanceFilter {
   year?: number;  // e.g. 2026
   type?: 'INCOME' | 'EXPENSE' | 'ALL';
   source?: string;
+  category?: string;
   search?: string;
 }
 
@@ -15,6 +16,7 @@ export interface CreateTransactionDTO {
   amount: number;
   description: string;
   source?: string;
+  category?: string;
   transactionDate?: string;
   createdById: string;
 }
@@ -24,12 +26,13 @@ export interface UpdateTransactionDTO {
   amount?: number;
   description?: string;
   source?: string;
+  category?: string;
   transactionDate?: string;
 }
 
 export interface CreateIncomeDTO {
   amount: number;
-  source: string; // e.g. 'iuran anggota', 'donasi', 'kegiatan', 'lainnya'
+  source: string; // 'iuran anggota' | 'donasi' | 'kegiatan' | 'lainnya'
   description: string;
   transactionDate?: string;
   createdById: string;
@@ -38,6 +41,22 @@ export interface CreateIncomeDTO {
 export interface UpdateIncomeDTO {
   amount?: number;
   source?: string;
+  description?: string;
+  transactionDate?: string;
+}
+
+// MODULE 12: Expense DTOs
+export interface CreateExpenseDTO {
+  amount: number;
+  category: string; // 'kegiatan' | 'konsumsi' | 'perlengkapan' | 'sosial' | 'operasional' | 'lainnya'
+  description: string;
+  transactionDate?: string;
+  createdById: string;
+}
+
+export interface UpdateExpenseDTO {
+  amount?: number;
+  category?: string;
   description?: string;
   transactionDate?: string;
 }
@@ -114,6 +133,13 @@ export class FinanceService {
       };
     }
 
+    if (filter.category && filter.category !== 'ALL') {
+      where.category = {
+        contains: filter.category.trim(),
+        mode: 'insensitive',
+      };
+    }
+
     if (filter.search && filter.search.trim()) {
       where.OR = [
         {
@@ -124,6 +150,12 @@ export class FinanceService {
         },
         {
           source: {
+            contains: filter.search.trim(),
+            mode: 'insensitive',
+          },
+        },
+        {
+          category: {
             contains: filter.search.trim(),
             mode: 'insensitive',
           },
@@ -173,6 +205,7 @@ export class FinanceService {
       amount: Number(t.amount),
       description: t.description,
       source: t.source || 'Lainnya',
+      category: t.category || 'Lainnya',
       transactionDate: t.transactionDate.toISOString(),
       creatorName: t.createdBy.member?.name || t.createdBy.username,
       createdAt: t.createdAt.toISOString(),
@@ -210,6 +243,7 @@ export class FinanceService {
       amount: Number(transaction.amount),
       description: transaction.description,
       source: transaction.source || 'Lainnya',
+      category: transaction.category || 'Lainnya',
       transactionDate: transaction.transactionDate.toISOString(),
       creatorName: transaction.createdBy.member?.name || transaction.createdBy.username,
       createdAt: transaction.createdAt.toISOString(),
@@ -235,6 +269,7 @@ export class FinanceService {
         amount: data.amount,
         description: data.description.trim(),
         source: data.source ? data.source.trim() : 'Lainnya',
+        category: data.category ? data.category.trim() : 'Lainnya',
         transactionDate: data.transactionDate ? new Date(data.transactionDate) : new Date(),
         createdById: data.createdById,
       },
@@ -254,6 +289,7 @@ export class FinanceService {
       amount: Number(transaction.amount),
       description: transaction.description,
       source: transaction.source || 'Lainnya',
+      category: transaction.category || 'Lainnya',
       transactionDate: transaction.transactionDate.toISOString(),
       creatorName: transaction.createdBy.member?.name || transaction.createdBy.username,
       createdAt: transaction.createdAt.toISOString(),
@@ -280,6 +316,7 @@ export class FinanceService {
         amount: data.amount !== undefined ? data.amount : existing.amount,
         description: data.description !== undefined ? data.description.trim() : existing.description,
         source: data.source !== undefined ? data.source.trim() : existing.source,
+        category: data.category !== undefined ? data.category.trim() : existing.category,
         transactionDate: data.transactionDate ? new Date(data.transactionDate) : existing.transactionDate,
       },
       include: {
@@ -298,6 +335,7 @@ export class FinanceService {
       amount: Number(updated.amount),
       description: updated.description,
       source: updated.source || 'Lainnya',
+      category: updated.category || 'Lainnya',
       transactionDate: updated.transactionDate.toISOString(),
       creatorName: updated.createdBy.member?.name || updated.createdBy.username,
       updatedAt: updated.updatedAt.toISOString(),
@@ -406,6 +444,99 @@ export class FinanceService {
     }
     if (existing.type !== TransactionType.INCOME) {
       throw new AppError('Transaksi ini bukan transaksi pemasukan.', 400);
+    }
+
+    return this.deleteTransaction(id);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MODULE 12: EXPENSE MANAGEMENT METHODS
+  // Kategori: kegiatan | konsumsi | perlengkapan | sosial | operasional | lainnya
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * READ: Get list of expenses with optional category/month/year/search filter
+   */
+  static async getExpenses(filter: Omit<FinanceFilter, 'type'>) {
+    return this.getTransactions({
+      ...filter,
+      type: 'EXPENSE',
+    });
+  }
+
+  /**
+   * READ: Get single expense by ID (validates it is EXPENSE type)
+   */
+  static async getExpenseById(id: string) {
+    const tx = await this.getTransactionById(id);
+    if (tx.type !== TransactionType.EXPENSE) {
+      throw new AppError('Data yang diminta bukan transaksi pengeluaran.', 400);
+    }
+    return tx;
+  }
+
+  /**
+   * CREATE: Record new expense (ADMIN ONLY)
+   * Validasi: amount > 0, category wajib, description wajib
+   */
+  static async createExpense(data: CreateExpenseDTO) {
+    if (data.amount === undefined || data.amount === null || isNaN(data.amount) || data.amount <= 0) {
+      throw new AppError('Jumlah pengeluaran harus lebih besar dari 0.', 400);
+    }
+    if (!data.category || data.category.trim().length === 0) {
+      throw new AppError('Kategori pengeluaran wajib diisi.', 400);
+    }
+    if (!data.description || data.description.trim().length === 0) {
+      throw new AppError('Keterangan pengeluaran wajib diisi.', 400);
+    }
+
+    return this.createTransaction({
+      type: TransactionType.EXPENSE,
+      amount: data.amount,
+      category: data.category.trim(),
+      description: data.description.trim(),
+      transactionDate: data.transactionDate,
+      createdById: data.createdById,
+    });
+  }
+
+  /**
+   * UPDATE: Modify expense (ADMIN ONLY)
+   * Validasi: amount > 0 jika diubah
+   */
+  static async updateExpense(id: string, data: UpdateExpenseDTO) {
+    const existing = await prisma.financeTransaction.findUnique({ where: { id } });
+    if (!existing) {
+      throw new AppError('Data pengeluaran tidak ditemukan.', 404);
+    }
+    if (existing.type !== TransactionType.EXPENSE) {
+      throw new AppError('Transaksi ini bukan transaksi pengeluaran.', 400);
+    }
+
+    if (data.amount !== undefined && (isNaN(data.amount) || data.amount <= 0)) {
+      throw new AppError('Jumlah pengeluaran harus lebih besar dari 0.', 400);
+    }
+
+    return this.updateTransaction(id, {
+      type: TransactionType.EXPENSE,
+      amount: data.amount,
+      category: data.category,
+      description: data.description,
+      transactionDate: data.transactionDate,
+    });
+  }
+
+  /**
+   * DELETE: Remove expense (ADMIN ONLY)
+   * Saldo otomatis bertambah kembali setelah pengeluaran dihapus
+   */
+  static async deleteExpense(id: string) {
+    const existing = await prisma.financeTransaction.findUnique({ where: { id } });
+    if (!existing) {
+      throw new AppError('Data pengeluaran tidak ditemukan.', 404);
+    }
+    if (existing.type !== TransactionType.EXPENSE) {
+      throw new AppError('Transaksi ini bukan transaksi pengeluaran.', 400);
     }
 
     return this.deleteTransaction(id);
