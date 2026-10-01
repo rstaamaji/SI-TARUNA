@@ -13,8 +13,10 @@ export class FinanceController {
     try {
       const month = req.query.month ? Number(req.query.month) : undefined;
       const year = req.query.year ? Number(req.query.year) : undefined;
+      const startDate = req.query.startDate as string | undefined;
+      const endDate = req.query.endDate as string | undefined;
 
-      const summary = await FinanceService.getSummary({ month, year });
+      const summary = await FinanceService.getSummary({ month, year, startDate, endDate });
       sendSuccess(res, 'Berhasil memuat ringkasan overview keuangan', summary, 200);
     } catch (error) {
       next(error);
@@ -23,13 +25,15 @@ export class FinanceController {
 
   /**
    * GET /api/finance
-   * Daftar transaksi kas dengan filter bulan, tahun, dan jenis transaksi
+   * Daftar transaksi kas dengan filter bulan, tahun, rentang tanggal, dan jenis transaksi
    * Dapat diakses oleh MEMBER dan ADMIN
    */
   static async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const month = req.query.month ? Number(req.query.month) : undefined;
       const year = req.query.year ? Number(req.query.year) : undefined;
+      const startDate = req.query.startDate as string | undefined;
+      const endDate = req.query.endDate as string | undefined;
       const type = (req.query.type as 'INCOME' | 'EXPENSE' | 'ALL') || 'ALL';
       const source = req.query.source as string | undefined;
       const search = req.query.search as string | undefined;
@@ -37,6 +41,8 @@ export class FinanceController {
       const transactions = await FinanceService.getTransactions({
         month,
         year,
+        startDate,
+        endDate,
         type,
         source,
         search,
@@ -338,4 +344,67 @@ export class FinanceController {
       next(error);
     }
   }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MODULE 14: FINANCIAL REPORTS CONTROLLERS
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * GET /api/finance/reports
+   * READ: Laporan keuangan komprehensif (MEMBER & ADMIN)
+   * Filter: startDate, endDate, month, year, type
+   */
+  static async getReport(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const month = req.query.month ? Number(req.query.month) : undefined;
+      const year = req.query.year ? Number(req.query.year) : undefined;
+      const startDate = req.query.startDate as string | undefined;
+      const endDate = req.query.endDate as string | undefined;
+      const type = (req.query.type as 'INCOME' | 'EXPENSE' | 'ALL') || 'ALL';
+
+      const report = await FinanceService.getFinancialReport({
+        startDate,
+        endDate,
+        month,
+        year,
+        type,
+      });
+
+      sendSuccess(res, 'Berhasil memuat laporan keuangan', report, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/finance/reports/csv
+   * EXPORT: Download Laporan Keuangan format CSV (MEMBER & ADMIN)
+   */
+  static async exportCSV(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const month = req.query.month ? Number(req.query.month) : undefined;
+      const year = req.query.year ? Number(req.query.year) : undefined;
+      const startDate = req.query.startDate as string | undefined;
+      const endDate = req.query.endDate as string | undefined;
+      const type = (req.query.type as 'INCOME' | 'EXPENSE' | 'ALL') || 'ALL';
+
+      const report = await FinanceService.getFinancialReport({
+        startDate,
+        endDate,
+        month,
+        year,
+        type,
+      });
+
+      const csvData = FinanceService.generateCSV(report);
+      const filename = `Laporan-Keuangan-Setya-Bakti-${Date.now()}.csv`;
+
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.status(200).send(csvData);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
+

@@ -21,6 +21,7 @@ import {
   ChevronRight,
   ShieldCheck,
   Banknote,
+  BarChart3,
 } from 'lucide-react';
 
 export interface SidebarProps {
@@ -61,6 +62,12 @@ export const navigationItems: NavItem[] = [
     name: 'Pengambilan Kas',
     href: '/finance/withdrawal',
     icon: Banknote,
+    badge: null,
+  },
+  {
+    name: 'Laporan Keuangan',
+    href: '/finance/reports',
+    icon: BarChart3,
     badge: null,
   },
   {
