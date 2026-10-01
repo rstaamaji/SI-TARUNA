@@ -10,6 +10,27 @@ router.use(authenticate);
 // 1. GET /api/finance/overview - Summary Cards (MEMBER dan ADMIN dapat melihat)
 router.get('/overview', FinanceController.getOverview);
 
+// ─────────────────────────────────────────────────────────────────────────────
+// MODULE 11: SPECIFIC INCOME ROUTES (/api/finance/incomes)
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/finance/incomes - Daftar pemasukan kas (MEMBER & ADMIN)
+router.get('/incomes', FinanceController.getIncomes);
+
+// GET /api/finance/incomes/:id - Detail pemasukan kas (MEMBER & ADMIN)
+router.get('/incomes/:id', FinanceController.getIncomeById);
+
+// POST /api/finance/incomes - Catat pemasukan kas baru (KHUSUS ADMIN)
+router.post('/incomes', requireAdmin, FinanceController.createIncome);
+
+// PUT /api/finance/incomes/:id - Ubah data pemasukan kas (KHUSUS ADMIN)
+router.put('/incomes/:id', requireAdmin, FinanceController.updateIncome);
+
+// DELETE /api/finance/incomes/:id - Hapus pemasukan kas (KHUSUS ADMIN)
+router.delete('/incomes/:id', requireAdmin, FinanceController.deleteIncome);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GENERAL FINANCE TRANSACTIONS ROUTES
+// ─────────────────────────────────────────────────────────────────────────────
 // 2. GET /api/finance - Daftar transaksi dengan filter (MEMBER dan ADMIN dapat melihat)
 router.get('/', FinanceController.getAll);
 

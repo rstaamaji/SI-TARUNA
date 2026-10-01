@@ -6,6 +6,7 @@ export interface FinanceFilter {
   month?: number; // 1 - 12
   year?: number;  // e.g. 2026
   type?: 'INCOME' | 'EXPENSE' | 'ALL';
+  source?: string;
   search?: string;
 }
 
@@ -13,6 +14,7 @@ export interface CreateTransactionDTO {
   type: TransactionType;
   amount: number;
   description: string;
+  source?: string;
   transactionDate?: string;
   createdById: string;
 }
@@ -20,6 +22,22 @@ export interface CreateTransactionDTO {
 export interface UpdateTransactionDTO {
   type?: TransactionType;
   amount?: number;
+  description?: string;
+  source?: string;
+  transactionDate?: string;
+}
+
+export interface CreateIncomeDTO {
+  amount: number;
+  source: string; // e.g. 'iuran anggota', 'donasi', 'kegiatan', 'lainnya'
+  description: string;
+  transactionDate?: string;
+  createdById: string;
+}
+
+export interface UpdateIncomeDTO {
+  amount?: number;
+  source?: string;
   description?: string;
   transactionDate?: string;
 }
@@ -89,11 +107,28 @@ export class FinanceService {
       where.type = filter.type as TransactionType;
     }
 
-    if (filter.search && filter.search.trim()) {
-      where.description = {
-        contains: filter.search.trim(),
+    if (filter.source && filter.source !== 'ALL') {
+      where.source = {
+        contains: filter.source.trim(),
         mode: 'insensitive',
       };
+    }
+
+    if (filter.search && filter.search.trim()) {
+      where.OR = [
+        {
+          description: {
+            contains: filter.search.trim(),
+            mode: 'insensitive',
+          },
+        },
+        {
+          source: {
+            contains: filter.search.trim(),
+            mode: 'insensitive',
+          },
+        },
+      ];
     }
 
     // Date range filtering by month and year
@@ -137,6 +172,7 @@ export class FinanceService {
       type: t.type, // INCOME / EXPENSE
       amount: Number(t.amount),
       description: t.description,
+      source: t.source || 'Lainnya',
       transactionDate: t.transactionDate.toISOString(),
       creatorName: t.createdBy.member?.name || t.createdBy.username,
       createdAt: t.createdAt.toISOString(),
@@ -173,6 +209,7 @@ export class FinanceService {
       type: transaction.type,
       amount: Number(transaction.amount),
       description: transaction.description,
+      source: transaction.source || 'Lainnya',
       transactionDate: transaction.transactionDate.toISOString(),
       creatorName: transaction.createdBy.member?.name || transaction.createdBy.username,
       createdAt: transaction.createdAt.toISOString(),
@@ -182,13 +219,14 @@ export class FinanceService {
 
   /**
    * Create new finance transaction (ADMIN ONLY)
+   * Validasi jumlah harus lebih besar dari 0
    */
   static async createTransaction(data: CreateTransactionDTO) {
     if (!data.description || data.description.trim().length === 0) {
       throw new AppError('Keterangan transaksi wajib diisi.', 400);
     }
-    if (!data.amount || data.amount <= 0) {
-      throw new AppError('Nominal transaksi harus lebih besar dari 0.', 400);
+    if (data.amount === undefined || data.amount === null || isNaN(data.amount) || data.amount <= 0) {
+      throw new AppError('Jumlah transaksi harus lebih besar dari 0.', 400);
     }
 
     const transaction = await prisma.financeTransaction.create({
@@ -196,6 +234,7 @@ export class FinanceService {
         type: data.type,
         amount: data.amount,
         description: data.description.trim(),
+        source: data.source ? data.source.trim() : 'Lainnya',
         transactionDate: data.transactionDate ? new Date(data.transactionDate) : new Date(),
         createdById: data.createdById,
       },
@@ -214,6 +253,7 @@ export class FinanceService {
       type: transaction.type,
       amount: Number(transaction.amount),
       description: transaction.description,
+      source: transaction.source || 'Lainnya',
       transactionDate: transaction.transactionDate.toISOString(),
       creatorName: transaction.createdBy.member?.name || transaction.createdBy.username,
       createdAt: transaction.createdAt.toISOString(),
@@ -229,8 +269,8 @@ export class FinanceService {
       throw new AppError('Transaksi kas tidak ditemukan.', 404);
     }
 
-    if (data.amount !== undefined && data.amount <= 0) {
-      throw new AppError('Nominal transaksi harus lebih besar dari 0.', 400);
+    if (data.amount !== undefined && (isNaN(data.amount) || data.amount <= 0)) {
+      throw new AppError('Jumlah transaksi harus lebih besar dari 0.', 400);
     }
 
     const updated = await prisma.financeTransaction.update({
@@ -239,6 +279,7 @@ export class FinanceService {
         type: data.type !== undefined ? data.type : existing.type,
         amount: data.amount !== undefined ? data.amount : existing.amount,
         description: data.description !== undefined ? data.description.trim() : existing.description,
+        source: data.source !== undefined ? data.source.trim() : existing.source,
         transactionDate: data.transactionDate ? new Date(data.transactionDate) : existing.transactionDate,
       },
       include: {
@@ -256,6 +297,7 @@ export class FinanceService {
       type: updated.type,
       amount: Number(updated.amount),
       description: updated.description,
+      source: updated.source || 'Lainnya',
       transactionDate: updated.transactionDate.toISOString(),
       creatorName: updated.createdBy.member?.name || updated.createdBy.username,
       updatedAt: updated.updatedAt.toISOString(),
@@ -276,5 +318,96 @@ export class FinanceService {
       id,
       message: 'Transaksi kas berhasil dihapus.',
     };
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MODULE 11: SPECIFIC INCOME MANAGEMENT METHODS
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * READ: Get list of incomes only
+   */
+  static async getIncomes(filter: Omit<FinanceFilter, 'type'>) {
+    return this.getTransactions({
+      ...filter,
+      type: 'INCOME',
+    });
+  }
+
+  /**
+   * READ: Get single income by ID
+   */
+  static async getIncomeById(id: string) {
+    const tx = await this.getTransactionById(id);
+    if (tx.type !== TransactionType.INCOME) {
+      throw new AppError('Data yang diminta bukan transaksi pemasukan.', 400);
+    }
+    return tx;
+  }
+
+  /**
+   * CREATE: Record new income (ADMIN ONLY)
+   * Validasi jumlah harus lebih besar dari 0
+   */
+  static async createIncome(data: CreateIncomeDTO) {
+    if (data.amount === undefined || data.amount === null || isNaN(data.amount) || data.amount <= 0) {
+      throw new AppError('Jumlah pemasukan harus lebih besar dari 0.', 400);
+    }
+    if (!data.source || data.source.trim().length === 0) {
+      throw new AppError('Sumber pemasukan wajib diisi.', 400);
+    }
+    if (!data.description || data.description.trim().length === 0) {
+      throw new AppError('Keterangan pemasukan wajib diisi.', 400);
+    }
+
+    return this.createTransaction({
+      type: TransactionType.INCOME,
+      amount: data.amount,
+      source: data.source.trim(),
+      description: data.description.trim(),
+      transactionDate: data.transactionDate,
+      createdById: data.createdById,
+    });
+  }
+
+  /**
+   * UPDATE: Modify income (ADMIN ONLY)
+   * Validasi jumlah harus lebih besar dari 0
+   */
+  static async updateIncome(id: string, data: UpdateIncomeDTO) {
+    const existing = await prisma.financeTransaction.findUnique({ where: { id } });
+    if (!existing) {
+      throw new AppError('Data pemasukan tidak ditemukan.', 404);
+    }
+    if (existing.type !== TransactionType.INCOME) {
+      throw new AppError('Transaksi ini bukan transaksi pemasukan.', 400);
+    }
+
+    if (data.amount !== undefined && (isNaN(data.amount) || data.amount <= 0)) {
+      throw new AppError('Jumlah pemasukan harus lebih besar dari 0.', 400);
+    }
+
+    return this.updateTransaction(id, {
+      type: TransactionType.INCOME,
+      amount: data.amount,
+      source: data.source,
+      description: data.description,
+      transactionDate: data.transactionDate,
+    });
+  }
+
+  /**
+   * DELETE: Remove income (ADMIN ONLY)
+   */
+  static async deleteIncome(id: string) {
+    const existing = await prisma.financeTransaction.findUnique({ where: { id } });
+    if (!existing) {
+      throw new AppError('Data pemasukan tidak ditemukan.', 404);
+    }
+    if (existing.type !== TransactionType.INCOME) {
+      throw new AppError('Transaksi ini bukan transaksi pemasukan.', 400);
+    }
+
+    return this.deleteTransaction(id);
   }
 }

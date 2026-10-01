@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Wallet,
   ArrowDownLeft,
@@ -18,6 +18,11 @@ import {
   Scale,
   X,
   AlertTriangle,
+  Coins,
+  HeartHandshake,
+  Sparkles,
+  Layers,
+  TrendingUp,
 } from 'lucide-react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
@@ -49,6 +54,7 @@ export interface FinanceTransactionItem {
   id: string;
   type: 'INCOME' | 'EXPENSE';
   amount: number;
+  source?: string;
   description: string;
   transactionDate: string;
   creatorName: string;
@@ -83,6 +89,21 @@ const TYPE_OPTIONS = [
   { value: 'EXPENSE', label: 'PENGELUARAN' },
 ];
 
+const SOURCE_OPTIONS = [
+  { value: '', label: 'Semua Sumber Pemasukan' },
+  { value: 'iuran anggota', label: 'Iuran Anggota' },
+  { value: 'donasi', label: 'Donasi' },
+  { value: 'kegiatan', label: 'Kegiatan' },
+  { value: 'lainnya', label: 'Lainnya' },
+];
+
+const PRESET_SOURCES = [
+  { value: 'Iuran Anggota', label: 'Iuran Anggota', icon: Coins, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800' },
+  { value: 'Donasi', label: 'Donasi', icon: HeartHandshake, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800' },
+  { value: 'Kegiatan', label: 'Kegiatan', icon: Sparkles, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800' },
+  { value: 'Lainnya', label: 'Lainnya', icon: Layers, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800' },
+];
+
 const formatRupiah = (value: number): string => {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -106,10 +127,14 @@ export default function FinanceOverviewPage() {
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Active Tab: ALL | INCOME | EXPENSE
+  const [activeTab, setActiveTab] = useState<'ALL' | 'INCOME' | 'EXPENSE'>('ALL');
+
   // Filter States
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [selectedYear, setSelectedYear] = useState<string>('2026');
   const [selectedType, setSelectedType] = useState<string>('ALL');
+  const [selectedSource, setSelectedSource] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Data States
@@ -132,12 +157,13 @@ export default function FinanceOverviewPage() {
 
   // Form State
   const [formType, setFormType] = useState<'INCOME' | 'EXPENSE'>('INCOME');
+  const [formSource, setFormSource] = useState<string>('Iuran Anggota');
   const [formAmount, setFormAmount] = useState<string>('');
   const [formDescription, setFormDescription] = useState<string>('');
   const [formDate, setFormDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 1. Load User Session
+  // 1. Load User Session & URL Tab
   useEffect(() => {
     try {
       const stored = localStorage.getItem('si_taruna_user');
@@ -152,12 +178,33 @@ export default function FinanceOverviewPage() {
     } catch {
       // Default to MEMBER if fails
     }
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab === 'income') {
+        setActiveTab('INCOME');
+      } else if (tab === 'expense') {
+        setActiveTab('EXPENSE');
+      }
+    }
   }, []);
 
   const getAuthToken = (): string | null => {
     if (typeof window === 'undefined') return null;
     return localStorage.getItem('si_taruna_token');
   };
+
+  // Sync activeTab with selectedType filter
+  useEffect(() => {
+    if (activeTab === 'ALL') {
+      setSelectedType('ALL');
+    } else if (activeTab === 'INCOME') {
+      setSelectedType('INCOME');
+    } else if (activeTab === 'EXPENSE') {
+      setSelectedType('EXPENSE');
+    }
+  }, [activeTab]);
 
   // 2. Fetch Finance Summary & Transactions
   const fetchFinanceData = useCallback(async (isManualRefresh = false) => {
@@ -174,6 +221,7 @@ export default function FinanceOverviewPage() {
       if (selectedMonth) params.append('month', selectedMonth);
       if (selectedYear) params.append('year', selectedYear);
       if (selectedType && selectedType !== 'ALL') params.append('type', selectedType);
+      if (selectedSource && selectedSource !== 'ALL') params.append('source', selectedSource);
       if (searchQuery.trim()) params.append('search', searchQuery.trim());
 
       // Fetch summary
@@ -199,13 +247,12 @@ export default function FinanceOverviewPage() {
         toast.success('Data keuangan berhasil diperbarui.');
       }
     } catch {
-      // Fallback mock if server unreachable
       toast.error('Gagal mengambil data dari server, menampilkan data lokal.');
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [selectedMonth, selectedYear, selectedType, searchQuery, toast]);
+  }, [selectedMonth, selectedYear, selectedType, selectedSource, searchQuery, toast]);
 
   useEffect(() => {
     fetchFinanceData();
@@ -215,13 +262,15 @@ export default function FinanceOverviewPage() {
   const handleResetFilter = () => {
     setSelectedMonth('');
     setSelectedYear('');
-    setSelectedType('ALL');
+    setSelectedType(activeTab === 'ALL' ? 'ALL' : activeTab);
+    setSelectedSource('');
     setSearchQuery('');
   };
 
   // 3. Admin CRUD Handlers
-  const handleOpenCreateModal = () => {
-    setFormType('INCOME');
+  const handleOpenCreateModal = (defaultType: 'INCOME' | 'EXPENSE' = 'INCOME') => {
+    setFormType(defaultType);
+    setFormSource('Iuran Anggota');
     setFormAmount('');
     setFormDescription('');
     setFormDate(new Date().toISOString().split('T')[0]);
@@ -231,6 +280,7 @@ export default function FinanceOverviewPage() {
   const handleOpenEditModal = (item: FinanceTransactionItem) => {
     setActiveTransaction(item);
     setFormType(item.type);
+    setFormSource(item.source || 'Lainnya');
     setFormAmount(String(item.amount));
     setFormDescription(item.description);
     setFormDate(item.transactionDate.split('T')[0]);
@@ -250,30 +300,48 @@ export default function FinanceOverviewPage() {
     }
     const numAmount = Number(formAmount);
     if (isNaN(numAmount) || numAmount <= 0) {
-      toast.error('Nominal harus lebih besar dari 0.');
+      toast.error('Jumlah transaksi harus lebih besar dari 0.');
       return;
     }
 
     setIsSubmitting(true);
     try {
       const token = getAuthToken();
-      const res = await fetch('http://localhost:5000/api/finance', {
+      const endpoint = formType === 'INCOME'
+        ? 'http://localhost:5000/api/finance/incomes'
+        : 'http://localhost:5000/api/finance';
+
+      const bodyPayload = formType === 'INCOME'
+        ? {
+            amount: numAmount,
+            source: formSource.trim() || 'Lainnya',
+            description: formDescription.trim(),
+            transactionDate: new Date(formDate).toISOString(),
+          }
+        : {
+            type: formType,
+            amount: numAmount,
+            source: formSource.trim() || 'Lainnya',
+            description: formDescription.trim(),
+            transactionDate: new Date(formDate).toISOString(),
+          };
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({
-          type: formType,
-          amount: numAmount,
-          description: formDescription.trim(),
-          transactionDate: new Date(formDate).toISOString(),
-        }),
+        body: JSON.stringify(bodyPayload),
       });
 
       const json = await res.json();
       if (res.ok && json.success) {
-        toast.success('Transaksi kas berhasil ditambahkan!');
+        toast.success(
+          formType === 'INCOME'
+            ? 'Pemasukan kas berhasil dicatat! Saldo otomatis diperbarui.'
+            : 'Transaksi kas berhasil dicatat!'
+        );
         setIsCreateModalOpen(false);
         fetchFinanceData();
       } else {
@@ -296,14 +364,18 @@ export default function FinanceOverviewPage() {
     }
     const numAmount = Number(formAmount);
     if (isNaN(numAmount) || numAmount <= 0) {
-      toast.error('Nominal harus lebih besar dari 0.');
+      toast.error('Jumlah transaksi harus lebih besar dari 0.');
       return;
     }
 
     setIsSubmitting(true);
     try {
       const token = getAuthToken();
-      const res = await fetch(`http://localhost:5000/api/finance/${activeTransaction.id}`, {
+      const endpoint = activeTransaction.type === 'INCOME' && formType === 'INCOME'
+        ? `http://localhost:5000/api/finance/incomes/${activeTransaction.id}`
+        : `http://localhost:5000/api/finance/${activeTransaction.id}`;
+
+      const res = await fetch(endpoint, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -312,6 +384,7 @@ export default function FinanceOverviewPage() {
         body: JSON.stringify({
           type: formType,
           amount: numAmount,
+          source: formSource.trim() || 'Lainnya',
           description: formDescription.trim(),
           transactionDate: new Date(formDate).toISOString(),
         }),
@@ -319,7 +392,7 @@ export default function FinanceOverviewPage() {
 
       const json = await res.json();
       if (res.ok && json.success) {
-        toast.success('Transaksi kas berhasil diperbarui!');
+        toast.success('Transaksi kas berhasil diperbarui! Saldo otomatis dikalkulasi ulang.');
         setIsEditModalOpen(false);
         setActiveTransaction(null);
         fetchFinanceData();
@@ -339,7 +412,11 @@ export default function FinanceOverviewPage() {
     setIsSubmitting(true);
     try {
       const token = getAuthToken();
-      const res = await fetch(`http://localhost:5000/api/finance/${activeTransaction.id}`, {
+      const endpoint = activeTransaction.type === 'INCOME'
+        ? `http://localhost:5000/api/finance/incomes/${activeTransaction.id}`
+        : `http://localhost:5000/api/finance/${activeTransaction.id}`;
+
+      const res = await fetch(endpoint, {
         method: 'DELETE',
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -348,7 +425,7 @@ export default function FinanceOverviewPage() {
 
       const json = await res.json();
       if (res.ok && json.success) {
-        toast.success('Transaksi kas berhasil dihapus!');
+        toast.success('Transaksi kas berhasil dihapus! Saldo otomatis dikalkulasi ulang.');
         setIsDeleteModalOpen(false);
         setActiveTransaction(null);
         fetchFinanceData();
@@ -363,6 +440,63 @@ export default function FinanceOverviewPage() {
   };
 
   const isAdmin = currentUser.role === 'ADMIN';
+
+  // Statistics for Income tab
+  const incomeStats = useMemo(() => {
+    const incomeItems = transactions.filter((t) => t.type === 'INCOME');
+    const bySource: Record<string, number> = {
+      'Iuran Anggota': 0,
+      'Donasi': 0,
+      'Kegiatan': 0,
+      'Lainnya': 0,
+    };
+
+    incomeItems.forEach((item) => {
+      const src = item.source || 'Lainnya';
+      const key = Object.keys(bySource).find((k) => k.toLowerCase() === src.toLowerCase()) || 'Lainnya';
+      bySource[key] = (bySource[key] || 0) + item.amount;
+    });
+
+    return {
+      totalCount: incomeItems.length,
+      bySource,
+    };
+  }, [transactions]);
+
+  // Helper badge color for source
+  const getSourceBadge = (source?: string) => {
+    const s = (source || 'Lainnya').toLowerCase();
+    if (s.includes('iuran')) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
+          <Coins className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+          Iuran Anggota
+        </span>
+      );
+    }
+    if (s.includes('donasi')) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80">
+          <HeartHandshake className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+          Donasi
+        </span>
+      );
+    }
+    if (s.includes('kegiatan')) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800/80">
+          <Sparkles className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+          Kegiatan
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-300 border border-gray-200 dark:border-slate-700">
+        <Layers className="w-3 h-3 text-gray-500 dark:text-slate-400" />
+        {source || 'Lainnya'}
+      </span>
+    );
+  };
 
   return (
     <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
@@ -392,27 +526,27 @@ export default function FinanceOverviewPage() {
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                  Transparansi Keuangan Organisasi
+                  Transparansi Keuangan &amp; Manajemen Kas
                 </span>
                 <Badge variant={isAdmin ? 'accent' : 'primary'} size="sm">
                   {isAdmin ? (
                     <>
                       <ShieldCheck className="w-3 h-3 mr-1 inline" />
-                      ADMINISTRATOR (Kelola Data)
+                      ADMINISTRATOR (Kelola Pemasukan &amp; Pengeluaran)
                     </>
                   ) : (
                     <>
                       <User className="w-3 h-3 mr-1 inline" />
-                      MEMBER (Akses Baca Saja)
+                      MEMBER (Akses Transparansi Kas)
                     </>
                   )}
                 </Badge>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
-                Laporan Kas &amp; Keuangan
+                Laporan Kas &amp; Pemasukan
               </h1>
               <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
-                Laporan transparan penerimaan iuran, kas masuk, dan pengeluaran kegiatan Dusun Tuk Uluh.
+                Pencatatan sumber kas masuk (iuran anggota, donasi, kegiatan), belanja kas, dan transparansi saldo terkini.
               </p>
             </div>
 
@@ -428,14 +562,25 @@ export default function FinanceOverviewPage() {
               </Button>
 
               {isAdmin && (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  leftIcon={<Plus className="w-4 h-4" />}
-                  onClick={handleOpenCreateModal}
-                >
-                  Tambah Transaksi
-                </Button>
+                <>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                    leftIcon={<Plus className="w-4 h-4" />}
+                    onClick={() => handleOpenCreateModal('INCOME')}
+                  >
+                    Catat Pemasukan
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    leftIcon={<Plus className="w-4 h-4" />}
+                    onClick={() => handleOpenCreateModal('EXPENSE')}
+                  >
+                    Tambah Transaksi Lain
+                  </Button>
+                </>
               )}
             </div>
           </div>
@@ -485,7 +630,7 @@ export default function FinanceOverviewPage() {
                 </div>
                 <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                   <ArrowDownLeft className="w-3.5 h-3.5" />
-                  <span>Iuran, donasi &amp; jimpitan</span>
+                  <span>Iuran, donasi, kegiatan &amp; lainnya</span>
                 </div>
               </CardContent>
             </Card>
@@ -506,7 +651,7 @@ export default function FinanceOverviewPage() {
                 </div>
                 <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-gray-500 dark:text-slate-400">
                   <ArrowUpRight className="w-3.5 h-3.5 text-taruna-red-500" />
-                  <span>Belanja &amp; operasional kegiatan</span>
+                  <span>Belanja operasional kegiatan</span>
                 </div>
               </CardContent>
             </Card>
@@ -526,19 +671,115 @@ export default function FinanceOverviewPage() {
                   {formatRupiah(summary.saldoSaatIni)}
                 </div>
                 <div className="mt-2 text-[11px] font-mono font-medium text-taruna-yellow-800 dark:text-taruna-yellow-300 bg-taruna-yellow-50/80 dark:bg-slate-800/80 px-2 py-1 rounded-lg border border-taruna-yellow-200/60 dark:border-slate-700">
-                  saldo = pemasukan - pengeluaran
+                  saldo = total pemasukan - total pengeluaran
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* ─────────────────────────────────────────────────────────────────────────────
-              3. FILTER BAR (BULAN, TAHUN, JENIS TRANSAKSI, PENCARIAN)
+              3. TAB NAVIGATION (SEMUA TRANSAKSI | PEMASUKAN KAS | PENGELUARAN)
+          ───────────────────────────────────────────────────────────────────────────── */}
+          <div className="flex items-center justify-between border-b border-taruna-border dark:border-slate-800 pb-2 flex-wrap gap-3">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setActiveTab('ALL')}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'ALL'
+                    ? 'bg-taruna-dark dark:bg-slate-100 text-white dark:text-slate-900 shadow-sm'
+                    : 'text-gray-500 hover:text-taruna-dark dark:text-slate-400 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800'
+                }`}
+              >
+                Semua Transaksi
+              </button>
+              <button
+                onClick={() => setActiveTab('INCOME')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'INCOME'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-gray-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800'
+                }`}
+              >
+                <ArrowDownLeft className="w-4 h-4" />
+                Pemasukan Kas (Income)
+                <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'INCOME' ? 'bg-emerald-700 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300'}`}>
+                  {incomeStats.totalCount}
+                </span>
+              </button>
+              <button
+                onClick={() => setActiveTab('EXPENSE')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'EXPENSE'
+                    ? 'bg-taruna-red-600 text-white shadow-sm'
+                    : 'text-gray-500 hover:text-taruna-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-slate-800'
+                }`}
+              >
+                <ArrowUpRight className="w-4 h-4" />
+                Pengeluaran Kas
+              </button>
+            </div>
+
+            {activeTab === 'INCOME' && isAdmin && (
+              <Button
+                variant="primary"
+                size="sm"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                leftIcon={<Plus className="w-4 h-4" />}
+                onClick={() => handleOpenCreateModal('INCOME')}
+              >
+                Catat Pemasukan Baru
+              </Button>
+            )}
+          </div>
+
+          {/* ─────────────────────────────────────────────────────────────────────────────
+              4. BREAKDOWN SUMBER PEMASUKAN (Khusus Tab Pemasukan atau saat ada transaksi)
+          ───────────────────────────────────────────────────────────────────────────── */}
+          {activeTab === 'INCOME' && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+              {PRESET_SOURCES.map((s) => {
+                const IconComponent = s.icon;
+                const totalSrc = incomeStats.bySource[s.value] || 0;
+                const isSelected = selectedSource.toLowerCase() === s.value.toLowerCase();
+
+                return (
+                  <button
+                    key={s.value}
+                    onClick={() => setSelectedSource(isSelected ? '' : s.value)}
+                    className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all relative overflow-hidden group ${
+                      isSelected
+                        ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-50/50 dark:bg-emerald-950/20'
+                        : 'border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-gray-300 dark:hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-gray-500 dark:text-slate-400">
+                        {s.label}
+                      </span>
+                      <div className={`p-1.5 rounded-lg border ${s.color}`}>
+                        <IconComponent className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+                    <div className="text-base sm:text-lg font-black text-taruna-dark dark:text-white">
+                      {formatRupiah(totalSrc)}
+                    </div>
+                    <div className="text-[11px] text-gray-400 mt-1 flex items-center gap-1">
+                      <TrendingUp className="w-3 h-3 text-emerald-500" />
+                      {isSelected ? 'Filter Aktif (Klik batal)' : 'Klik untuk filter'}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ─────────────────────────────────────────────────────────────────────────────
+              5. FILTER BAR (BULAN, TAHUN, JENIS TRANSAKSI, SUMBER, PENCARIAN)
           ───────────────────────────────────────────────────────────────────────────── */}
           <Card>
             <CardContent className="p-4 sm:p-5">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 flex-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 flex-1">
                   {/* Filter Bulan */}
                   <div>
                     <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
@@ -563,15 +804,29 @@ export default function FinanceOverviewPage() {
                     />
                   </div>
 
-                  {/* Filter Jenis Transaksi */}
-                  <div>
+                  {/* Filter Jenis Transaksi (Hanya jika di tab ALL) */}
+                  {activeTab === 'ALL' ? (
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
+                        Jenis Transaksi:
+                      </label>
+                      <Select
+                        value={selectedType}
+                        onChange={(e) => setSelectedType(e.target.value)}
+                        options={TYPE_OPTIONS}
+                      />
+                    </div>
+                  ) : null}
+
+                  {/* Filter Sumber Pemasukan */}
+                  <div className={activeTab !== 'ALL' ? 'sm:col-span-2' : ''}>
                     <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
-                      Jenis Transaksi:
+                      Sumber Pemasukan:
                     </label>
                     <Select
-                      value={selectedType}
-                      onChange={(e) => setSelectedType(e.target.value)}
-                      options={TYPE_OPTIONS}
+                      value={selectedSource}
+                      onChange={(e) => setSelectedSource(e.target.value)}
+                      options={SOURCE_OPTIONS}
                     />
                   </div>
                 </div>
@@ -580,17 +835,17 @@ export default function FinanceOverviewPage() {
                 <div className="flex items-end gap-2 flex-wrap sm:flex-nowrap">
                   <div className="w-full sm:w-64">
                     <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
-                      Cari Keterangan:
+                      Cari Keterangan / Sumber:
                     </label>
                     <Input
-                      placeholder="Cari transaksi..."
+                      placeholder="Cari kata kunci..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       leftIcon={<Search className="w-4 h-4 text-gray-400" />}
                     />
                   </div>
 
-                  {(selectedMonth || selectedYear || selectedType !== 'ALL' || searchQuery) && (
+                  {(selectedMonth || selectedYear || (activeTab === 'ALL' && selectedType !== 'ALL') || selectedSource || searchQuery) && (
                     <Button
                       variant="secondary"
                       size="sm"
@@ -607,20 +862,29 @@ export default function FinanceOverviewPage() {
           </Card>
 
           {/* ─────────────────────────────────────────────────────────────────────────────
-              4. TABEL TRANSAKSI KEUANGAN
+              6. TABEL TRANSAKSI KEUANGAN & PEMASUKAN
               Kolom:
               - Tanggal
               - Jenis (PEMASUKAN / PENGELUARAN)
+              - Sumber Pemasukan (iuran anggota, donasi, kegiatan, lainnya)
               - Keterangan
-              - Jumlah
-              - Aksi (Admin Only)
+              - Jumlah (> 0)
+              - Aksi (Admin Only: Edit & Delete)
           ───────────────────────────────────────────────────────────────────────────── */}
           <Card>
             <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
               <div>
-                <CardTitle>Buku Kas &amp; Riwayat Transaksi</CardTitle>
+                <CardTitle>
+                  {activeTab === 'INCOME'
+                    ? 'Buku Pemasukan Kas (Income Records)'
+                    : activeTab === 'EXPENSE'
+                    ? 'Buku Pengeluaran Kas'
+                    : 'Buku Kas & Riwayat Transaksi'}
+                </CardTitle>
                 <CardDescription>
-                  Daftar transaksi kas masuk dan keluar Karang Taruna Setya Bakti.
+                  {activeTab === 'INCOME'
+                    ? 'Daftar seluruh penerimaan kas masuk dari iuran, donasi, kegiatan, dan sumber lainnya.'
+                    : 'Daftar transaksi kas masuk dan keluar Karang Taruna Setya Bakti.'}
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
@@ -635,7 +899,8 @@ export default function FinanceOverviewPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-36">Tanggal</TableHead>
-                      <TableHead className="w-36">Jenis</TableHead>
+                      <TableHead className="w-32">Jenis</TableHead>
+                      <TableHead className="w-40">Sumber</TableHead>
                       <TableHead>Keterangan</TableHead>
                       <TableHead className="text-right w-44">Jumlah</TableHead>
                       {isAdmin && <TableHead className="text-center w-28">Aksi</TableHead>}
@@ -644,7 +909,7 @@ export default function FinanceOverviewPage() {
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
-                        <TableCell colSpan={isAdmin ? 5 : 4} className="text-center py-12 text-gray-400">
+                        <TableCell colSpan={isAdmin ? 6 : 5} className="text-center py-12 text-gray-400">
                           <div className="flex flex-col items-center justify-center gap-2">
                             <RefreshCw className="w-5 h-5 animate-spin text-taruna-yellow-600" />
                             <span className="text-xs">Memuat data transaksi kas...</span>
@@ -653,14 +918,14 @@ export default function FinanceOverviewPage() {
                       </TableRow>
                     ) : transactions.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={isAdmin ? 5 : 4} className="text-center py-12 text-gray-400">
+                        <TableCell colSpan={isAdmin ? 6 : 5} className="text-center py-12 text-gray-400">
                           <div className="flex flex-col items-center justify-center gap-1.5">
                             <Info className="w-6 h-6 text-gray-400" />
                             <span className="text-sm font-semibold text-gray-600 dark:text-slate-300">
-                              Tidak ada transaksi ditemukan
+                              Tidak ada catatan transaksi ditemukan
                             </span>
                             <span className="text-xs text-gray-400">
-                              Coba ubah filter bulan, tahun, atau kata kunci pencarian.
+                              Coba ubah filter bulan, tahun, sumber pemasukan, atau kata kunci pencarian.
                             </span>
                           </div>
                         </TableCell>
@@ -685,13 +950,24 @@ export default function FinanceOverviewPage() {
                             <Badge
                               variant={t.type === 'INCOME' ? 'success' : 'accent'}
                               size="sm"
-                              className="font-bold uppercase tracking-wider"
+                              className="font-bold uppercase tracking-wider text-[10px]"
                             >
                               {t.type === 'INCOME' ? 'PEMASUKAN' : 'PENGELUARAN'}
                             </Badge>
                           </TableCell>
 
-                          {/* 3. Keterangan */}
+                          {/* 3. Sumber Pemasukan */}
+                          <TableCell className="whitespace-nowrap">
+                            {t.type === 'INCOME' ? (
+                              getSourceBadge(t.source)
+                            ) : (
+                              <span className="text-xs text-gray-400 dark:text-slate-500 italic">
+                                Belanja Kas
+                              </span>
+                            )}
+                          </TableCell>
+
+                          {/* 4. Keterangan */}
                           <TableCell>
                             <div className="space-y-0.5">
                               <p className="font-semibold text-sm text-taruna-dark dark:text-white">
@@ -703,7 +979,7 @@ export default function FinanceOverviewPage() {
                             </div>
                           </TableCell>
 
-                          {/* 4. Jumlah */}
+                          {/* 5. Jumlah */}
                           <TableCell
                             className={`text-right font-black text-sm whitespace-nowrap ${
                               t.type === 'INCOME'
@@ -715,7 +991,7 @@ export default function FinanceOverviewPage() {
                             {formatRupiah(t.amount)}
                           </TableCell>
 
-                          {/* 5. Aksi (Hanya untuk ADMIN) */}
+                          {/* 6. Aksi (Hanya untuk ADMIN) */}
                           {isAdmin && (
                             <TableCell className="text-center">
                               <div className="flex items-center justify-center gap-1.5">
@@ -748,14 +1024,18 @@ export default function FinanceOverviewPage() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          MODAL TAMBAH TRANSAKSI KAS (KHUSUS ADMIN)
+          MODAL TAMBAH TRANSAKSI / PEMASUKAN KAS (KHUSUS ADMIN)
       ───────────────────────────────────────────────────────────────────────────── */}
       {isAdmin && (
         <Modal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
-          title="Tambah Transaksi Kas Baru"
-          description="Catat penerimaan kas masuk atau belanja pengeluaran Karang Taruna Setya Bakti."
+          title={formType === 'INCOME' ? 'Catat Pemasukan Kas Baru' : 'Tambah Transaksi Kas Baru'}
+          description={
+            formType === 'INCOME'
+              ? 'Catat penerimaan kas masuk dari iuran anggota, donasi, kegiatan, atau sumber lainnya. Saldo kas akan otomatis bertambah.'
+              : 'Catat belanja atau pengeluaran operasional Karang Taruna Setya Bakti.'
+          }
           footer={
             <>
               <Button
@@ -769,10 +1049,11 @@ export default function FinanceOverviewPage() {
               <Button
                 variant="primary"
                 size="sm"
+                className={formType === 'INCOME' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''}
                 onClick={handleSaveCreate}
                 isLoading={isSubmitting}
               >
-                Simpan Transaksi
+                {formType === 'INCOME' ? 'Simpan Pemasukan' : 'Simpan Transaksi'}
               </Button>
             </>
           }
@@ -792,23 +1073,72 @@ export default function FinanceOverviewPage() {
               />
             </div>
 
-            <Input
-              label="Nominal Transaksi (Rp)"
-              type="number"
-              placeholder="Contoh: 150000"
-              value={formAmount}
-              onChange={(e) => setFormAmount(e.target.value)}
-              required
-            />
+            {/* Sumber Pemasukan (Tampil jika PEMASUKAN) */}
+            {formType === 'INCOME' && (
+              <div>
+                <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-1">
+                  Sumber Pemasukan <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  {PRESET_SOURCES.map((s) => (
+                    <button
+                      key={s.value}
+                      type="button"
+                      onClick={() => setFormSource(s.value)}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold border text-left flex items-center gap-2 transition ${
+                        formSource.toLowerCase() === s.value.toLowerCase()
+                          ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20'
+                          : 'border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 hover:bg-taruna-surface'
+                      }`}
+                    >
+                      <s.icon className="w-3.5 h-3.5 text-emerald-600" />
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+                <Input
+                  placeholder="Atau ketik sumber lainnya..."
+                  value={formSource}
+                  onChange={(e) => setFormSource(e.target.value)}
+                  required
+                />
+              </div>
+            )}
 
+            {/* Jumlah / Nominal (> 0) */}
+            <div>
+              <Input
+                label="Jumlah (Nominal Kas)"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="Contoh: 150000"
+                value={formAmount}
+                onChange={(e) => setFormAmount(e.target.value)}
+                required
+                helperText="* Jumlah harus lebih besar dari 0 (amount > 0)."
+              />
+              {Number(formAmount) > 0 && (
+                <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
+                  Terbilang: {formatRupiah(Number(formAmount))}
+                </p>
+              )}
+            </div>
+
+            {/* Keterangan */}
             <Input
               label="Keterangan / Uraian"
-              placeholder="Contoh: Iuran wajib kas pemuda periode Oktober 2026"
+              placeholder={
+                formType === 'INCOME'
+                  ? 'Contoh: Iuran kas pemuda bulanan RT 02 Dusun Tuk Uluh'
+                  : 'Contoh: Pembelian sound system untuk tirakatan'
+              }
               value={formDescription}
               onChange={(e) => setFormDescription(e.target.value)}
               required
             />
 
+            {/* Tanggal */}
             <Input
               label="Tanggal Transaksi"
               type="date"
@@ -821,7 +1151,7 @@ export default function FinanceOverviewPage() {
       )}
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          MODAL EDIT TRANSAKSI KAS (KHUSUS ADMIN)
+          MODAL EDIT TRANSAKSI / PEMASUKAN KAS (KHUSUS ADMIN)
       ───────────────────────────────────────────────────────────────────────────── */}
       {isAdmin && (
         <Modal
@@ -830,8 +1160,8 @@ export default function FinanceOverviewPage() {
             setIsEditModalOpen(false);
             setActiveTransaction(null);
           }}
-          title="Ubah Transaksi Kas"
-          description="Perbarui informasi catatan keuangan yang telah tersimpan."
+          title={formType === 'INCOME' ? 'Ubah Data Pemasukan Kas' : 'Ubah Transaksi Kas'}
+          description="Perbarui informasi catatan keuangan yang telah tersimpan. Saldo kas akan dihitung ulang secara otomatis."
           footer={
             <>
               <Button
@@ -871,13 +1201,55 @@ export default function FinanceOverviewPage() {
               />
             </div>
 
-            <Input
-              label="Nominal Transaksi (Rp)"
-              type="number"
-              value={formAmount}
-              onChange={(e) => setFormAmount(e.target.value)}
-              required
-            />
+            {/* Sumber Pemasukan */}
+            {formType === 'INCOME' && (
+              <div>
+                <label className="block text-xs font-bold text-gray-600 dark:text-slate-300 mb-1">
+                  Sumber Pemasukan <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                  {PRESET_SOURCES.map((s) => (
+                    <button
+                      key={s.value}
+                      type="button"
+                      onClick={() => setFormSource(s.value)}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold border text-left flex items-center gap-2 transition ${
+                        formSource.toLowerCase() === s.value.toLowerCase()
+                          ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 ring-2 ring-emerald-500/20'
+                          : 'border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 hover:bg-taruna-surface'
+                      }`}
+                    >
+                      <s.icon className="w-3.5 h-3.5 text-emerald-600" />
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+                <Input
+                  value={formSource}
+                  onChange={(e) => setFormSource(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+
+            {/* Nominal / Jumlah */}
+            <div>
+              <Input
+                label="Nominal Transaksi (Rp)"
+                type="number"
+                min="1"
+                step="1"
+                value={formAmount}
+                onChange={(e) => setFormAmount(e.target.value)}
+                required
+                helperText="* Jumlah harus lebih besar dari 0."
+              />
+              {Number(formAmount) > 0 && (
+                <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
+                  Terbilang: {formatRupiah(Number(formAmount))}
+                </p>
+              )}
+            </div>
 
             <Input
               label="Keterangan / Uraian"
@@ -898,7 +1270,7 @@ export default function FinanceOverviewPage() {
       )}
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          MODAL KONFIRMASI HAPUS TRANSAKSI (KHUSUS ADMIN)
+          MODAL KONFIRMASI HAPUS TRANSAKSI / PEMASUKAN (KHUSUS ADMIN)
       ───────────────────────────────────────────────────────────────────────────── */}
       {isAdmin && (
         <Modal
@@ -907,7 +1279,7 @@ export default function FinanceOverviewPage() {
             setIsDeleteModalOpen(false);
             setActiveTransaction(null);
           }}
-          title="Hapus Catatan Transaksi"
+          title={activeTransaction?.type === 'INCOME' ? 'Hapus Catatan Pemasukan' : 'Hapus Catatan Transaksi'}
           description="Apakah Anda yakin ingin menghapus catatan transaksi ini dari pembukuan kas?"
           footer={
             <>
@@ -939,19 +1311,27 @@ export default function FinanceOverviewPage() {
               <div>
                 <p className="font-bold">Peringatan:</p>
                 <p>
-                  Penghapusan transaksi akan langsung memengaruhi perhitungan <strong>TOTAL KAS</strong> dan <strong>SALDO SAAT INI</strong>.
+                  Penghapusan transaksi akan langsung memengaruhi perhitungan <strong>TOTAL KAS</strong> dan <strong>SALDO SAAT INI</strong> (saldo = total pemasukan - total pengeluaran).
                 </p>
               </div>
             </div>
 
             {activeTransaction && (
-              <div className="p-3 rounded-xl bg-taruna-surface dark:bg-slate-800 border border-taruna-border dark:border-slate-700 space-y-1 text-xs">
+              <div className="p-3 rounded-xl bg-taruna-surface dark:bg-slate-800 border border-taruna-border dark:border-slate-700 space-y-1.5 text-xs">
                 <p>
                   <strong className="text-gray-500">Uraian:</strong>{' '}
                   <span className="font-semibold text-taruna-dark dark:text-white">
                     {activeTransaction.description}
                   </span>
                 </p>
+                {activeTransaction.type === 'INCOME' && (
+                  <p>
+                    <strong className="text-gray-500">Sumber Pemasukan:</strong>{' '}
+                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                      {activeTransaction.source || 'Lainnya'}
+                    </span>
+                  </p>
+                )}
                 <p>
                   <strong className="text-gray-500">Nominal:</strong>{' '}
                   <span className="font-black text-taruna-dark dark:text-white">
