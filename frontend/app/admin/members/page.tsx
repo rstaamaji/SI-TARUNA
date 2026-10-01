@@ -61,7 +61,7 @@ const DUMMY_MEMBERS: MemberItem[] = [
   {
     id: 'm-01',
     memberNumber: 'KT-SB-001',
-    name: 'Anggota 1',
+    name: 'Rustam Aji',
     gender: 'MALE',
     phone: '081234567801',
     address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -516,7 +516,7 @@ export default function AdminMembersPage() {
         <Navbar
           onMenuToggle={() => setSidebarOpen(true)}
           user={{
-            name: 'Anggota 1',
+            name: 'Rustam Aji',
             role: 'ADMIN',
           }}
           notificationCount={3}

@@ -19,7 +19,6 @@ import {
   UserCircle,
   X,
   ChevronRight,
-  ShieldAlert,
   ShieldCheck,
 } from 'lucide-react';
 
@@ -242,11 +241,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Sidebar Footer Organization Badge */}
-        <div className="p-4 border-t border-taruna-border dark:border-slate-800 bg-taruna-surface/80 dark:bg-slate-800/40 m-3 rounded-2xl">
+        <div className="p-3.5 border-t border-taruna-border dark:border-slate-800 bg-taruna-surface/80 dark:bg-slate-800/40 m-3 rounded-2xl">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-700 shadow-xs text-taruna-red-600 dark:text-red-400">
-              <ShieldAlert className="w-4 h-4" />
-            </div>
+            <Logo size={36} showText={false} />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-taruna-dark dark:text-white truncate">
                 Karang Taruna Setya Bakti

@@ -43,7 +43,7 @@ export class MemberController {
   static async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const member = await MemberService.getMemberById(id);
+      const member = await MemberService.getMemberById(id as string);
 
       sendSuccess(res, 'Berhasil memuat data detail anggota', member, 200);
     } catch (error) {
@@ -72,7 +72,7 @@ export class MemberController {
   static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const updatedMember = await MemberService.updateMember(id, req.body);
+      const updatedMember = await MemberService.updateMember(id as string, req.body);
 
       sendSuccess(res, 'Data anggota berhasil diperbarui', updatedMember, 200);
     } catch (error) {
@@ -88,7 +88,7 @@ export class MemberController {
     try {
       const { id } = req.params;
       const { status } = req.body;
-      const updatedMember = await MemberService.updateMemberStatus(id, status);
+      const updatedMember = await MemberService.updateMemberStatus(id as string, status);
 
       sendSuccess(
         res,
@@ -108,7 +108,7 @@ export class MemberController {
   static async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const result = await MemberService.deleteMember(id);
+      const result = await MemberService.deleteMember(id as string);
 
       sendSuccess(res, result.message, result, 200);
     } catch (error) {

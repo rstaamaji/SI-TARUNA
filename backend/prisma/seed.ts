@@ -37,7 +37,7 @@ async function main() {
   const dummyMembersData = [
     {
       memberNumber: 'KT-SB-001',
-      name: 'Anggota 1',
+      name: 'Rustam Aji',
       gender: Gender.MALE,
       phone: '081234567801',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',

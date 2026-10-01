@@ -1,0 +1,1250 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Users,
+  Wallet,
+  CalendarCheck2,
+  Coins,
+  Gift,
+  Bell,
+  AlertTriangle,
+  Clock,
+  MapPin,
+  ChevronRight,
+  CheckCircle2,
+  ExternalLink,
+  Info,
+  Calendar,
+  BadgeCheck,
+  Building2,
+  Check,
+} from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
+import { Logo } from '@/components/ui/Logo';
+
+export interface AttentionItem {
+  id: string;
+  title: string;
+  description: string;
+  badge: string;
+  badgeVariant: 'accent' | 'warning' | 'primary' | 'info';
+  dueDate?: string;
+  actionLabel?: string;
+  actionUrl?: string;
+}
+
+export interface MemberDashboardData {
+  memberProfile: {
+    id: string | null;
+    name: string;
+    memberNumber: string;
+    role: string;
+    gender: string;
+    address: string;
+    status: string;
+    joinDate: string;
+  };
+  stats: {
+    totalMembers: number;
+    activeMembers: number;
+    inactiveMembers: number;
+    totalCashBalance: number;
+    totalJimpitanMonth: number;
+  };
+  attentionItems: AttentionItem[];
+  announcements: {
+    id: string;
+    title: string;
+    content: string;
+    date: string;
+    eventDate: string | null;
+    author: string;
+  }[];
+  upcomingEvents: {
+    id: string;
+    title: string;
+    description: string | null;
+    eventDate: string;
+    location: string;
+    type: string;
+    myAttendance: string | null;
+  }[];
+  arisanSummary: {
+    monthlyFee: number;
+    totalPot: number;
+    currentCycleMonth: number;
+    currentCycleYear: number;
+    nextDrawDate: string;
+    nextDrawLocation: string;
+    memberStatus: string;
+    recentDraws: {
+      id: string;
+      month: number;
+      year: number;
+      drawDate: string | null;
+      status: string;
+      winnerName: string;
+      winnerNumber: string;
+    }[];
+  };
+  personalAttendance: {
+    totalAttended: number;
+    totalEvents: number;
+    attendancePercentage: number;
+    lastStatus: string;
+    history: {
+      id: string;
+      eventId: string;
+      eventTitle: string;
+      eventDate: string;
+      status: string;
+      notes: string | null;
+    }[];
+  };
+  jimpitanSummary: {
+    month: number;
+    year: number;
+    periodName: string;
+    totalCollected: number;
+    targetAmount: number;
+    groupsCount: number;
+    groups: {
+      id: string;
+      groupId: string;
+      groupNumber: number;
+      groupName: string;
+      amount: number;
+      notes: string | null;
+    }[];
+  };
+  notifications: {
+    id: string;
+    title: string;
+    message: string;
+    type: string;
+    isRead: boolean;
+    createdAt: string;
+  }[];
+  unreadNotificationsCount: number;
+}
+
+// Fallback data realistis untuk Dusun Tuk Uluh, Desa Sringin, Jumantono
+const FALLBACK_DASHBOARD: MemberDashboardData = {
+  memberProfile: {
+    id: 'm-02',
+    name: 'Anggota 2',
+    memberNumber: 'KT-SB-002',
+    role: 'MEMBER',
+    gender: 'MALE',
+    address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
+    status: 'ACTIVE',
+    joinDate: '2023-01-15T00:00:00.000Z',
+  },
+  stats: {
+    totalMembers: 25,
+    activeMembers: 23,
+    inactiveMembers: 2,
+    totalCashBalance: 6420000,
+    totalJimpitanMonth: 1820000,
+  },
+  attentionItems: [
+    {
+      id: 'att-1',
+      title: 'Batas Penyetoran Iuran Kas Wajib Oktober 2026',
+      description:
+        'Iuran kas pemuda sebesar Rp 10.000 wajib diserahkan kepada Bendahara Setya Bakti paling lambat tanggal 10 Oktober 2026.',
+      badge: 'PENTING - KAS',
+      badgeVariant: 'accent',
+      dueDate: '10 Oktober 2026',
+      actionLabel: 'Konfirmasi Bendahara',
+      actionUrl: 'https://wa.me/6281234567801?text=Halo%20Bendahara%20Setya%20Bakti,%20saya%20ingin%20konfirmasi%20iuran%20kas',
+    },
+    {
+      id: 'att-2',
+      title: 'Pertemuan Rutin & Undian Arisan Pemuda',
+      description:
+        'Diharapkan hadir tepat waktu pada Minggu malam di Balai Dusun Tuk Uluh pukul 19:30 WIB. Undian arisan putaran ke-9 akan dikocok.',
+      badge: 'KEGIATAN UTAMA',
+      badgeVariant: 'warning',
+      dueDate: '05 Oktober 2026, 19:30 WIB',
+      actionLabel: 'Konfirmasi Hadir',
+      actionUrl: '#kegiatan',
+    },
+    {
+      id: 'att-3',
+      title: 'Kerja Bakti Gotong Royong Dusun Tuk Uluh',
+      description:
+        'Pembersihan saluran air dan pengecatan gapura dusun menjelang musim hujan. Harap membawa cangkul atau sabit.',
+      badge: 'GOTONG ROYONG',
+      badgeVariant: 'primary',
+      dueDate: '12 Oktober 2026, 06:30 WIB',
+      actionLabel: 'Lihat Lokasi',
+      actionUrl: '#kegiatan',
+    },
+  ],
+  announcements: [
+    {
+      id: 'ann-1',
+      title: 'Iuran Wajib Bulanan Periode Oktober 2026',
+      content:
+        'Diberitahukan kepada seluruh anggota Karang Taruna Setya Bakti bahwa iuran wajib sebesar Rp 10.000 dapat disetorkan kepada bendahara dusun paling lambat tanggal 10 Oktober 2026.',
+      date: '2026-09-29T00:00:00.000Z',
+      eventDate: '2026-10-10T00:00:00.000Z',
+      author: 'Bendahara Setya Bakti',
+    },
+    {
+      id: 'ann-2',
+      title: 'Pelaksanaan Kerja Bakti Dusun Tuk Uluh',
+      content:
+        'Dalam rangka menjaga kebersihan lingkungan dan mengantisipasi musim penghujan, seluruh pemuda diharapkan hadir pada kerja bakti hari Minggu, 12 Oktober 2026 pukul 06.30 WIB dengan membawa alat kerja bakti.',
+      date: '2026-09-24T00:00:00.000Z',
+      eventDate: '2026-10-12T06:30:00.000Z',
+      author: 'Rustam Aji (Ketua)',
+    },
+  ],
+  upcomingEvents: [
+    {
+      id: 'ev-1',
+      title: 'Pertemuan Rutin & Arisan Pemuda Oktober 2026',
+      description:
+        'Pertemuan rutin bulanan Karang Taruna Setya Bakti, evaluasi kas, dan penarikan undian arisan.',
+      eventDate: '2026-10-05T19:30:00.000Z',
+      location: 'Balai Dusun Tuk Uluh',
+      type: 'MEETING',
+      myAttendance: 'PRESENT',
+    },
+    {
+      id: 'ev-2',
+      title: 'Kerja Bakti Bersih Lingkungan Dusun',
+      description:
+        'Pembersihan saluran air dan pengecatan gapura Dusun Tuk Uluh menjelang musim hujan.',
+      eventDate: '2026-10-12T06:30:00.000Z',
+      location: 'Area Lapangan & Gapura Tuk Uluh',
+      type: 'COMMUNITY_SERVICE',
+      myAttendance: null,
+    },
+    {
+      id: 'ev-3',
+      title: 'Turnamen Bola Voli Antar RT Sringin',
+      description: 'Pertandingan persahabatan bola voli pemuda antar RT se-Desa Sringin.',
+      eventDate: '2026-10-25T15:30:00.000Z',
+      location: 'Lapangan Olahraga Sringin',
+      type: 'SPORTS',
+      myAttendance: null,
+    },
+  ],
+  arisanSummary: {
+    monthlyFee: 20000,
+    totalPot: 500000,
+    currentCycleMonth: 10,
+    currentCycleYear: 2026,
+    nextDrawDate: '2026-10-05T19:30:00.000Z',
+    nextDrawLocation: 'Balai Dusun Tuk Uluh',
+    memberStatus: 'BELUM_DAPAT',
+    recentDraws: [
+      {
+        id: 'ar-1',
+        month: 9,
+        year: 2026,
+        drawDate: '2026-09-10T19:30:00.000Z',
+        status: 'WON',
+        winnerName: 'Anggota 3',
+        winnerNumber: 'KT-SB-003',
+      },
+      {
+        id: 'ar-2',
+        month: 8,
+        year: 2026,
+        drawDate: '2026-08-10T19:30:00.000Z',
+        status: 'WON',
+        winnerName: 'Anggota 2',
+        winnerNumber: 'KT-SB-002',
+      },
+      {
+        id: 'ar-3',
+        month: 7,
+        year: 2026,
+        drawDate: '2026-07-10T19:30:00.000Z',
+        status: 'WON',
+        winnerName: 'Rustam Aji',
+        winnerNumber: 'KT-SB-001',
+      },
+    ],
+  },
+  personalAttendance: {
+    totalAttended: 3,
+    totalEvents: 3,
+    attendancePercentage: 100,
+    lastStatus: 'PRESENT',
+    history: [
+      {
+        id: 'att-h-1',
+        eventId: 'ev-1',
+        eventTitle: 'Pertemuan Rutin & Arisan Pemuda Oktober',
+        eventDate: '2026-10-05T19:30:00.000Z',
+        status: 'PRESENT',
+        notes: 'Hadir tepat waktu',
+      },
+      {
+        id: 'att-h-2',
+        eventId: 'ev-prev-1',
+        eventTitle: 'Rapat Pleno Penyusunan Rencana Kerja September',
+        eventDate: '2026-09-10T19:30:00.000Z',
+        status: 'PRESENT',
+        notes: null,
+      },
+      {
+        id: 'att-h-3',
+        eventId: 'ev-prev-2',
+        eventTitle: 'Peringatan HUT Kemerdekaan RI di Balai Dusun',
+        eventDate: '2026-08-17T08:00:00.000Z',
+        status: 'PRESENT',
+        notes: 'Panitia Lomba',
+      },
+    ],
+  },
+  jimpitanSummary: {
+    month: 10,
+    year: 2026,
+    periodName: 'Oktober 2026',
+    totalCollected: 910000,
+    targetAmount: 1000000,
+    groupsCount: 7,
+    groups: [
+      {
+        id: 'j-1',
+        groupId: 'g-1',
+        groupNumber: 1,
+        groupName: 'Kelompok 1 (RT 01 Tuk Uluh Barat)',
+        amount: 130000,
+        notes: 'Pencatatan berjalan',
+      },
+      {
+        id: 'j-2',
+        groupId: 'g-2',
+        groupNumber: 2,
+        groupName: 'Kelompok 2 (RT 01 Tuk Uluh Timur)',
+        amount: 135000,
+        notes: 'Pencatatan berjalan',
+      },
+      {
+        id: 'j-3',
+        groupId: 'g-3',
+        groupNumber: 3,
+        groupName: 'Kelompok 3 (RT 02 Tuk Uluh Utara)',
+        amount: 140000,
+        notes: 'Pencatatan berjalan',
+      },
+      {
+        id: 'j-4',
+        groupId: 'g-4',
+        groupNumber: 4,
+        groupName: 'Kelompok 4 (RT 02 Tuk Uluh Selatan)',
+        amount: 125000,
+        notes: 'Pencatatan berjalan',
+      },
+      {
+        id: 'j-5',
+        groupId: 'g-5',
+        groupNumber: 5,
+        groupName: 'Kelompok 5 (RT 03 Tuk Uluh Krajan)',
+        amount: 130000,
+        notes: 'Pencatatan berjalan',
+      },
+      {
+        id: 'j-6',
+        groupId: 'g-6',
+        groupNumber: 6,
+        groupName: 'Kelompok 6 (RT 03 Tuk Uluh Wetan)',
+        amount: 120000,
+        notes: 'Pencatatan berjalan',
+      },
+      {
+        id: 'j-7',
+        groupId: 'g-7',
+        groupNumber: 7,
+        groupName: 'Kelompok 7 (Tuk Uluh Perbatasan)',
+        amount: 130000,
+        notes: 'Pencatatan berjalan',
+      },
+    ],
+  },
+  notifications: [
+    {
+      id: 'notif-1',
+      title: 'Pengingat Iuran Kas Oktober',
+      message: 'Jangan lupa untuk melunasi iuran wajib kas bulanan sebelum tanggal 10 Oktober 2026.',
+      type: 'FINANCE',
+      isRead: false,
+      createdAt: '2026-09-30T10:00:00.000Z',
+    },
+    {
+      id: 'notif-2',
+      title: 'Pertemuan Rutin Minggu Ini',
+      message: 'Pertemuan bulanan Karang Taruna Setya Bakti dijadwalkan pada hari Minggu, 05 Oktober 2026 di Balai Dusun.',
+      type: 'EVENT',
+      isRead: false,
+      createdAt: '2026-09-29T14:30:00.000Z',
+    },
+    {
+      id: 'notif-3',
+      title: 'Selamat! Pemenang Arisan September',
+      message: 'Arisan periode September 2026 telah diserahkan kepada Anggota 3. Terima kasih atas partisipasinya.',
+      type: 'INFO',
+      isRead: true,
+      createdAt: '2026-09-15T20:00:00.000Z',
+    },
+  ],
+  unreadNotificationsCount: 2,
+};
+
+export const MemberDashboard: React.FC = () => {
+  const toast = useToast();
+  const [data, setData] = useState<MemberDashboardData>(FALLBACK_DASHBOARD);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [rsvpState, setRsvpState] = useState<Record<string, boolean>>({
+    'ev-1': true,
+  });
+  const [notifFilter, setNotifFilter] = useState<'ALL' | 'UNREAD'>('ALL');
+
+  // Load dashboard data from API with fallback
+  const fetchDashboard = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch('http://localhost:5000/api/member/dashboard', { headers });
+      const json = await res.json();
+
+      if (res.ok && json.success && json.data) {
+        setData(json.data);
+      } else {
+        // Use fallback if response not success
+        setData(FALLBACK_DASHBOARD);
+      }
+    } catch {
+      // Offline / network fallback
+      setData(FALLBACK_DASHBOARD);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
+
+  // Handle Mark single notification read
+  const handleMarkNotificationRead = async (notifId: string) => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
+      if (token) {
+        await fetch(`http://localhost:5000/api/member/dashboard/notifications/${notifId}/read`, {
+          method: 'PATCH',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+    } catch {
+      // Local fallback
+    }
+
+    setData((prev) => ({
+      ...prev,
+      notifications: prev.notifications.map((n) =>
+        n.id === notifId ? { ...n, isRead: true } : n
+      ),
+      unreadNotificationsCount: Math.max(0, prev.unreadNotificationsCount - 1),
+    }));
+    toast.success('Notifikasi ditandai telah dibaca.');
+  };
+
+  // Handle Mark all notifications read
+  const handleMarkAllRead = async () => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
+      if (token) {
+        await fetch('http://localhost:5000/api/member/dashboard/notifications/read-all', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+    } catch {
+      // Local fallback
+    }
+
+    setData((prev) => ({
+      ...prev,
+      notifications: prev.notifications.map((n) => ({ ...n, isRead: true })),
+      unreadNotificationsCount: 0,
+    }));
+    toast.success('Seluruh notifikasi telah ditandai dibaca.');
+  };
+
+  // Handle RSVP confirmation
+  const handleRsvp = (eventId: string, eventTitle: string) => {
+    setRsvpState((prev) => {
+      const current = !!prev[eventId];
+      const next = !current;
+      if (next) {
+        toast.success(`Konfirmasi kehadiran berhasil untuk "${eventTitle}"!`);
+      } else {
+        toast.info(`Status kehadiran dibatalkan untuk "${eventTitle}".`);
+      }
+      return { ...prev, [eventId]: next };
+    });
+  };
+
+  // Format currency IDR
+  const formatRupiah = (val: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(val);
+  };
+
+  const filteredNotifications = data.notifications.filter((n) => {
+    if (notifFilter === 'UNREAD') return !n.isRead;
+    return true;
+  });
+
+  return (
+    <div className="space-y-8 pb-16">
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          1. HEADER PROFIL ANGGOTA & KARTU SELAMAT DATANG
+      ───────────────────────────────────────────────────────────────────────────── */}
+      <div className="bg-gradient-to-br from-white via-white to-taruna-yellow-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800/80 p-6 sm:p-8 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs transition-colors">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-start sm:items-center gap-4 sm:gap-5">
+            <Logo size={60} showText={false} />
+            <div>
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span className="text-xs font-bold uppercase tracking-wider text-taruna-yellow-700 dark:text-taruna-yellow-400">
+                  Dashboard Anggota
+                </span>
+                <span className="text-gray-300 dark:text-slate-700">•</span>
+                <Badge variant="primary" size="sm">
+                  {data.memberProfile.memberNumber}
+                </Badge>
+                <Badge variant="success" size="sm" dot>
+                  {data.memberProfile.status === 'ACTIVE' ? 'Aktif' : 'Non-Aktif'}
+                </Badge>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+                Halo, {data.memberProfile.name}! 👋
+              </h1>
+
+              <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500 dark:text-slate-400 flex-wrap">
+                <span className="inline-flex items-center gap-1">
+                  <Building2 className="w-3.5 h-3.5 text-taruna-yellow-600 dark:text-taruna-yellow-400" />
+                  {data.memberProfile.address}
+                </span>
+                <span className="hidden sm:inline text-gray-300 dark:text-slate-700">•</span>
+                <span className="inline-flex items-center gap-1">
+                  <BadgeCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  Karang Taruna Setya Bakti
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap self-start md:self-auto">
+            <Button
+              variant="secondary"
+              size="sm"
+              isLoading={isLoading}
+              onClick={fetchDashboard}
+            >
+              Segarkan
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Bell className="w-4 h-4 text-taruna-yellow-600 dark:text-taruna-yellow-400" />}
+              onClick={() => {
+                const el = document.getElementById('notification-center');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Notifikasi ({data.unreadNotificationsCount})
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<Calendar className="w-4 h-4" />}
+              onClick={() => {
+                const el = document.getElementById('kegiatan-section');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Jadwal Kegiatan
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          2. SECTION "ATTENTION / INFORMASI PENTING"
+          (Highlight informasi penting yang membutuhkan perhatian segera dari anggota)
+      ───────────────────────────────────────────────────────────────────────────── */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-xl bg-red-100 dark:bg-red-950/60 text-taruna-red-600 dark:text-red-400">
+              <AlertTriangle className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-taruna-dark dark:text-white tracking-tight">
+                Attention / Informasi Penting
+              </h2>
+              <p className="text-xs text-gray-500 dark:text-slate-400">
+                Pemberitahuan mendesak yang memerlukan tindakan atau kehadiran Anda
+              </p>
+            </div>
+          </div>
+          <span className="text-xs font-bold text-taruna-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2.5 py-1 rounded-full border border-red-200 dark:border-red-900/40">
+            {data.attentionItems.length} Perlu Diperhatikan
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {data.attentionItems.map((item) => (
+            <div
+              key={item.id}
+              className="relative p-5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-red-200/80 dark:border-red-900/50 shadow-xs hover:border-red-400 dark:hover:border-red-700/80 transition-all flex flex-col justify-between gap-4 group"
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <Badge variant={item.badgeVariant} size="sm">
+                    {item.badge}
+                  </Badge>
+                  {item.dueDate && (
+                    <span className="text-[11px] font-semibold text-gray-400 dark:text-slate-500 inline-flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-red-500" />
+                      {item.dueDate}
+                    </span>
+                  )}
+                </div>
+
+                <h3 className="font-bold text-sm text-taruna-dark dark:text-white group-hover:text-taruna-red-600 dark:group-hover:text-red-400 transition-colors leading-snug">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-gray-600 dark:text-slate-300 mt-1.5 leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+
+              {item.actionLabel && (
+                <div className="pt-3 border-t border-taruna-border/60 dark:border-slate-800 flex items-center justify-between">
+                  <a
+                    href={item.actionUrl || '#'}
+                    target={item.actionUrl?.startsWith('http') ? '_blank' : '_self'}
+                    rel="noreferrer"
+                    className="text-xs font-bold text-taruna-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 inline-flex items-center gap-1.5 group-hover:translate-x-0.5 transition"
+                  >
+                    <span>{item.actionLabel}</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </a>
+                  {item.actionUrl?.startsWith('http') && (
+                    <ExternalLink className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500" />
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          3. STATISTIK UTAMA RINGKAS (SEDERHANA DAN MUDAH DIPAHAMI)
+      ───────────────────────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        {/* Card 1: Total Anggota */}
+        <Card hoverable>
+          <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+              Total Anggota
+            </span>
+            <div className="p-2.5 rounded-2xl bg-taruna-yellow-50 dark:bg-slate-800 ring-2 ring-black/5 dark:ring-white/10 text-taruna-yellow-600 dark:text-taruna-yellow-400">
+              <Users className="w-5 h-5" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+              {data.stats.totalMembers} Pemuda
+            </div>
+            <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1 inline-flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              {data.stats.activeMembers} Anggota Aktif Dusun
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Card 2: Saldo Kas */}
+        <Card hoverable>
+          <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+              Saldo Kas Organisasi
+            </span>
+            <div className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-slate-800 ring-2 ring-black/5 dark:ring-white/10 text-emerald-600 dark:text-emerald-400">
+              <Wallet className="w-5 h-5" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+              {formatRupiah(data.stats.totalCashBalance)}
+            </div>
+            <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 mt-1">
+              Transparan & Terbuka untuk Anggota
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Status Absensi Pribadi */}
+        <Card hoverable>
+          <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+              Kehadiran Pribadi
+            </span>
+            <div className="p-2.5 rounded-2xl bg-taruna-red-50 dark:bg-slate-800 ring-2 ring-black/5 dark:ring-white/10 text-taruna-red-600 dark:text-red-400">
+              <CalendarCheck2 className="w-5 h-5" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+              {data.personalAttendance.attendancePercentage}%
+            </div>
+            <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1 inline-flex items-center gap-1">
+              <Check className="w-3.5 h-3.5" />
+              {data.personalAttendance.totalAttended} dari {data.personalAttendance.totalEvents} Kegiatan Diikuti
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Card 4: Rekap Jimpitan Bulan Ini */}
+        <Card hoverable>
+          <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+              Jimpitan {data.jimpitanSummary.periodName}
+            </span>
+            <div className="p-2.5 rounded-2xl bg-amber-50 dark:bg-slate-800 ring-2 ring-black/5 dark:ring-white/10 text-amber-600 dark:text-amber-400">
+              <Coins className="w-5 h-5" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+              {formatRupiah(data.jimpitanSummary.totalCollected)}
+            </div>
+            <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 mt-1">
+              Dari 7 Kelompok RT Warga Tuk Uluh
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          4. DUA KOLOM UTAMA: KEGIATAN TERDEKAT & JADWAL ARISAN
+      ───────────────────────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" id="kegiatan-section">
+        {/* Card: Kegiatan Terdekat */}
+        <Card>
+          <CardHeader className="flex-row items-center justify-between pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-taruna-yellow-50 dark:bg-slate-800 text-taruna-yellow-700 dark:text-taruna-yellow-400">
+                <Calendar className="w-5 h-5" />
+              </div>
+              <div>
+                <CardTitle>Kegiatan Terdekat</CardTitle>
+                <CardDescription>Agenda resmi pemuda Dusun Tuk Uluh mendatang</CardDescription>
+              </div>
+            </div>
+            <Badge variant="primary" dot>
+              Aktif
+            </Badge>
+          </CardHeader>
+          <CardContent className="space-y-3.5">
+            {data.upcomingEvents.map((event) => {
+              const isRsvpd = !!rsvpState[event.id];
+              return (
+                <div
+                  key={event.id}
+                  className="p-4 rounded-2xl border border-taruna-border dark:border-slate-800 bg-taruna-surface/50 dark:bg-slate-800/40 hover:bg-taruna-surface dark:hover:bg-slate-800 transition flex flex-col gap-2.5"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h4 className="font-bold text-sm text-taruna-dark dark:text-white">
+                        {event.title}
+                      </h4>
+                      {event.description && (
+                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5 line-clamp-2">
+                          {event.description}
+                        </p>
+                      )}
+                    </div>
+                    <Badge
+                      variant={
+                        event.type === 'MEETING'
+                          ? 'primary'
+                          : event.type === 'COMMUNITY_SERVICE'
+                          ? 'accent'
+                          : 'success'
+                      }
+                      size="sm"
+                    >
+                      {event.type === 'MEETING'
+                        ? 'Rapat'
+                        : event.type === 'COMMUNITY_SERVICE'
+                        ? 'Kerja Bakti'
+                        : 'Olahraga'}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-400 flex-wrap">
+                    <span className="inline-flex items-center gap-1.5 font-medium">
+                      <Clock className="w-3.5 h-3.5 text-taruna-yellow-600 dark:text-taruna-yellow-400" />
+                      {new Date(event.eventDate).toLocaleDateString('id-ID', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}{' '}
+                      WIB
+                    </span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-taruna-red-600 dark:text-red-400" />
+                      {event.location}
+                    </span>
+                  </div>
+
+                  <div className="pt-2 border-t border-taruna-border/60 dark:border-slate-800 flex items-center justify-between">
+                    <span className="text-xs text-gray-500 dark:text-slate-400">
+                      Konfirmasi Anda:{' '}
+                      <strong className={isRsvpd ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400'}>
+                        {isRsvpd ? '✓ Pasti Hadir' : 'Belum Konfirmasi'}
+                      </strong>
+                    </span>
+                    <Button
+                      variant={isRsvpd ? 'secondary' : 'primary'}
+                      size="sm"
+                      onClick={() => handleRsvp(event.id, event.title)}
+                    >
+                      {isRsvpd ? 'Batal Hadir' : 'Saya Akan Hadir'}
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+
+        {/* Card: Jadwal Arisan */}
+        <Card>
+          <CardHeader className="flex-row items-center justify-between pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
+                <Gift className="w-5 h-5" />
+              </div>
+              <div>
+                <CardTitle>Jadwal Arisan Pemuda</CardTitle>
+                <CardDescription>
+                  Putaran Arisan Periode {data.arisanSummary.currentCycleMonth} / {data.arisanSummary.currentCycleYear}
+                </CardDescription>
+              </div>
+            </div>
+            <Badge variant="warning" dot>
+              Rp {formatRupiah(data.arisanSummary.totalPot)}
+            </Badge>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Box Status Pribadi Arisan */}
+            <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 flex items-center justify-between gap-4">
+              <div>
+                <span className="text-xs font-bold uppercase text-amber-800 dark:text-amber-300">
+                  Status Undian Anda
+                </span>
+                <p className="text-base font-black text-taruna-dark dark:text-white mt-0.5">
+                  {data.arisanSummary.memberStatus === 'BELUM_DAPAT'
+                    ? 'Belum Mendapatkan Undian'
+                    : 'Sudah Pernah Menerima Undian'}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                  Iuran bulanan: {formatRupiah(data.arisanSummary.monthlyFee)} / anggota
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="text-xs font-semibold text-gray-500 dark:text-slate-400 block">
+                  Kocokan Berikutnya:
+                </span>
+                <span className="text-xs font-bold text-amber-700 dark:text-amber-400">
+                  {new Date(data.arisanSummary.nextDrawDate).toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
+            </div>
+
+            {/* Lokasi Tuan Rumah Arisan (Bergilir antar rumah anggota) */}
+            <div className="p-3.5 rounded-2xl bg-amber-50/60 dark:bg-slate-800/60 border border-amber-200/70 dark:border-slate-700/60 flex items-center justify-between gap-3 text-xs flex-wrap sm:flex-nowrap">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 shrink-0">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-gray-500 dark:text-slate-400 block text-[11px] font-medium">
+                    Tuan Rumah &amp; Tempat Pertemuan:
+                  </span>
+                  <span className="font-bold text-taruna-dark dark:text-white">
+                    {data.arisanSummary.nextDrawLocation || 'Kediaman Anggota (Bergilir)'}
+                  </span>
+                </div>
+              </div>
+              <Badge variant="warning" size="sm">
+                Bergilir Antar Rumah
+              </Badge>
+            </div>
+
+            {/* Riwayat Pemenang Sebelumnya */}
+            <div>
+              <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider block mb-2">
+                Penerima Putaran Terakhir
+              </span>
+              <div className="divide-y divide-taruna-border/60 dark:divide-slate-800 border border-taruna-border/60 dark:border-slate-800 rounded-2xl overflow-hidden">
+                {data.arisanSummary.recentDraws.map((draw) => (
+                  <div
+                    key={draw.id}
+                    className="p-3 bg-white dark:bg-slate-900 flex items-center justify-between text-xs"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-6 h-6 rounded-full bg-taruna-yellow-100 dark:bg-slate-800 text-taruna-yellow-800 dark:text-taruna-yellow-400 font-bold flex items-center justify-center text-[10px]">
+                        B{draw.month}
+                      </span>
+                      <div>
+                        <p className="font-bold text-taruna-dark dark:text-white">{draw.winnerName}</p>
+                        <p className="text-[11px] text-gray-400 dark:text-slate-500">{draw.winnerNumber}</p>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full font-semibold text-[11px] bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
+                      Telah Diterima
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          5. PENGUMUMAN TERBARU & STATUS ABSENSI PRIBADI
+      ───────────────────────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Card: Pengumuman Terbaru */}
+        <Card id="pengumuman-section">
+          <CardHeader className="flex-row items-center justify-between pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-taruna-red-50 dark:bg-slate-800 text-taruna-red-600 dark:text-red-400">
+                <Info className="w-5 h-5" />
+              </div>
+              <div>
+                <CardTitle>Pengumuman Terbaru</CardTitle>
+                <CardDescription>Kabar dan edaran resmi pengurus Setya Bakti</CardDescription>
+              </div>
+            </div>
+            <Badge variant="accent" size="sm">
+              Terbaru
+            </Badge>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {data.announcements.map((ann) => (
+              <div
+                key={ann.id}
+                className="p-4 rounded-2xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900/80 hover:border-taruna-yellow-300 dark:hover:border-taruna-yellow-500/50 transition flex flex-col gap-1.5"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <h4 className="font-bold text-sm text-taruna-dark dark:text-white leading-snug">
+                    {ann.title}
+                  </h4>
+                  <span className="text-[11px] text-gray-400 dark:text-slate-500 whitespace-nowrap">
+                    {new Date(ann.date).toLocaleDateString('id-ID', {
+                      day: 'numeric',
+                      month: 'short',
+                    })}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed">
+                  {ann.content}
+                </p>
+                <div className="pt-2 flex items-center justify-between text-[11px] text-gray-400 dark:text-slate-500 border-t border-taruna-border/50 dark:border-slate-800">
+                  <span>
+                    Diterbitkan oleh: <strong className="text-taruna-dark dark:text-slate-200">{ann.author}</strong>
+                  </span>
+                  <span className="text-taruna-yellow-700 dark:text-taruna-yellow-400 font-semibold inline-flex items-center gap-0.5 cursor-pointer hover:underline">
+                    Baca Selengkapnya <ChevronRight className="w-3 h-3" />
+                  </span>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Card: Status Absensi Pribadi */}
+        <Card>
+          <CardHeader className="flex-row items-center justify-between pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400">
+                <CalendarCheck2 className="w-5 h-5" />
+              </div>
+              <div>
+                <CardTitle>Status Absensi Pribadi</CardTitle>
+                <CardDescription>Riwayat kehadiran Anda pada kegiatan pemuda</CardDescription>
+              </div>
+            </div>
+            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
+              {data.personalAttendance.attendancePercentage}% Kehadiran
+            </span>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-3 gap-2 text-center p-3 rounded-2xl bg-taruna-surface dark:bg-slate-800/40 border border-taruna-border dark:border-slate-800">
+              <div>
+                <span className="text-xs text-gray-500 dark:text-slate-400 block">Total Agenda</span>
+                <span className="text-lg font-black text-taruna-dark dark:text-white">
+                  {data.personalAttendance.totalEvents}
+                </span>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 dark:text-slate-400 block">Hadir</span>
+                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">
+                  {data.personalAttendance.totalAttended}
+                </span>
+              </div>
+              <div>
+                <span className="text-xs text-gray-500 dark:text-slate-400 block">Izin / Alpha</span>
+                <span className="text-lg font-black text-taruna-yellow-600 dark:text-taruna-yellow-400">
+                  {data.personalAttendance.totalEvents - data.personalAttendance.totalAttended}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-2 mt-2">
+              <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider block">
+                Riwayat Terakhir
+              </span>
+              {data.personalAttendance.history.map((hist) => (
+                <div
+                  key={hist.id}
+                  className="p-3 rounded-xl border border-taruna-border/60 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between text-xs"
+                >
+                  <div>
+                    <p className="font-bold text-taruna-dark dark:text-white">{hist.eventTitle}</p>
+                    <p className="text-[11px] text-gray-400 dark:text-slate-500">
+                      {new Date(hist.eventDate).toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                      {hist.notes ? ` • ${hist.notes}` : ''}
+                    </p>
+                  </div>
+                  <span
+                    className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                      hist.status === 'PRESENT'
+                        ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'
+                        : hist.status === 'EXCUSED'
+                        ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                        : 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-300'
+                    }`}
+                  >
+                    {hist.status === 'PRESENT' ? 'HADIR' : hist.status === 'EXCUSED' ? 'IZIN' : 'ALPHA'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          6. DUA KOLOM: REKAP JIMPITAN TERBARU & NOTIFICATION CENTER
+      ───────────────────────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Card: Rekap Jimpitan Terbaru */}
+        <Card>
+          <CardHeader className="flex-row items-center justify-between pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-amber-50 dark:bg-slate-800 text-amber-600 dark:text-amber-400">
+                <Coins className="w-5 h-5" />
+              </div>
+              <div>
+                <CardTitle>Rekap Jimpitan Terbaru</CardTitle>
+                <CardDescription>
+                  Pencatatan jimpitan koin beras warga Dusun Tuk Uluh ({data.jimpitanSummary.periodName})
+                </CardDescription>
+              </div>
+            </div>
+            <Badge variant="primary" size="sm">
+              7 Kelompok RT
+            </Badge>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-taruna-yellow-50 dark:from-slate-800/80 dark:to-slate-800/40 border border-amber-200/80 dark:border-slate-700 flex items-center justify-between">
+              <div>
+                <span className="text-xs text-gray-500 dark:text-slate-400 block font-medium">
+                  Total Terkumpul Bulan Ini
+                </span>
+                <span className="text-2xl font-black text-amber-700 dark:text-amber-400">
+                  {formatRupiah(data.jimpitanSummary.totalCollected)}
+                </span>
+              </div>
+              <div className="text-right">
+                <span className="text-xs text-gray-500 dark:text-slate-400 block">Target Bulanan</span>
+                <span className="text-sm font-bold text-gray-700 dark:text-slate-300">
+                  {formatRupiah(data.jimpitanSummary.targetAmount)}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider block">
+                Rincian Per Kelompok RT
+              </span>
+              <div className="divide-y divide-taruna-border/60 dark:divide-slate-800 border border-taruna-border/60 dark:border-slate-800 rounded-2xl overflow-hidden max-h-56 overflow-y-auto">
+                {data.jimpitanSummary.groups.map((grp) => (
+                  <div
+                    key={grp.id}
+                    className="p-3 bg-white dark:bg-slate-900 flex items-center justify-between text-xs hover:bg-gray-50 dark:hover:bg-slate-800/40 transition"
+                  >
+                    <div>
+                      <p className="font-bold text-taruna-dark dark:text-white">{grp.groupName}</p>
+                      <p className="text-[11px] text-gray-400 dark:text-slate-500">{grp.notes || 'Terekap'}</p>
+                    </div>
+                    <span className="font-bold text-sm text-taruna-yellow-800 dark:text-taruna-yellow-400">
+                      {formatRupiah(grp.amount)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card: Notification Center */}
+        <Card id="notification-center">
+          <CardHeader className="flex-row items-center justify-between pb-3 flex-wrap gap-2">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-taruna-yellow-50 dark:bg-slate-800 text-taruna-yellow-700 dark:text-taruna-yellow-400">
+                <Bell className="w-5 h-5" />
+              </div>
+              <div>
+                <CardTitle>Notification Center</CardTitle>
+                <CardDescription>Pusat info dan pemberitahuan personal anggota</CardDescription>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center rounded-xl bg-taruna-surface dark:bg-slate-800 p-0.5 border border-taruna-border dark:border-slate-700 text-xs">
+                <button
+                  onClick={() => setNotifFilter('ALL')}
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition ${
+                    notifFilter === 'ALL'
+                      ? 'bg-white dark:bg-slate-900 text-taruna-dark dark:text-white shadow-xs'
+                      : 'text-gray-500 dark:text-slate-400'
+                  }`}
+                >
+                  Semua
+                </button>
+                <button
+                  onClick={() => setNotifFilter('UNREAD')}
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition ${
+                    notifFilter === 'UNREAD'
+                      ? 'bg-white dark:bg-slate-900 text-taruna-dark dark:text-white shadow-xs'
+                      : 'text-gray-500 dark:text-slate-400'
+                  }`}
+                >
+                  Belum Dibaca ({data.unreadNotificationsCount})
+                </button>
+              </div>
+
+              {data.unreadNotificationsCount > 0 && (
+                <button
+                  onClick={handleMarkAllRead}
+                  className="text-xs text-taruna-red-600 dark:text-red-400 hover:underline font-semibold"
+                >
+                  Tandai Semua
+                </button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {filteredNotifications.length === 0 ? (
+              <div className="text-center py-8 text-gray-400 dark:text-slate-500 text-xs">
+                Tidak ada pemberitahuan saat ini.
+              </div>
+            ) : (
+              filteredNotifications.map((notif) => (
+                <div
+                  key={notif.id}
+                  className={`p-3.5 rounded-2xl border transition flex items-start justify-between gap-3 ${
+                    notif.isRead
+                      ? 'bg-white dark:bg-slate-900 border-taruna-border/60 dark:border-slate-800'
+                      : 'bg-taruna-yellow-50/60 dark:bg-slate-800/80 border-taruna-yellow-200 dark:border-taruna-yellow-500/40 shadow-xs'
+                  }`}
+                >
+                  <div className="flex items-start gap-2.5">
+                    <span
+                      className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                        notif.isRead ? 'bg-gray-300 dark:bg-slate-700' : 'bg-taruna-red-500 animate-ping'
+                      }`}
+                    />
+                    <div>
+                      <h4
+                        className={`text-xs font-bold leading-snug ${
+                          notif.isRead
+                            ? 'text-gray-700 dark:text-slate-300'
+                            : 'text-taruna-dark dark:text-white'
+                        }`}
+                      >
+                        {notif.title}
+                      </h4>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 leading-relaxed">
+                        {notif.message}
+                      </p>
+                      <span className="text-[10px] text-gray-400 dark:text-slate-500 mt-1 block">
+                        {new Date(notif.createdAt).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'short',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}{' '}
+                        WIB
+                      </span>
+                    </div>
+                  </div>
+
+                  {!notif.isRead && (
+                    <button
+                      onClick={() => handleMarkNotificationRead(notif.id)}
+                      className="text-[11px] font-semibold text-taruna-yellow-700 dark:text-taruna-yellow-400 hover:underline shrink-0"
+                    >
+                      Tandai Dibaca
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};

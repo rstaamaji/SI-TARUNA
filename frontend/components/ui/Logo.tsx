@@ -26,21 +26,45 @@ export const Logo: React.FC<LogoProps> = ({
       {/* Logo Graphic using uploaded official logo */}
       <div
         className="relative flex items-center justify-center shrink-0 rounded-2xl bg-taruna-dark shadow-sm ring-2 ring-taruna-yellow-500/50 overflow-hidden transition-transform duration-200 group-hover:scale-105"
-        style={{ width: size, height: size }}
+        style={{
+          width: size,
+          height: size,
+          minWidth: size,
+          minHeight: size,
+          maxWidth: size,
+          maxHeight: size,
+          overflow: 'hidden',
+        }}
       >
         {!imageError ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src="/assets/logo.png"
             alt="Logo Karang Taruna Setya Bakti - Tuk Uluh, Sringin, Jumantono"
+            width={size}
+            height={size}
+            style={{
+              width: size,
+              height: size,
+              maxWidth: '100%',
+              maxHeight: '100%',
+              objectFit: 'contain',
+              display: 'block',
+            }}
             className="w-full h-full object-contain"
             onError={() => setImageError(true)}
           />
         ) : (
           /* SVG Emblem with Karang Taruna colors */
-          <div className="w-full h-full bg-gradient-to-br from-taruna-yellow-500 via-taruna-yellow-600 to-amber-600 flex items-center justify-center relative p-1.5">
+          <div
+            className="w-full h-full bg-gradient-to-br from-taruna-yellow-500 via-taruna-yellow-600 to-amber-600 flex items-center justify-center relative p-1.5"
+            style={{ width: '100%', height: '100%' }}
+          >
             <svg
               viewBox="0 0 40 40"
+              width={size}
+              height={size}
+              style={{ width: '100%', height: '100%' }}
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               className="w-full h-full text-white drop-shadow-sm"

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Users,
   Wallet,
@@ -11,11 +11,6 @@ import {
   Plus,
   CheckCircle,
   FileSpreadsheet,
-  CalendarDays,
-  Megaphone,
-  Clock,
-  MapPin,
-  ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
@@ -33,10 +28,32 @@ import {
 } from '@/components/ui/Table';
 import { Avatar } from '@/components/ui/Avatar';
 import { useToast } from '@/components/ui/Toast';
+import { Logo } from '@/components/ui/Logo';
+import { MemberDashboard } from '@/components/dashboard/MemberDashboard';
+import { AdminEventsAndAnnouncements } from '@/components/dashboard/AdminEventsAndAnnouncements';
 
 export default function DashboardPage() {
   const toast = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userRole, setUserRole] = useState<'ADMIN' | 'MEMBER'>('MEMBER');
+  const [viewMode, setViewMode] = useState<'AUTO' | 'MEMBER' | 'ADMIN'>('AUTO');
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('si_taruna_user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.role === 'ADMIN' || parsed.role === 'MEMBER') {
+          setUserRole(parsed.role);
+        }
+      }
+    } catch (e) {
+      // Fallback silently if storage read fails
+      console.debug('Failed to read stored user session:', e);
+    }
+  }, []);
+
+  const isMemberView = viewMode === 'MEMBER' || (viewMode === 'AUTO' && userRole === 'MEMBER');
 
   const stats = [
     {
@@ -70,40 +87,6 @@ export default function DashboardPage() {
       isPositive: false,
       icon: <Coins className="w-5 h-5 text-amber-600 dark:text-amber-400" />,
       bg: 'bg-amber-50 dark:bg-slate-800',
-    },
-  ];
-
-  const upcomingEvents = [
-    {
-      title: 'Pertemuan Rutin & Arisan Pemuda',
-      date: 'Minggu, 05 Okt 2026',
-      time: '19:30 WIB',
-      location: 'Balai Dusun Tuk Uluh',
-      tag: 'Pertemuan',
-      color: 'primary',
-    },
-    {
-      title: 'Kerja Bakti Bersih Lingkungan Dusun',
-      date: 'Minggu, 12 Okt 2026',
-      time: '06:30 WIB',
-      location: 'Area Lapangan & Gapura Tuk Uluh',
-      tag: 'Sosial',
-      color: 'accent',
-    },
-  ];
-
-  const announcements = [
-    {
-      title: 'Iuran Wajib Bulanan Periode Oktober 2026',
-      date: 'Kemarin, 29 Sep 2026',
-      desc: 'Iuran kas wajib pemuda sebesar Rp 10.000 dapat diserahkan kepada bendahara paling lambat tanggal 10 Oktober 2026.',
-      author: 'Bendahara Setya Bakti',
-    },
-    {
-      title: 'Hasil Keputusan Rapat Pleno Dusun Tuk Uluh',
-      date: '24 Sep 2026',
-      desc: 'Telah disepakati rencana pengadaan seragam karang taruna serta pembaruan jadwal ronda malam.',
-      author: 'Sekretariat',
     },
   ];
 
@@ -146,19 +129,33 @@ export default function DashboardPage() {
     },
   ];
 
+  if (isMemberView) {
+    return (
+      <div className="space-y-6">
+        {userRole === 'ADMIN' && (
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-2xl flex items-center justify-between gap-3 text-xs flex-wrap">
+            <span className="text-amber-800 dark:text-amber-300 font-semibold">
+              👁️ Pratinjau: Anda sedang melihat tampilan <strong>Dashboard Member</strong> (Mode Admin).
+            </span>
+            <button
+              onClick={() => setViewMode('ADMIN')}
+              className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold transition"
+            >
+              Kembali ke Dashboard Admin
+            </button>
+          </div>
+        )}
+        <MemberDashboard />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 pb-12">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs transition-colors">
         <div className="flex items-start gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-taruna-dark ring-2 ring-taruna-yellow-500/60 overflow-hidden shrink-0 flex items-center justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/assets/logo.png"
-              alt="Logo Karang Taruna Setya Bakti"
-              className="w-full h-full object-contain"
-            />
-          </div>
+          <Logo size={54} showText={false} />
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2.5 h-2.5 rounded-full bg-taruna-yellow-500 animate-pulse" />
@@ -176,6 +173,13 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setViewMode('MEMBER')}
+          >
+            Lihat Dashboard Member
+          </Button>
           <Button
             variant="secondary"
             size="sm"
@@ -229,89 +233,8 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Agenda & Pengumuman Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Agenda Kegiatan Terdekat */}
-        <Card>
-          <CardHeader className="flex-row items-center justify-between pb-3">
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-taruna-yellow-50 dark:bg-slate-800 text-taruna-yellow-700 dark:text-taruna-yellow-400">
-                <CalendarDays className="w-5 h-5" />
-              </div>
-              <div>
-                <CardTitle>Jadwal Kegiatan Terdekat</CardTitle>
-                <CardDescription>Agenda pemuda Dusun Tuk Uluh mendatang</CardDescription>
-              </div>
-            </div>
-            <Badge variant="primary" dot>Aktif</Badge>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {upcomingEvents.map((event, idx) => (
-              <div
-                key={idx}
-                className="p-4 rounded-2xl border border-taruna-border dark:border-slate-800 bg-taruna-surface/50 dark:bg-slate-800/50 hover:bg-taruna-surface dark:hover:bg-slate-800 transition flex flex-col gap-2"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-taruna-dark dark:text-white">{event.title}</span>
-                  <Badge variant={event.color === 'primary' ? 'primary' : 'accent'} size="sm">
-                    {event.tag}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-400 flex-wrap">
-                  <span className="inline-flex items-center gap-1">
-                    <CalendarDays className="w-3.5 h-3.5 text-taruna-yellow-600 dark:text-taruna-yellow-400" />
-                    {event.date}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500" />
-                    {event.time}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-taruna-red-600 dark:text-red-400" />
-                    {event.location}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Pengumuman Terkini */}
-        <Card>
-          <CardHeader className="flex-row items-center justify-between pb-3">
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-taruna-red-50 dark:bg-slate-800 text-taruna-red-600 dark:text-red-400">
-                <Megaphone className="w-5 h-5" />
-              </div>
-              <div>
-                <CardTitle>Pengumuman Organisasi</CardTitle>
-                <CardDescription>Informasi resmi pengurus Setya Bakti</CardDescription>
-              </div>
-            </div>
-            <Badge variant="accent">Penting</Badge>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {announcements.map((item, idx) => (
-              <div
-                key={idx}
-                className="p-4 rounded-2xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900/80 hover:border-taruna-yellow-300 dark:hover:border-taruna-yellow-500/50 transition flex flex-col gap-1.5"
-              >
-                <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-sm text-taruna-dark dark:text-white">{item.title}</h4>
-                  <span className="text-[11px] text-gray-400 dark:text-slate-500">{item.date}</span>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed">{item.desc}</p>
-                <div className="pt-2 flex items-center justify-between text-[11px] text-gray-400 dark:text-slate-500 border-t border-taruna-border/50 dark:border-slate-800">
-                  <span>Oleh: <strong className="text-taruna-dark dark:text-slate-200">{item.author}</strong></span>
-                  <span className="text-taruna-yellow-700 dark:text-taruna-yellow-400 font-semibold inline-flex items-center cursor-pointer hover:underline">
-                    Baca Detail <ChevronRight className="w-3 h-3" />
-                  </span>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
+      {/* Agenda & Pengumuman Grid (Full CRUD Real-Time Synchronized) */}
+      <AdminEventsAndAnnouncements />
 
       {/* Table Kas & Jimpitan Setya Bakti */}
       <Card>
