@@ -9,6 +9,8 @@ router.use(authenticate);
 
 // 1. GET /api/member/dashboard - Mengambil data ringkasan dashboard member
 router.get('/', MemberDashboardController.getDashboard);
+router.get('/overview', MemberDashboardController.getDashboard);
+router.get('/dashboard', MemberDashboardController.getDashboard);
 
 // 2. PATCH /api/member/dashboard/notifications/:id/read - Tandai notifikasi dibaca
 router.patch('/notifications/:id/read', MemberDashboardController.markNotificationRead);

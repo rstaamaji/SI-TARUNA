@@ -7,9 +7,10 @@ const router = Router();
 // Semua endpoint memerlukan login
 router.use(authenticate);
 
-// GET /api/withdrawals/summary — Ringkasan total (MEMBER & ADMIN)
+// GET /api/withdrawals/summary & /overview — Ringkasan total (MEMBER & ADMIN)
 // MUST be before /:id to avoid "summary" being treated as id param
 router.get('/summary', CashWithdrawalController.getSummary);
+router.get('/overview', CashWithdrawalController.getSummary);
 
 // GET /api/withdrawals — Daftar riwayat pengambilan kas (MEMBER & ADMIN)
 router.get('/', CashWithdrawalController.getAll);

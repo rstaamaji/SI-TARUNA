@@ -256,7 +256,11 @@ export default function FinancialReportsPage() {
         if (selectedYear) params.append('year', selectedYear);
         if (selectedType && selectedType !== 'ALL') params.append('type', selectedType);
 
-        const res = await fetch(`http://localhost:5000/api/finance/reports?${params}`, {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL
+          ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+          : 'http://localhost:5000/api';
+
+        const res = await fetch(`${apiBase}/finance/reports?${params}`, {
           headers,
         });
         const json = await res.json();
@@ -264,17 +268,19 @@ export default function FinancialReportsPage() {
         if (res.ok && json.success && json.data) {
           setReport(json.data);
           if (isManualRefresh) toast.success('Laporan keuangan berhasil diperbarui.');
-        } else {
+        } else if (isManualRefresh) {
           toast.error(json.message || 'Gagal memuat laporan keuangan.');
         }
       } catch {
-        toast.error('Gagal terhubung ke server saat memuat laporan.');
+        if (isManualRefresh) {
+          toast.error('Gagal terhubung ke server saat memuat laporan.');
+        }
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
       }
     },
-    [startDate, endDate, selectedMonth, selectedYear, selectedType, toast]
+    [startDate, endDate, selectedMonth, selectedYear, selectedType]
   );
 
   useEffect(() => {

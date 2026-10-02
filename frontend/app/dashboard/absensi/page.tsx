@@ -117,7 +117,11 @@ export default function MemberAttendancePage() {
         const headers: Record<string, string> = {};
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const res = await fetch('http://localhost:5000/api/attendance/my-history', {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL
+          ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+          : 'http://localhost:5000/api';
+
+        const res = await fetch(`${apiBase}/attendance/my-history`, {
           headers,
         });
         const json = await res.json();
@@ -130,13 +134,15 @@ export default function MemberAttendancePage() {
           setAttendanceData(null);
         }
       } catch {
-        toast.error('Gagal mengambil data absensi dari server.');
+        if (isManualRefresh) {
+          toast.error('Gagal mengambil data absensi dari server.');
+        }
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
       }
     },
-    [toast]
+    []
   );
 
   useEffect(() => {

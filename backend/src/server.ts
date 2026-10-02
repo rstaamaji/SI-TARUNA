@@ -39,6 +39,25 @@ app.use(requestLogger);
 // 3. API Routes
 app.use('/api', apiRoutes);
 
+// 3b. Root & Direct Health Check
+app.get('/', (_req, res) => {
+  res.json({
+    success: true,
+    message: 'SI-TARUNA Backend API Server Running',
+    version: '1.0.0',
+    mode: config.env,
+    apiBase: '/api',
+  });
+});
+
+app.get('/health', (_req, res) => {
+  res.json({
+    success: true,
+    status: 'UP',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // 4. 404 Not Found Middleware
 app.use(notFoundHandler);
 

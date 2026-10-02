@@ -186,21 +186,27 @@ export default function PengumumanPage() {
       const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const res = await fetch('http://localhost:5000/api/announcements', { headers });
+      const apiBase = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : 'http://localhost:5000/api';
+
+      const res = await fetch(`${apiBase}/announcements`, { headers });
       const json = await res.json();
 
       if (res.ok && json.success && Array.isArray(json.data)) {
         setAnnouncements(json.data);
-      } else {
+      } else if (isManualRefresh) {
         toast.error(json.message || 'Gagal memuat daftar pengumuman');
       }
     } catch {
-      toast.error('Gagal terhubung ke server pengumuman');
+      if (isManualRefresh) {
+        toast.error('Gagal terhubung ke server pengumuman');
+      }
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
     fetchAnnouncements();

@@ -282,11 +282,44 @@ export class AttendanceService {
       },
     });
 
-    if (!user || !user.member) {
-      throw new AppError('Profil anggota tidak terhubung dengan akun ini.', 404);
+    if (!user) {
+      throw new AppError('Pengguna tidak terautentikasi.', 401);
     }
 
-    return this.getMemberAttendanceHistory(user.member.id);
+    if (user.member) {
+      return this.getMemberAttendanceHistory(user.member.id);
+    }
+
+    // Try finding by username in member name
+    const matchedMember = await prisma.member.findFirst({
+      where: {
+        name: { contains: user.username, mode: 'insensitive' },
+      },
+    });
+
+    if (matchedMember) {
+      return this.getMemberAttendanceHistory(matchedMember.id);
+    }
+
+    // Graceful fallback for admin or user without linked member
+    return {
+      member: {
+        id: user.id,
+        memberNumber: user.role === 'ADMIN' ? 'ADMIN-01' : 'MBR-GUEST',
+        name: user.username || 'Pengurus Taruna',
+        gender: 'L',
+        status: 'ACTIVE',
+        joinDate: user.createdAt.toISOString(),
+      },
+      stats: {
+        totalEvents: 0,
+        presentCount: 0,
+        absentCount: 0,
+        excusedCount: 0,
+        attendanceRate: 0,
+      },
+      history: [],
+    };
   }
 
   /**

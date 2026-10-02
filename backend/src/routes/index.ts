@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import healthRoutes from './health.routes';
 import authRoutes from './auth.routes';
 import adminRoutes from './admin.routes';
@@ -10,6 +10,9 @@ import financeRoutes from './finance.routes';
 import cashWithdrawalRoutes from './cashWithdrawal.routes';
 import attendanceRoutes from './attendance.routes';
 import meetingMinuteRoutes from './meetingMinute.routes';
+import { authenticate } from '../middleware/auth.middleware';
+import { AdminDashboardController } from '../controllers/adminDashboard.controller';
+import { MemberDashboardController } from '../controllers/memberDashboard.controller';
 
 const router = Router();
 
@@ -19,39 +22,64 @@ router.use('/', healthRoutes);
 // 2. Authentication: /api/auth (login, me)
 router.use('/auth', authRoutes);
 
-// 3. Admin Protected Routes: /api/admin & /api/dashboard/admin
+// 3. General Dashboard: /api/dashboard (Role-based smart dispatcher)
+router.get('/dashboard', authenticate, (req: Request, res: Response, next: NextFunction) => {
+  if (req.user?.role === 'ADMIN') {
+    return AdminDashboardController.getOverview(req, res, next);
+  }
+  return MemberDashboardController.getDashboard(req, res, next);
+});
+
+// 4. Admin Protected Routes: /api/admin & /api/dashboard/admin
 router.use('/admin', adminRoutes);
 router.use('/dashboard/admin', adminRoutes);
 
-// 4. Member Dashboard: /api/member/dashboard & /api/dashboard/member
+// 5. Member Dashboard: /api/member/dashboard & /api/dashboard/member
 router.use('/member/dashboard', memberDashboardRoutes);
 router.use('/dashboard/member', memberDashboardRoutes);
 
-// 5. Events / Kegiatan CRUD: /api/events & /api/event
+// 6. Events / Kegiatan CRUD: /api/events, /api/event, /api/kegiatan, /api/agenda
 router.use('/events', eventRoutes);
 router.use('/event', eventRoutes);
+router.use('/kegiatan', eventRoutes);
+router.use('/agenda', eventRoutes);
 
-// 6. Announcements / Pengumuman CRUD: /api/announcements & /api/announcement
+// 7. Announcements / Pengumuman CRUD: /api/announcements, /api/announcement, /api/pengumuman
 router.use('/announcements', announcementRoutes);
 router.use('/announcement', announcementRoutes);
+router.use('/pengumuman', announcementRoutes);
 
-// 7. Member Management CRUD: /api/members (and /api/member)
+// 8. Member Management CRUD: /api/members, /api/member, /api/anggota
 router.use('/members', memberRoutes);
 router.use('/member', memberRoutes);
+router.use('/anggota', memberRoutes);
 
-// 8. Financial Transparency Overview (Module 10-12): /api/finance & /api/finances
+// 9. Financial Transparency (Module 10-14): /api/finance, /api/finances, /api/keuangan, /api/reports
 router.use('/finance', financeRoutes);
 router.use('/finances', financeRoutes);
+router.use('/keuangan', financeRoutes);
+router.use('/reports', financeRoutes);
+router.use('/report', financeRoutes);
 
-// 9. Cash Withdrawal Records (Module 13): /api/withdrawals
+// 10. Cash Withdrawal Records (Module 13): /api/withdrawals & /api/finance/withdrawals
 router.use('/withdrawals', cashWithdrawalRoutes);
+router.use('/withdrawal', cashWithdrawalRoutes);
+router.use('/finance/withdrawals', cashWithdrawalRoutes);
+router.use('/finance/withdrawal', cashWithdrawalRoutes);
 
-// 10. Attendance Management (Module 15): /api/attendance
+// 11. Attendance Management & Statistics (Module 15-16): /api/attendance, /api/absensi, /api/statistics
 router.use('/attendance', attendanceRoutes);
+router.use('/absensi', attendanceRoutes);
+router.use('/presensi', attendanceRoutes);
+router.use('/statistics', attendanceRoutes);
+router.use('/stats', attendanceRoutes);
 
-// 11. Meeting Minutes / Notulensi Rapat (Module 18): /api/meeting-minutes & /api/notulensi
+// 12. Meeting Minutes / Notulensi Rapat (Module 18): /api/meeting-minutes, /api/notulensi, /api/minutes
 router.use('/meeting-minutes', meetingMinuteRoutes);
+router.use('/meeting-minute', meetingMinuteRoutes);
 router.use('/notulensi', meetingMinuteRoutes);
+router.use('/minutes', meetingMinuteRoutes);
+router.use('/minute', meetingMinuteRoutes);
 
 export default router;
 

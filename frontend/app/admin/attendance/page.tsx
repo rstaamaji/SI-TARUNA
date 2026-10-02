@@ -153,7 +153,11 @@ export default function AdminAttendancePage() {
       const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const res = await fetch('http://localhost:5000/api/attendance/events', { headers });
+      const apiBase = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : 'http://localhost:5000/api';
+
+      const res = await fetch(`${apiBase}/attendance/events`, { headers });
       const json = await res.json();
 
       if (res.ok && json.success && Array.isArray(json.data)) {
@@ -161,15 +165,13 @@ export default function AdminAttendancePage() {
         if (json.data.length > 0 && (selectFirst || !selectedEventId)) {
           setSelectedEventId(json.data[0].id);
         }
-      } else {
-        toast.error('Gagal memuat daftar kegiatan.');
       }
     } catch {
-      toast.error('Gagal terhubung ke server.');
+      // offline fallback
     } finally {
       setIsLoadingEvents(false);
     }
-  }, [selectedEventId, toast]);
+  }, [selectedEventId]);
 
   useEffect(() => {
     fetchEvents(true);
@@ -184,21 +186,23 @@ export default function AdminAttendancePage() {
       const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const res = await fetch(`http://localhost:5000/api/attendance/events/${eventId}`, { headers });
+      const apiBase = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : 'http://localhost:5000/api';
+
+      const res = await fetch(`${apiBase}/attendance/events/${eventId}`, { headers });
       const json = await res.json();
 
       if (res.ok && json.success && json.data) {
         setAttendanceSheet(json.data);
         setMemberRows(json.data.attendances || []);
-      } else {
-        toast.error('Gagal memuat lembar absensi kegiatan.');
       }
     } catch {
-      toast.error('Gagal mengambil data absensi.');
+      // offline fallback
     } finally {
       setIsLoadingSheet(false);
     }
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
     if (selectedEventId) {

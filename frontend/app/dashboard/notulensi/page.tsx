@@ -116,21 +116,27 @@ export default function NotulensiListPage() {
       const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const res = await fetch('http://localhost:5000/api/meeting-minutes', { headers });
+      const apiBase = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : 'http://localhost:5000/api';
+
+      const res = await fetch(`${apiBase}/meeting-minutes`, { headers });
       const json = await res.json();
 
       if (res.ok && json.success && Array.isArray(json.data)) {
         setMinutes(json.data);
-      } else {
+      } else if (isManual) {
         toast.error(json.message || 'Gagal memuat arsip notulensi rapat');
       }
     } catch {
-      toast.error('Gagal terhubung ke server notulensi');
+      if (isManual) {
+        toast.error('Gagal terhubung ke server notulensi');
+      }
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
     fetchMinutes();

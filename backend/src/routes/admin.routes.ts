@@ -12,7 +12,9 @@ router.use(authenticate, requireAdmin);
  * GET /api/admin/dashboard
  * Endpoint ringkasan overview organisasi untuk Admin Dashboard
  */
+router.get('/', AdminDashboardController.getOverview);
 router.get('/dashboard', AdminDashboardController.getOverview);
+router.get('/overview', AdminDashboardController.getOverview);
 
 /**
  * GET /api/admin/management-data

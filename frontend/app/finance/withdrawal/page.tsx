@@ -182,9 +182,13 @@ export default function CashWithdrawalPage() {
       if (selectedYear) params.append('year', selectedYear);
       if (searchQuery.trim()) params.append('search', searchQuery.trim());
 
+      const apiBase = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : 'http://localhost:5000/api';
+
       const [listRes, summaryRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/withdrawals?${params}`, { headers: authHeaders() }),
-        fetch('http://localhost:5000/api/withdrawals/summary', { headers: authHeaders() }),
+        fetch(`${apiBase}/withdrawals?${params}`, { headers: authHeaders() }),
+        fetch(`${apiBase}/withdrawals/summary`, { headers: authHeaders() }),
       ]);
 
       const listJson = await listRes.json();
@@ -194,7 +198,9 @@ export default function CashWithdrawalPage() {
       if (summaryRes.ok && summaryJson.success) setSummary(summaryJson.data);
       if (isManual) toast.success('Data berhasil diperbarui.');
     } catch {
-      toast.error('Gagal mengambil data dari server.');
+      if (isManual) {
+        toast.error('Gagal mengambil data dari server.');
+      }
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
