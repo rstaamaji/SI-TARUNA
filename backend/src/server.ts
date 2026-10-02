@@ -14,7 +14,19 @@ const server = http.createServer(app);
 // 1. Basic Middleware
 app.use(
   cors({
-    origin: config.clientUrl,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (
+        config.isDevelopment &&
+        (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'))
+      ) {
+        return callback(null, true);
+      }
+      if (origin === config.clientUrl) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
