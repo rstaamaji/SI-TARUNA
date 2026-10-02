@@ -43,7 +43,15 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       duration?: number;
     }) => {
       const id = Math.random().toString(36).substring(2, 9);
-      setToasts((prev) => [...prev, { id, type, title, message }]);
+      setToasts((prev) => {
+        // Prevent duplicate toasts with the same message from stacking
+        if (prev.some((t) => t.message === message && t.type === type)) {
+          return prev;
+        }
+        // Limit max 3 visible toasts to prevent cascade flooding
+        const next = [...prev, { id, type, title, message }];
+        return next.length > 3 ? next.slice(-3) : next;
+      });
 
       if (duration > 0) {
         setTimeout(() => {
@@ -70,6 +78,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     addToast({ type: 'info', title, message });
   }, [addToast]);
 
+  const contextValue = React.useMemo(
+    () => ({ toast: addToast, success, error, warning, info }),
+    [addToast, success, error, warning, info]
+  );
+
   const icons = {
     success: <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />,
     error: <AlertCircle className="w-5 h-5 text-taruna-red-600 shrink-0" />,
@@ -85,7 +98,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   return (
-    <ToastContext.Provider value={{ toast: addToast, success, error, warning, info }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
       {/* Toast viewport */}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0">

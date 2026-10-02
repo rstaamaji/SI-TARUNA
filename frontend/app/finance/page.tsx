@@ -165,6 +165,7 @@ export default function FinanceOverviewPage() {
   const [transactions, setTransactions] = useState<FinanceTransactionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isServerError, setIsServerError] = useState(false);
 
   // ── Modal states ──
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -234,17 +235,25 @@ export default function FinanceOverviewPage() {
       if (selectedCategory) params.append('category', selectedCategory);
       if (searchQuery.trim()) params.append('search', searchQuery.trim());
 
+      const apiBase = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : 'http://localhost:5000/api';
+
       const [summaryRes, listRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/finance/overview?${params}`, { headers }),
-        fetch(`http://localhost:5000/api/finance?${params}`, { headers }),
+        fetch(`${apiBase}/finance/overview?${params}`, { headers }),
+        fetch(`${apiBase}/finance?${params}`, { headers }),
       ]);
       const summaryJson = await summaryRes.json();
       const listJson = await listRes.json();
       if (summaryRes.ok && summaryJson.success && summaryJson.data) setSummary(summaryJson.data);
       if (listRes.ok && listJson.success && listJson.data) setTransactions(listJson.data);
+      setIsServerError(false);
       if (isManualRefresh) toast.success('Data keuangan berhasil diperbarui.');
     } catch {
-      toast.error('Gagal mengambil data dari server.');
+      setIsServerError(true);
+      if (isManualRefresh) {
+        toast.error('Gagal mengambil data dari server. Pastikan backend aktif.');
+      }
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -474,6 +483,27 @@ export default function FinanceOverviewPage() {
               )}
             </div>
           </div>
+
+          {/* ── SERVER OFFLINE BANNER ── */}
+          {isServerError && (
+            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5 text-amber-900 dark:text-amber-200">
+                <AlertTriangle className="w-5 h-5 shrink-0 text-amber-600" />
+                <span>
+                  <strong>Koneksi ke Server Backend Terputus:</strong> Data kas belum dapat dimuat karena server backend (port 5000) belum aktif atau sedang memproses. Pastikan backend telah dijalankan (<code>npm run dev</code> di folder backend).
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchFinanceData(true)}
+                disabled={isRefreshing}
+                className="border-amber-400 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-amber-900 dark:text-amber-200 shrink-0 font-bold"
+              >
+                Coba Hubungkan Kembali
+              </Button>
+            </div>
+          )}
 
           {/* ── SUMMARY CARDS ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
