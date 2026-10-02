@@ -74,6 +74,8 @@ export interface MemberDashboardData {
     title: string;
     description: string | null;
     eventDate: string;
+    dayOfWeek?: string | null;
+    time?: string | null;
     location: string;
     type: string;
     myAttendance: string | null;
@@ -793,7 +795,15 @@ export const MemberDashboard: React.FC = () => {
               </div>
               <div>
                 <CardTitle>Kegiatan Terdekat</CardTitle>
-                <CardDescription>Agenda resmi pemuda Dusun Tuk Uluh mendatang</CardDescription>
+                <CardDescription>
+                  Agenda resmi pemuda Dusun Tuk Uluh •{' '}
+                  <Link
+                    href="/dashboard/kegiatan"
+                    className="text-taruna-yellow-600 dark:text-taruna-yellow-400 font-bold hover:underline inline-flex items-center gap-0.5"
+                  >
+                    Buka Kalender Lengkap <ChevronRight className="w-3 h-3" />
+                  </Link>
+                </CardDescription>
               </div>
             </div>
             <Badge variant="primary" dot>
@@ -824,8 +834,14 @@ export const MemberDashboard: React.FC = () => {
                         event.type === 'MEETING'
                           ? 'primary'
                           : event.type === 'COMMUNITY_SERVICE'
+                          ? 'success'
+                          : event.type === 'ARISAN'
+                          ? 'warning'
+                          : event.type === 'SOCIAL'
                           ? 'accent'
-                          : 'success'
+                          : event.type === 'TARUNA'
+                          ? 'primary'
+                          : 'neutral'
                       }
                       size="sm"
                     >
@@ -833,22 +849,28 @@ export const MemberDashboard: React.FC = () => {
                         ? 'Rapat'
                         : event.type === 'COMMUNITY_SERVICE'
                         ? 'Kerja Bakti'
-                        : 'Olahraga'}
+                        : event.type === 'ARISAN'
+                        ? 'Arisan'
+                        : event.type === 'SOCIAL'
+                        ? 'Kegiatan Sosial'
+                        : event.type === 'TARUNA'
+                        ? 'Karang Taruna'
+                        : event.type === 'SPORTS'
+                        ? 'Olahraga'
+                        : 'Lainnya'}
                     </Badge>
                   </div>
 
                   <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-400 flex-wrap">
                     <span className="inline-flex items-center gap-1.5 font-medium">
                       <Clock className="w-3.5 h-3.5 text-taruna-yellow-600 dark:text-taruna-yellow-400" />
+                      {event.dayOfWeek || new Date(event.eventDate).toLocaleDateString('id-ID', { weekday: 'long' })},{' '}
                       {new Date(event.eventDate).toLocaleDateString('id-ID', {
-                        weekday: 'long',
                         day: 'numeric',
                         month: 'short',
                         year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
                       })}{' '}
-                      WIB
+                      • <strong className="text-taruna-dark dark:text-slate-200">{event.time || '19:30 WIB'}</strong>
                     </span>
                     <span className="inline-flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-taruna-red-600 dark:text-red-400" />

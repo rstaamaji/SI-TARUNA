@@ -74,8 +74,12 @@ export class MemberDashboardService {
       author: a.createdBy.member?.name || a.createdBy.username,
     }));
 
-    // 5. Kegiatan Terdekat
-    const rawEvents = await prisma.event.findMany({
+    // 5. Kegiatan Terdekat (Prioritize future events sorted by nearest date)
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    let rawEvents = await prisma.event.findMany({
+      where: { eventDate: { gte: startOfToday } },
       orderBy: { eventDate: 'asc' },
       take: 4,
       include: {
@@ -87,13 +91,33 @@ export class MemberDashboardService {
       },
     });
 
+    if (rawEvents.length === 0) {
+      rawEvents = await prisma.event.findMany({
+        orderBy: { eventDate: 'asc' },
+        take: 4,
+        include: {
+          attendances: user.member
+            ? {
+                where: { memberId: user.member.id },
+              }
+            : false,
+        },
+      });
+    }
+
+    const daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     const upcomingEvents = rawEvents.map((e) => {
       const myAttendance = e.attendances && e.attendances.length > 0 ? e.attendances[0].status : null;
+      const d = new Date(e.eventDate);
+      const dayOfWeek = e.dayOfWeek || daysIndo[d.getDay()];
+      const time = e.time || `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} WIB`;
       return {
         id: e.id,
         title: e.title,
         description: e.description,
         eventDate: e.eventDate.toISOString(),
+        dayOfWeek,
+        time,
         location: e.location,
         type: e.type,
         myAttendance,

@@ -47,6 +47,8 @@ enum EventType {
   COMMUNITY_SERVICE
   SOCIAL
   SPORTS
+  ARISAN
+  TARUNA
   OTHER
 }
 
@@ -148,6 +150,8 @@ model Event {
   title       String
   description String?
   eventDate   DateTime
+  dayOfWeek   String?
+  time        String?
   location    String
   type        EventType @default(MEETING)
   createdAt   DateTime  @default(now())

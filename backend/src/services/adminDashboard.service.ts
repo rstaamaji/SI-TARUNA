@@ -44,6 +44,8 @@ export interface AdminDashboardData {
     title: string;
     description: string | null;
     eventDate: string;
+    dayOfWeek?: string | null;
+    time?: string | null;
     location: string;
     type: string;
   }[];
@@ -318,10 +320,38 @@ export class AdminDashboardService {
       ];
     }
 
-    // 8. Kegiatan Terdekat
-    const upcomingEvents = await prisma.event.findMany({
+    // 8. Kegiatan Terdekat (Prioritize future events sorted by nearest date)
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    let rawUpcomingEvents = await prisma.event.findMany({
+      where: { eventDate: { gte: startOfToday } },
       orderBy: { eventDate: 'asc' },
       take: 4,
+    });
+
+    if (rawUpcomingEvents.length === 0) {
+      rawUpcomingEvents = await prisma.event.findMany({
+        orderBy: { eventDate: 'asc' },
+        take: 4,
+      });
+    }
+
+    const daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const upcomingEvents = rawUpcomingEvents.map((ev) => {
+      const d = new Date(ev.eventDate);
+      const dayOfWeek = ev.dayOfWeek || daysIndo[d.getDay()];
+      const time = ev.time || `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} WIB`;
+      return {
+        id: ev.id,
+        title: ev.title,
+        description: ev.description,
+        eventDate: ev.eventDate.toISOString(),
+        dayOfWeek,
+        time,
+        location: ev.location,
+        type: ev.type,
+      };
     });
 
     // 9. Pengumuman Terbaru
@@ -396,14 +426,7 @@ export class AdminDashboardService {
         balanceTrend: balanceTrendChart,
         attendanceStats: attendanceStatsChart,
       },
-      upcomingEvents: upcomingEvents.map((e) => ({
-        id: e.id,
-        title: e.title,
-        description: e.description,
-        eventDate: e.eventDate.toISOString(),
-        location: e.location,
-        type: e.type,
-      })),
+      upcomingEvents,
       recentAnnouncements,
       latestMeetingMinute,
     };

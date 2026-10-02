@@ -5,8 +5,24 @@ import { sendSuccess } from '../utils/response';
 export class EventController {
   static async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const events = await EventService.getAllEvents();
+      const { search, type, month, year } = req.query;
+      const events = await EventService.getAllEvents({
+        search: search as string,
+        type: type as string,
+        month: month ? Number(month) : undefined,
+        year: year ? Number(year) : undefined,
+      });
       sendSuccess(res, 'Berhasil memuat daftar kegiatan', events, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getUpcoming(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const limit = req.query.limit ? Number(req.query.limit) : 10;
+      const events = await EventService.getUpcomingEvents(limit);
+      sendSuccess(res, 'Berhasil memuat kegiatan terdekat', events, 200);
     } catch (error) {
       next(error);
     }
@@ -24,11 +40,13 @@ export class EventController {
 
   static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { title, description, eventDate, location, type } = req.body;
+      const { title, description, eventDate, dayOfWeek, time, location, type } = req.body;
       const created = await EventService.createEvent({
         title,
         description,
         eventDate,
+        dayOfWeek,
+        time,
         location,
         type,
       });
@@ -41,11 +59,13 @@ export class EventController {
   static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const { title, description, eventDate, location, type } = req.body;
+      const { title, description, eventDate, dayOfWeek, time, location, type } = req.body;
       const updated = await EventService.updateEvent(id as string, {
         title,
         description,
         eventDate,
+        dayOfWeek,
+        time,
         location,
         type,
       });

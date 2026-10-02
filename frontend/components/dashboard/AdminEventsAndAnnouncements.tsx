@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import {
   CalendarDays,
   Megaphone,
@@ -11,6 +12,7 @@ import {
   MapPin,
   AlertTriangle,
   Home,
+  ChevronRight,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -25,8 +27,10 @@ export interface EventItem {
   title: string;
   description: string | null;
   eventDate: string;
+  dayOfWeek?: string | null;
+  time?: string | null;
   location: string;
-  type: 'MEETING' | 'COMMUNITY_SERVICE' | 'SOCIAL' | 'SPORTS' | 'OTHER';
+  type: 'MEETING' | 'COMMUNITY_SERVICE' | 'ARISAN' | 'SOCIAL' | 'TARUNA' | 'SPORTS' | 'OTHER' | string;
 }
 
 export interface AnnouncementItem {
@@ -101,6 +105,13 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
     return localStorage.getItem('si_taruna_token');
   };
 
+  const getApiBase = () => {
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
+    }
+    return 'http://localhost:5000/api';
+  };
+
   // Fetch events and announcements from API
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -109,9 +120,10 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
       const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
+      const apiBase = getApiBase();
       const [evRes, annRes] = await Promise.all([
-        fetch('http://localhost:5000/api/events', { headers }),
-        fetch('http://localhost:5000/api/announcements', { headers }),
+        fetch(`${apiBase}/events`, { headers }),
+        fetch(`${apiBase}/announcements`, { headers }),
       ]);
 
       const evJson = await evRes.json();
@@ -176,17 +188,24 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
     try {
       const token = getAuthToken();
       const fullIsoDate = new Date(`${eventDateOnly}T${eventTimeOnly}:00`).toISOString();
+      const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      const derivedDay = days[new Date(`${eventDateOnly}T00:00:00`).getDay()] || 'Minggu';
+      const formattedTime = `${eventTimeOnly} WIB`;
+
       const payload = {
         title: eventTitle.trim(),
         type: eventType,
         eventDate: fullIsoDate,
+        dayOfWeek: derivedDay,
+        time: formattedTime,
         location: eventLocation.trim(),
         description: eventDescription.trim(),
       };
 
+      const apiBase = getApiBase();
       const url = editingEvent
-        ? `http://localhost:5000/api/events/${editingEvent.id}`
-        : 'http://localhost:5000/api/events';
+        ? `${apiBase}/events/${editingEvent.id}`
+        : `${apiBase}/events`;
       const method = editingEvent ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -250,9 +269,10 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
         content: annContent.trim(),
       };
 
+      const apiBase = getApiBase();
       const url = editingAnn
-        ? `http://localhost:5000/api/announcements/${editingAnn.id}`
-        : 'http://localhost:5000/api/announcements';
+        ? `${apiBase}/announcements/${editingAnn.id}`
+        : `${apiBase}/announcements`;
       const method = editingAnn ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -292,10 +312,11 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
     setIsSubmitting(true);
     try {
       const token = getAuthToken();
+      const apiBase = getApiBase();
       const endpoint =
         deleteTarget.type === 'EVENT'
-          ? `http://localhost:5000/api/events/${deleteTarget.id}`
-          : `http://localhost:5000/api/announcements/${deleteTarget.id}`;
+          ? `${apiBase}/events/${deleteTarget.id}`
+          : `${apiBase}/announcements/${deleteTarget.id}`;
 
       const res = await fetch(endpoint, {
         method: 'DELETE',
@@ -339,7 +360,13 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
             <div>
               <CardTitle>Jadwal Kegiatan &amp; Arisan</CardTitle>
               <CardDescription>
-                Agenda pemuda Tuk Uluh (Lokasi arisan fleksibel antar rumah)
+                Agenda pemuda Tuk Uluh •{' '}
+                <Link
+                  href="/dashboard/kegiatan"
+                  className="text-taruna-yellow-600 dark:text-taruna-yellow-400 font-bold hover:underline inline-flex items-center gap-0.5"
+                >
+                  Buka Kalender Lengkap <ChevronRight className="w-3 h-3" />
+                </Link>
               </CardDescription>
             </div>
           </div>
@@ -384,16 +411,30 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
                         event.type === 'MEETING'
                           ? 'primary'
                           : event.type === 'COMMUNITY_SERVICE'
+                          ? 'success'
+                          : event.type === 'ARISAN'
+                          ? 'warning'
+                          : event.type === 'SOCIAL'
                           ? 'accent'
-                          : 'success'
+                          : event.type === 'TARUNA'
+                          ? 'primary'
+                          : 'neutral'
                       }
                       size="sm"
                     >
                       {event.type === 'MEETING'
-                        ? 'Arisan / Rapat'
+                        ? 'Rapat'
                         : event.type === 'COMMUNITY_SERVICE'
                         ? 'Kerja Bakti'
-                        : 'Sosial'}
+                        : event.type === 'ARISAN'
+                        ? 'Arisan'
+                        : event.type === 'SOCIAL'
+                        ? 'Kegiatan Sosial'
+                        : event.type === 'TARUNA'
+                        ? 'Karang Taruna'
+                        : event.type === 'SPORTS'
+                        ? 'Olahraga'
+                        : 'Lainnya'}
                     </Badge>
                   </div>
                 </div>
@@ -402,15 +443,13 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
                 <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-400 flex-wrap">
                   <span className="inline-flex items-center gap-1.5 font-medium">
                     <Clock className="w-3.5 h-3.5 text-taruna-yellow-600 dark:text-taruna-yellow-400" />
+                    {event.dayOfWeek || new Date(event.eventDate).toLocaleDateString('id-ID', { weekday: 'long' })},{' '}
                     {new Date(event.eventDate).toLocaleDateString('id-ID', {
-                      weekday: 'long',
                       day: 'numeric',
                       month: 'short',
                       year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
                     })}{' '}
-                    WIB
+                    • <strong className="text-taruna-dark dark:text-slate-200">{event.time || '19:30 WIB'}</strong>
                   </span>
                   <span className="inline-flex items-center gap-1.5 font-semibold text-taruna-dark dark:text-slate-200">
                     <MapPin className="w-3.5 h-3.5 text-taruna-red-600 dark:text-red-400" />
@@ -619,11 +658,13 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
               value={eventType}
               onChange={(e) => setEventType(e.target.value as any)}
               options={[
-                { value: 'MEETING', label: 'Arisan / Pertemuan Rutin' },
-                { value: 'COMMUNITY_SERVICE', label: 'Kerja Bakti Lingkungan' },
+                { value: 'MEETING', label: 'Rapat (Pleno / Evaluasi)' },
+                { value: 'COMMUNITY_SERVICE', label: 'Kerja Bakti' },
+                { value: 'ARISAN', label: 'Arisan Pemuda' },
                 { value: 'SOCIAL', label: 'Kegiatan Sosial' },
+                { value: 'TARUNA', label: 'Kegiatan Karang Taruna' },
                 { value: 'SPORTS', label: 'Olahraga Pemuda' },
-                { value: 'OTHER', label: 'Lain-lain' },
+                { value: 'OTHER', label: 'Lainnya' },
               ]}
             />
             <div className="grid grid-cols-2 gap-2">

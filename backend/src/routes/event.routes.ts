@@ -9,6 +9,7 @@ router.use(authenticate);
 
 // Public / Member reads
 router.get('/', EventController.getAll);
+router.get('/upcoming', EventController.getUpcoming);
 router.get('/:id', EventController.getById);
 
 // Admin-only mutations (Create, Update, Delete)
