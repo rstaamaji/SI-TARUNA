@@ -9,6 +9,7 @@ import announcementRoutes from './announcement.routes';
 import financeRoutes from './finance.routes';
 import cashWithdrawalRoutes from './cashWithdrawal.routes';
 import attendanceRoutes from './attendance.routes';
+import meetingMinuteRoutes from './meetingMinute.routes';
 
 const router = Router();
 
@@ -47,6 +48,10 @@ router.use('/withdrawals', cashWithdrawalRoutes);
 
 // 10. Attendance Management (Module 15): /api/attendance
 router.use('/attendance', attendanceRoutes);
+
+// 11. Meeting Minutes / Notulensi Rapat (Module 18): /api/meeting-minutes & /api/notulensi
+router.use('/meeting-minutes', meetingMinuteRoutes);
+router.use('/notulensi', meetingMinuteRoutes);
 
 export default router;
 

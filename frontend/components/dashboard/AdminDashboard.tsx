@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import {
   Users,
   Wallet,
@@ -12,6 +13,12 @@ import {
   RefreshCw,
   Sparkles,
   ShieldCheck,
+  FileText,
+  BookOpen,
+  Clock,
+  MapPin,
+  ChevronRight,
+  CheckCircle2,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -86,6 +93,19 @@ export interface AdminDashboardData {
     eventDate: string | null;
     author: string;
   }[];
+  latestMeetingMinute?: {
+    id: string;
+    title: string;
+    meetingDate: string;
+    dayOfWeek: string | null;
+    location: string;
+    meetingLeader: string;
+    noteTaker: string;
+    content: string;
+    conclusion: string | null;
+    followUp: string | null;
+    author: string;
+  } | null;
 }
 
 // Fallback initial data
@@ -134,6 +154,19 @@ const FALLBACK_ADMIN_DASHBOARD: AdminDashboardData = {
   },
   upcomingEvents: [],
   recentAnnouncements: [],
+  latestMeetingMinute: {
+    id: 'mm-1',
+    title: 'Rapat Pleno & Evaluasi Program Kerja September 2026',
+    meetingDate: '2026-09-10T19:30:00.000Z',
+    dayOfWeek: 'Kamis',
+    location: 'Balai Dusun Tuk Uluh, Desa Sringin',
+    meetingLeader: 'Rustam Aji (Ketua Karang Taruna)',
+    noteTaker: 'Siti Nurhaliza (Sekretaris)',
+    content: 'Pembahasan evaluasi kas keuangan, kesepakatan jadwal kerja bakti saluran air, dan partisipasi turnamen voli antardusun.',
+    conclusion: 'Laporan kas disetujui, kerja bakti disepakati 12 Oktober 2026, dan subsidi tim voli disetujui.',
+    followUp: 'Seksi perlengkapan menyiapkan alat kerja bakti, seksi olahraga mengadakan seleksi pemain.',
+    author: 'Siti Nurhaliza',
+  },
 };
 
 const formatRupiah = (value: number): string => {
@@ -617,6 +650,90 @@ export const AdminDashboard: React.FC = () => {
         </div>
         <AdminEventsAndAnnouncements onDataChanged={() => fetchDashboardData(false)} />
       </div>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          5. NOTULENSI RAPAT TERBARU (DOKUMENTASI ADMIN)
+      ───────────────────────────────────────────────────────────────────────────── */}
+      {data.latestMeetingMinute && (
+        <Card className="mt-6">
+          <CardHeader className="flex-row items-center justify-between pb-3 flex-wrap gap-2">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
+                <FileText className="w-5 h-5" />
+              </div>
+              <div>
+                <CardTitle>Notulensi Rapat Terakhir</CardTitle>
+                <CardDescription>Dokumen resmi keputusan pleno &amp; tindak lanjut kepengurusan</CardDescription>
+              </div>
+            </div>
+            <Link
+              href="/dashboard/notulensi"
+              className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+            >
+              Buka Seluruh Arsip Notulensi <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </CardHeader>
+          <CardContent>
+            <div className="p-5 rounded-2xl bg-gradient-to-br from-white to-blue-50/30 dark:from-slate-900 dark:to-blue-950/20 border border-blue-200/80 dark:border-blue-900/40 space-y-4">
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div>
+                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                    <Badge variant="primary" size="sm">
+                      {data.latestMeetingMinute.dayOfWeek || 'Rapat Pleno'}
+                    </Badge>
+                    <span className="text-xs text-gray-500 dark:text-slate-400 flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-blue-600" />
+                      {new Date(data.latestMeetingMinute.meetingDate).toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </span>
+                    <span className="text-gray-300 dark:text-slate-700">•</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-400 flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-red-500" />
+                      {data.latestMeetingMinute.location}
+                    </span>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-bold text-taruna-dark dark:text-white leading-snug">
+                    {data.latestMeetingMinute.title}
+                  </h3>
+                </div>
+
+                <Link
+                  href={`/dashboard/notulensi/${data.latestMeetingMinute.id}`}
+                  className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs inline-flex items-center gap-1.5 shrink-0"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  Buka Dokumen Lengkap
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-white dark:bg-slate-800/80 p-3.5 rounded-xl border border-taruna-border/60 dark:border-slate-700">
+                <div>
+                  <span className="text-gray-400 dark:text-slate-500 block">Pimpinan Rapat:</span>
+                  <strong className="text-gray-700 dark:text-slate-200">{data.latestMeetingMinute.meetingLeader}</strong>
+                </div>
+                <div>
+                  <span className="text-gray-400 dark:text-slate-500 block">Notulis:</span>
+                  <strong className="text-gray-700 dark:text-slate-200">{data.latestMeetingMinute.noteTaker}</strong>
+                </div>
+              </div>
+
+              {data.latestMeetingMinute.conclusion && (
+                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 text-xs text-emerald-900 dark:text-emerald-200">
+                  <span className="font-bold flex items-center gap-1 mb-0.5 text-[11px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                    <CheckCircle2 className="w-3 h-3" /> Kesimpulan Rapat:
+                  </span>
+                  <p className="line-clamp-2 leading-relaxed opacity-95">
+                    {data.latestMeetingMinute.conclusion}
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

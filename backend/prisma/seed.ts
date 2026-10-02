@@ -513,13 +513,55 @@ async function main() {
   });
 
   // 10. Meeting Minutes
-  await prisma.meetingMinute.create({
-    data: {
-      meetingDate: new Date('2026-09-10'),
-      title: 'Notulensi Rapat Pleno Evaluasi Kegiatan September 2026',
-      content: '1. Pembukaan oleh Ketua (Rustam Aji).\n2. Laporan keuangan kas oleh Bendahara: Saldo akhir per 10 September adalah Rp 7.500.000.\n3. Rencana pengadaan jersey olahraga Karang Taruna Setya Bakti disetujui dengan iuran mandiri 50% dan subsidi kas 50%.\n4. Rapat ditutup pukul 22.00 WIB.',
-      createdById: adminUser.id,
-    },
+  await prisma.meetingMinute.deleteMany();
+  await prisma.meetingMinute.createMany({
+    data: [
+      {
+        meetingDate: new Date('2026-09-10T19:30:00'),
+        dayOfWeek: 'Kamis',
+        title: 'Rapat Pleno & Evaluasi Program Kerja September 2026',
+        location: 'Balai Dusun Tuk Uluh, Desa Sringin',
+        meetingLeader: 'Rustam Aji (Ketua Karang Taruna)',
+        noteTaker: 'Siti Nurhaliza (Sekretaris 1)',
+        content: `1. Pembukaan oleh Ketua Karang Taruna Setya Bakti (Sdr. Rustam Aji) pukul 19.45 WIB.
+2. Sambutan dari Penasihat Karang Taruna Dusun Tuk Uluh mengenai ketertiban pemuda dan keaktifan siskamling.
+3. Laporan Kas Keuangan oleh Bendahara (Sdri. Dewi Lestari):
+   - Saldo awal: Rp 4.500.000
+   - Pemasukan periode berjalan: Rp 3.620.000
+   - Pengeluaran operasional & sosial: Rp 1.700.000
+   - Saldo akhir kas: Rp 6.420.000
+4. Evaluasi Kegiatan Agustusan & Peringatan HUT RI ke-81:
+   - Pelaksanaan berjalan lancar dan sukses.
+   - Sisa anggaran kegiatan telah dikembalikan ke kas umum organisasi.
+5. Pembahasan Agenda Kerja Bakti & Pembersihan Lingkungan Saluran Air Dusun menghadapi musim hujan.
+6. Rencana Partisipasi Turnamen Bola Voli Tingkat Kecamatan Jumantono.`,
+        conclusion: `1. Seluruh anggota menyetujui laporan pertanggungjawaban keuangan kas periode September 2026.
+2. Kerja bakti saluran air disepakati pada hari Minggu, 12 Oktober 2026 pukul 06.30 WIB.
+3. Tim bola voli Karang Taruna Setya Bakti akan didaftarkan dengan alokasi dana subsidi kas maksimal Rp 500.000.`,
+        followUp: `1. Seksi Perlengkapan (Sdr. Eko & Bambang) mempersiapkan cangkul dan gerobak dorong dusun sebelum tanggal 12 Oktober.
+2. Seksi Olahraga (Sdr. Fajar) mengadakan seleksi pemain voli pada hari Jumat sore di lapangan desa.
+3. Bendahara membagikan rekapitulasi iuran wajib ke grup WhatsApp anggota.`,
+        createdById: adminUser.id,
+      },
+      {
+        meetingDate: new Date('2026-08-10T19:30:00'),
+        dayOfWeek: 'Senin',
+        title: 'Rapat Koordinasi Persiapan Malam Tirakatan & Pentas Seni Dusun',
+        location: 'Kediaman Sdr. Bambang (RT 01 Dusun Tuk Uluh)',
+        meetingLeader: 'Rustam Aji (Ketua)',
+        noteTaker: 'Eko Prasetyo (Sekretaris 2)',
+        content: `1. Rapat dibuka pukul 20.00 WIB di kediaman Sdr. Bambang RT 01.
+2. Pembentukan kepanitiaan malam tirakatan HUT RI ke-81.
+3. Susunan acara malam tirakatan: tahlil bersama, sambutan kepala dusun, pemotongan tumpeng, pembagian hadiah lomba anak-anak, dan ramah tamah.
+4. Rincian anggaran konsumsi dan sound system dusun.`,
+        conclusion: `1. Panitia pelaksana diketuai oleh Sdr. Bambang.
+2. Iuran sukarela warga dikoordinasikan bersama pengurus RT 01, 02, dan 03.
+3. Gladi bersih panggung pada tanggal 15 Agustus malam.`,
+        followUp: `1. Pembelian terpal dan sewa sound system diselesaikan paling lambat 14 Agustus 2026.
+2. Konsumsi dikoordinasikan dengan kelompok ibu-ibu PKK Dusun Tuk Uluh.`,
+        createdById: adminUser.id,
+      },
+    ],
   });
 
   // 11. Arisan Records

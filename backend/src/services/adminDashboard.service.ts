@@ -51,10 +51,25 @@ export interface AdminDashboardData {
     id: string;
     title: string;
     content: string;
+    type?: string;
+    isAttention?: boolean;
     announcementDate: string;
     eventDate: string | null;
     author: string;
   }[];
+  latestMeetingMinute?: {
+    id: string;
+    title: string;
+    meetingDate: string;
+    dayOfWeek: string | null;
+    location: string;
+    meetingLeader: string;
+    noteTaker: string;
+    content: string;
+    conclusion: string | null;
+    followUp: string | null;
+    author: string;
+  } | null;
 }
 
 export class AdminDashboardService {
@@ -337,6 +352,35 @@ export class AdminDashboardService {
       author: a.createdBy.member?.name || a.createdBy.username,
     }));
 
+    // 10. Notulensi Rapat Terbaru
+    const rawMinute = await prisma.meetingMinute.findFirst({
+      orderBy: { meetingDate: 'desc' },
+      include: {
+        createdBy: {
+          select: {
+            username: true,
+            member: { select: { name: true } },
+          },
+        },
+      },
+    });
+
+    const latestMeetingMinute = rawMinute
+      ? {
+          id: rawMinute.id,
+          title: rawMinute.title,
+          meetingDate: rawMinute.meetingDate.toISOString(),
+          dayOfWeek: rawMinute.dayOfWeek,
+          location: rawMinute.location,
+          meetingLeader: rawMinute.meetingLeader,
+          noteTaker: rawMinute.noteTaker,
+          content: rawMinute.content,
+          conclusion: rawMinute.conclusion,
+          followUp: rawMinute.followUp,
+          author: rawMinute.createdBy.member?.name || rawMinute.createdBy.username,
+        }
+      : null;
+
     return {
       metrics: {
         totalActiveMembers,
@@ -361,6 +405,7 @@ export class AdminDashboardService {
         type: e.type,
       })),
       recentAnnouncements,
+      latestMeetingMinute,
     };
   }
 }

@@ -336,6 +336,35 @@ export class MemberDashboardService {
       actionUrl: 'https://wa.me/6281234567801?text=Halo%20Bendahara%20Setya%20Bakti,%20saya%20ingin%20konfirmasi%20iuran%20kas',
     });
 
+    // 11. Notulensi Rapat Terbaru
+    const rawMinute = await prisma.meetingMinute.findFirst({
+      orderBy: { meetingDate: 'desc' },
+      include: {
+        createdBy: {
+          select: {
+            username: true,
+            member: { select: { name: true } },
+          },
+        },
+      },
+    });
+
+    const latestMeetingMinute = rawMinute
+      ? {
+          id: rawMinute.id,
+          title: rawMinute.title,
+          meetingDate: rawMinute.meetingDate.toISOString(),
+          dayOfWeek: rawMinute.dayOfWeek,
+          location: rawMinute.location,
+          meetingLeader: rawMinute.meetingLeader,
+          noteTaker: rawMinute.noteTaker,
+          content: rawMinute.content,
+          conclusion: rawMinute.conclusion,
+          followUp: rawMinute.followUp,
+          author: rawMinute.createdBy.member?.name || rawMinute.createdBy.username,
+        }
+      : null;
+
     return {
       memberProfile: {
         id: user.member?.id || null,
@@ -369,6 +398,7 @@ export class MemberDashboardService {
         createdAt: n.createdAt.toISOString(),
       })),
       unreadNotificationsCount,
+      latestMeetingMinute,
     };
   }
 
