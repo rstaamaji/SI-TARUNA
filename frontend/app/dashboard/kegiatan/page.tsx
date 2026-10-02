@@ -12,17 +12,8 @@ import {
   Search,
   RefreshCw,
   ShieldCheck,
-  CheckCircle2,
   AlertTriangle,
-  Info,
-  Users,
-  Compass,
   Sparkles,
-  ExternalLink,
-  ChevronRight,
-  Filter,
-  Layers,
-  MapPinned,
   Eye,
   Calendar as CalendarIcon,
 } from 'lucide-react';
@@ -310,7 +301,6 @@ export default function KegiatanPage() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const evDate = new Date(dateStr);
     const evDatePure = new Date(dateStr);
     evDatePure.setHours(0, 0, 0, 0);
 

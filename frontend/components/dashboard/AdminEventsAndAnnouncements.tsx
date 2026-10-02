@@ -65,7 +65,7 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
   const [eventTitle, setEventTitle] = useState('');
-  const [eventType, setEventType] = useState<'MEETING' | 'COMMUNITY_SERVICE' | 'SOCIAL' | 'SPORTS' | 'OTHER'>('MEETING');
+  const [eventType, setEventType] = useState<'MEETING' | 'COMMUNITY_SERVICE' | 'ARISAN' | 'SOCIAL' | 'TARUNA' | 'SPORTS' | 'OTHER' | string>('MEETING');
   const [eventDateOnly, setEventDateOnly] = useState('2026-10-05');
   const [eventTimeOnly, setEventTimeOnly] = useState('19:30');
   const [eventLocation, setEventLocation] = useState('Balai Dusun Tuk Uluh');
