@@ -311,8 +311,11 @@ export class AdminDashboardService {
 
     // 9. Pengumuman Terbaru
     const rawAnnouncements = await prisma.announcement.findMany({
-      orderBy: { announcementDate: 'desc' },
-      take: 4,
+      orderBy: [
+        { isAttention: 'desc' },
+        { announcementDate: 'desc' },
+      ],
+      take: 6,
       include: {
         createdBy: {
           select: {
@@ -327,6 +330,8 @@ export class AdminDashboardService {
       id: a.id,
       title: a.title,
       content: a.content,
+      type: a.type,
+      isAttention: a.isAttention,
       announcementDate: a.announcementDate.toISOString(),
       eventDate: a.eventDate ? a.eventDate.toISOString() : null,
       author: a.createdBy.member?.name || a.createdBy.username,

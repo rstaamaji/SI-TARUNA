@@ -60,6 +60,8 @@ export interface MemberDashboardData {
     id: string;
     title: string;
     content: string;
+    type?: string;
+    isAttention?: boolean;
     date: string;
     eventDate: string | null;
     author: string;
@@ -971,10 +973,34 @@ export const MemberDashboard: React.FC = () => {
                 key={ann.id}
                 className="p-4 rounded-2xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900/80 hover:border-taruna-yellow-300 dark:hover:border-taruna-yellow-500/50 transition flex flex-col gap-1.5"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className="font-bold text-sm text-taruna-dark dark:text-white leading-snug">
-                    {ann.title}
-                  </h4>
+                <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {ann.isAttention && (
+                      <Badge variant="accent" size="sm" dot>
+                        ATTENTION
+                      </Badge>
+                    )}
+                    {ann.type && (
+                      <Badge
+                        variant={
+                          ann.type === 'RAPAT'
+                            ? 'primary'
+                            : ann.type === 'KERJA_BAKTI'
+                            ? 'success'
+                            : ann.type === 'ARISAN'
+                            ? 'warning'
+                            : ann.type === 'INFORMASI'
+                            ? 'info'
+                            : ann.type === 'LAINNYA'
+                            ? 'neutral'
+                            : 'info'
+                        }
+                        size="sm"
+                      >
+                        {ann.type === 'KERJA_BAKTI' ? 'Kerja Bakti' : ann.type}
+                      </Badge>
+                    )}
+                  </div>
                   <span className="text-[11px] text-gray-400 dark:text-slate-500 whitespace-nowrap">
                     {new Date(ann.date).toLocaleDateString('id-ID', {
                       day: 'numeric',
@@ -982,6 +1008,9 @@ export const MemberDashboard: React.FC = () => {
                     })}
                   </span>
                 </div>
+                <h4 className="font-bold text-sm text-taruna-dark dark:text-white leading-snug">
+                  {ann.title}
+                </h4>
                 <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed">
                   {ann.content}
                 </p>
@@ -989,9 +1018,12 @@ export const MemberDashboard: React.FC = () => {
                   <span>
                     Diterbitkan oleh: <strong className="text-taruna-dark dark:text-slate-200">{ann.author}</strong>
                   </span>
-                  <span className="text-taruna-yellow-700 dark:text-taruna-yellow-400 font-semibold inline-flex items-center gap-0.5 cursor-pointer hover:underline">
-                    Baca Selengkapnya <ChevronRight className="w-3 h-3" />
-                  </span>
+                  <a
+                    href="/dashboard/pengumuman"
+                    className="text-taruna-yellow-700 dark:text-taruna-yellow-400 font-semibold inline-flex items-center gap-0.5 cursor-pointer hover:underline"
+                  >
+                    Selengkapnya <ChevronRight className="w-3 h-3" />
+                  </a>
                 </div>
               </div>
             ))}

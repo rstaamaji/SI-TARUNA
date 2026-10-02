@@ -33,6 +33,8 @@ export interface AnnouncementItem {
   id: string;
   title: string;
   content: string;
+  type?: 'PENGUMUMAN' | 'RAPAT' | 'KERJA_BAKTI' | 'ARISAN' | 'INFORMASI' | 'LAINNYA';
+  isAttention?: boolean;
   announcementDate: string;
   eventDate?: string | null;
   createdBy?: {
@@ -492,10 +494,34 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
                 key={ann.id}
                 className="p-4 rounded-2xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900/80 hover:border-taruna-yellow-300 dark:hover:border-taruna-yellow-500/50 transition flex flex-col gap-2 group"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className="font-bold text-sm text-taruna-dark dark:text-white leading-snug">
-                    {ann.title}
-                  </h4>
+                <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {ann.isAttention && (
+                      <Badge variant="accent" size="sm" dot>
+                        ATTENTION
+                      </Badge>
+                    )}
+                    {ann.type && (
+                      <Badge
+                        variant={
+                          ann.type === 'RAPAT'
+                            ? 'primary'
+                            : ann.type === 'KERJA_BAKTI'
+                            ? 'success'
+                            : ann.type === 'ARISAN'
+                            ? 'warning'
+                            : ann.type === 'INFORMASI'
+                            ? 'info'
+                            : ann.type === 'LAINNYA'
+                            ? 'neutral'
+                            : 'info'
+                        }
+                        size="sm"
+                      >
+                        {ann.type === 'KERJA_BAKTI' ? 'Kerja Bakti' : ann.type}
+                      </Badge>
+                    )}
+                  </div>
                   <span className="text-[11px] text-gray-400 dark:text-slate-500 whitespace-nowrap">
                     {new Date(ann.announcementDate).toLocaleDateString('id-ID', {
                       day: 'numeric',
@@ -504,6 +530,9 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
                     })}
                   </span>
                 </div>
+                <h4 className="font-bold text-sm text-taruna-dark dark:text-white leading-snug">
+                  {ann.title}
+                </h4>
                 <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed">
                   {ann.content}
                 </p>

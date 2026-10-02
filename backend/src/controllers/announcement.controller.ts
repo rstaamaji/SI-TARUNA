@@ -1,12 +1,29 @@
 import { Request, Response, NextFunction } from 'express';
 import { AnnouncementService } from '../services/announcement.service';
 import { sendSuccess } from '../utils/response';
+import { AnnouncementType } from '@prisma/client';
 
 export class AnnouncementController {
   static async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const announcements = await AnnouncementService.getAllAnnouncements();
+      const { type, isAttention, search } = req.query;
+
+      const announcements = await AnnouncementService.getAllAnnouncements({
+        type: type as AnnouncementType | 'ALL',
+        isAttention: isAttention !== undefined ? isAttention === 'true' : undefined,
+        search: search as string,
+      });
+
       sendSuccess(res, 'Berhasil memuat daftar pengumuman', announcements, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getAttention(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const items = await AnnouncementService.getAttentionItems();
+      sendSuccess(res, 'Berhasil memuat daftar informasi perhatian / attention', items, 200);
     } catch (error) {
       next(error);
     }
@@ -29,10 +46,13 @@ export class AnnouncementController {
         throw new Error('User unauthenticated');
       }
 
-      const { title, content, eventDate } = req.body;
+      const { title, content, type, isAttention, announcementDate, eventDate } = req.body;
       const created = await AnnouncementService.createAnnouncement({
         title,
         content,
+        type,
+        isAttention,
+        announcementDate,
         eventDate,
         createdById: userId,
       });
@@ -45,10 +65,13 @@ export class AnnouncementController {
   static async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const { title, content, eventDate } = req.body;
+      const { title, content, type, isAttention, announcementDate, eventDate } = req.body;
       const updated = await AnnouncementService.updateAnnouncement(id as string, {
         title,
         content,
+        type,
+        isAttention,
+        announcementDate,
         eventDate,
       });
       sendSuccess(res, 'Pengumuman berhasil diperbarui', updated, 200);
@@ -67,3 +90,4 @@ export class AnnouncementController {
     }
   }
 }
+

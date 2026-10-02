@@ -9,6 +9,7 @@ router.use(authenticate);
 
 // Member / Public reads
 router.get('/', AnnouncementController.getAll);
+router.get('/attention', AnnouncementController.getAttention);
 router.get('/:id', AnnouncementController.getById);
 
 // Admin-only mutations (Create, Update, Delete)

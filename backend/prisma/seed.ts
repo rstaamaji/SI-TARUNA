@@ -1,4 +1,4 @@
-import { PrismaClient, Role, Gender, MemberStatus, TransactionType, AttendanceStatus, ArisanStatus, EventType, NotificationType } from '@prisma/client';
+import { PrismaClient, Role, Gender, MemberStatus, TransactionType, AttendanceStatus, ArisanStatus, EventType, NotificationType, AnnouncementType } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -264,7 +264,7 @@ async function main() {
     },
   ];
 
-  const createdMembers = [];
+  const createdMembers: any[] = [];
   for (const m of dummyMembersData) {
     const member = await prisma.member.upsert({
       where: { memberNumber: m.memberNumber },
@@ -287,7 +287,7 @@ async function main() {
     { groupNumber: 7, name: 'Kelompok 7 (Dusun Tuk Uluh Perbatasan)' },
   ];
 
-  const createdGroups = [];
+  const createdGroups: any[] = [];
   for (const g of jimpitanGroupsData) {
     const group = await prisma.jimpitanGroup.upsert({
       where: { groupNumber: g.groupNumber },
@@ -452,20 +452,61 @@ async function main() {
   console.log('✅ Seeded 5 Finance Transactions.');
 
   // 9. Announcements
+  await prisma.announcement.deleteMany(); // Clear existing to seed fresh types
   await prisma.announcement.createMany({
     data: [
       {
-        title: 'Iuran Wajib Bulanan Periode Oktober 2026',
-        content: 'Diberitahukan kepada seluruh anggota Karang Taruna Setya Bakti bahwa iuran wajib sebesar Rp 10.000 dapat disetorkan kepada bendahara dusun paling lambat tanggal 10 Oktober 2026.',
-        announcementDate: new Date('2026-09-29'),
-        eventDate: new Date('2026-10-10'),
+        title: 'PERHATIAN: Rapat Pleno & Pembentukan Panitia Turnamen 2026',
+        content: 'Diharapkan kehadiran SELURUH anggota pemuda-pemudi Karang Taruna Setya Bakti Dusun Tuk Uluh. Agenda sangat krusial: Pembentukan panitia turnamen voli antardusun dan pembahasan laporan pertanggungjawaban kas periode kuartal 3.',
+        type: AnnouncementType.RAPAT,
+        isAttention: true,
+        announcementDate: new Date('2026-10-01T08:00:00'),
+        eventDate: new Date('2026-10-05T19:30:00'),
         createdById: adminUser.id,
       },
       {
-        title: 'Pelaksanaan Kerja Bakti Dusun Tuk Uluh',
-        content: 'Dalam rangka menjaga kebersihan lingkungan dan mengantisipasi musim penghujan, seluruh pemuda diharapkan hadir pada kerja bakti hari Minggu, 12 Oktober 2026 pukul 06.30 WIB dengan membawa cangkul dan sabit.',
-        announcementDate: new Date('2026-09-24'),
-        eventDate: new Date('2026-10-12'),
+        title: 'Iuran Wajib Bulanan Periode Oktober 2026',
+        content: 'Diberitahukan kepada seluruh anggota Karang Taruna Setya Bakti bahwa iuran wajib sebesar Rp 10.000 dapat disetorkan kepada bendahara dusun paling lambat tanggal 10 Oktober 2026.',
+        type: AnnouncementType.PENGUMUMAN,
+        isAttention: true,
+        announcementDate: new Date('2026-09-29T10:00:00'),
+        eventDate: new Date('2026-10-10T23:59:00'),
+        createdById: adminUser.id,
+      },
+      {
+        title: 'Pelaksanaan Kerja Bakti Pembersihan Lingkungan & Gorong-Gorong',
+        content: 'Dalam rangka menjaga kebersihan lingkungan dan mengantisipasi musim penghujan, seluruh pemuda diharapkan hadir pada kerja bakti hari Minggu pukul 06.30 WIB dengan membawa cangkul dan sabit.',
+        type: AnnouncementType.KERJA_BAKTI,
+        isAttention: false,
+        announcementDate: new Date('2026-09-28T09:00:00'),
+        eventDate: new Date('2026-10-12T06:30:00'),
+        createdById: adminUser.id,
+      },
+      {
+        title: 'Undian Arisan Pemuda Putaran Ke-9',
+        content: 'Undian arisan putaran ke-9 akan diselenggarakan di kediaman Sdr. Bambang (RT 01) bersamaan dengan kumpul rutin malam Minggu. Harap menyelesaikan setoran arisan sebelum pengundian dimulai.',
+        type: AnnouncementType.ARISAN,
+        isAttention: false,
+        announcementDate: new Date('2026-09-25T14:00:00'),
+        eventDate: new Date('2026-10-15T20:00:00'),
+        createdById: adminUser.id,
+      },
+      {
+        title: 'Informasi Pendaftaran Turnamen Bulutangkis Antardusun',
+        content: 'Bagi rekan-rekan anggota yang berminat mewakili Dusun Tuk Uluh dalam turnamen bulutangkis kecamatan, pendaftaran dibuka sampai 8 Oktober 2026 melalui koordinator seksi olahraga.',
+        type: AnnouncementType.INFORMASI,
+        isAttention: false,
+        announcementDate: new Date('2026-09-20T11:00:00'),
+        eventDate: new Date('2026-10-08T18:00:00'),
+        createdById: adminUser.id,
+      },
+      {
+        title: 'Inventarisasi Perlengkapan Tenda & Sound System Dusun',
+        content: 'Diberitahukan kepada anggota yang saat ini menyimpan kabel roll, mikrofon, atau inventaris sound dusun harap mengembalikannya ke posko pemuda untuk dilakukan pengecekan kondisi berkala.',
+        type: AnnouncementType.LAINNYA,
+        isAttention: false,
+        announcementDate: new Date('2026-09-18T16:00:00'),
+        eventDate: null,
         createdById: adminUser.id,
       },
     ],

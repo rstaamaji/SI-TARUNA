@@ -48,8 +48,11 @@ export class MemberDashboardService {
 
     // 4. Pengumuman Terbaru
     const rawAnnouncements = await prisma.announcement.findMany({
-      orderBy: { announcementDate: 'desc' },
-      take: 4,
+      orderBy: [
+        { isAttention: 'desc' },
+        { announcementDate: 'desc' },
+      ],
+      take: 6,
       include: {
         createdBy: {
           select: {
@@ -64,6 +67,8 @@ export class MemberDashboardService {
       id: a.id,
       title: a.title,
       content: a.content,
+      type: a.type,
+      isAttention: a.isAttention,
       date: a.announcementDate.toISOString(),
       eventDate: a.eventDate ? a.eventDate.toISOString() : null,
       author: a.createdBy.member?.name || a.createdBy.username,
@@ -241,15 +246,37 @@ export class MemberDashboardService {
     // 10. "Attention / Informasi Penting" Section Items (Dynamic based on Announcements & Events)
     const attentionItems: AttentionItem[] = [];
 
-    // Prioritas 1: Pengumuman Terbaru dari Admin jika ada
-    if (announcements.length > 0) {
-      const topAnn = announcements[0];
+    // Prioritas 1: Pengumuman bertanda ATTENTION / Pengumuman Teratas dari Admin
+    const attentionAnns = announcements.filter((a) => a.isAttention);
+    const topAnns = attentionAnns.length > 0 ? attentionAnns.slice(0, 2) : announcements.slice(0, 1);
+
+    topAnns.forEach((topAnn) => {
+      let badgeLabel = 'ATTENTION';
+      let variant: AttentionItem['badgeVariant'] = 'accent';
+
+      if (topAnn.type === 'RAPAT') {
+        badgeLabel = 'RAPAT PENTING';
+        variant = 'primary';
+      } else if (topAnn.type === 'KERJA_BAKTI') {
+        badgeLabel = 'KERJA BAKTI';
+        variant = 'warning';
+      } else if (topAnn.type === 'ARISAN') {
+        badgeLabel = 'ARISAN PEMUDA';
+        variant = 'warning';
+      } else if (topAnn.type === 'INFORMASI') {
+        badgeLabel = 'INFORMASI PENTING';
+        variant = 'info';
+      } else if (topAnn.type === 'PENGUMUMAN') {
+        badgeLabel = 'PENGUMUMAN PENTING';
+        variant = 'accent';
+      }
+
       attentionItems.push({
         id: `att-ann-${topAnn.id}`,
         title: topAnn.title,
         description: topAnn.content,
-        badge: 'PENGUMUMAN PENTING',
-        badgeVariant: 'accent',
+        badge: badgeLabel,
+        badgeVariant: variant,
         dueDate: topAnn.eventDate
           ? new Date(topAnn.eventDate).toLocaleDateString('id-ID', {
               day: 'numeric',
@@ -257,10 +284,10 @@ export class MemberDashboardService {
               year: 'numeric',
             })
           : undefined,
-        actionLabel: 'Baca Selengkapnya',
-        actionUrl: '#pengumuman-section',
+        actionLabel: 'Lihat Pengumuman',
+        actionUrl: '/dashboard/pengumuman',
       });
-    }
+    });
 
     // Prioritas 2: Agenda Terdekat / Arisan dengan lokasi bergilir
     if (arisanEvent) {
