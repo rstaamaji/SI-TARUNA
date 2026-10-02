@@ -17,8 +17,6 @@ import {
   Info,
   ArrowRight,
 } from 'lucide-react';
-import { Sidebar } from '@/components/layout/Sidebar';
-import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -75,7 +73,6 @@ export default function MemberAttendancePage() {
     name: 'Anggota Karang Taruna',
     role: 'MEMBER',
   });
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const isAdmin = currentUser.role === 'ADMIN';
 
   // Data
@@ -190,15 +187,8 @@ export default function MemberAttendancePage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={currentUser.role} />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <Navbar onMenuToggle={() => setSidebarOpen(true)} user={{ name: currentUser.name, role: currentUser.role }} />
-
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
-
-          {/* ── HEADER ── */}
+    <div className="space-y-6">
+      {/* ── HEADER ── */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -502,8 +492,6 @@ export default function MemberAttendancePage() {
               </div>
             </CardContent>
           </Card>
-        </main>
-      </div>
     </div>
   );
 }

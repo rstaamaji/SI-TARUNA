@@ -45,23 +45,27 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors print:bg-white print:text-black print:min-h-0">
       {/* Sidebar Navigation with RBAC */}
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        userRole={currentUser.role}
-      />
+      <div className="print:hidden">
+        <Sidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          userRole={currentUser.role}
+        />
+      </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <Navbar
-          onMenuToggle={() => setSidebarOpen(true)}
-          user={currentUser}
-          notificationCount={3}
-        />
+      <div className="flex-1 flex flex-col min-w-0 print:w-full print:block">
+        <div className="print:hidden">
+          <Navbar
+            onMenuToggle={() => setSidebarOpen(true)}
+            user={currentUser}
+            notificationCount={3}
+          />
+        </div>
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto print:p-0 print:max-w-none">
           {children}
         </main>
       </div>

@@ -14,8 +14,6 @@ import {
   Pencil,
   AlertCircle,
 } from 'lucide-react';
-import { Sidebar } from '@/components/layout/Sidebar';
-import { Navbar } from '@/components/layout/Navbar';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/ui/Logo';
@@ -52,9 +50,7 @@ export default function NotulensiDetailPage() {
   const minuteId = params?.id as string;
 
   // Layout & Auth
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userRole, setUserRole] = useState<'ADMIN' | 'MEMBER'>('MEMBER');
-  const [userName, setUserName] = useState('Anggota Taruna');
 
   // Data state
   const [minute, setMinute] = useState<MeetingMinuteDetail | null>(null);
@@ -68,9 +64,6 @@ export default function NotulensiDetailPage() {
         const u = JSON.parse(stored);
         if (u.role === 'ADMIN' || u.role === 'MEMBER') {
           setUserRole(u.role);
-        }
-        if (u.name || u.member?.name || u.username) {
-          setUserName(u.name || u.member?.name || u.username);
         }
       }
     } catch {
@@ -149,20 +142,10 @@ ${minute.followUp || '-'}`;
   };
 
   return (
-    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors print:bg-white print:text-black">
-      <div className="print:hidden">
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={userRole} />
-      </div>
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <div className="print:hidden">
-          <Navbar onMenuToggle={() => setSidebarOpen(true)} user={{ name: userName, role: userRole }} />
-        </div>
-
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-5xl w-full mx-auto space-y-6 print:p-0 print:max-w-none">
-          {/* ─────────────────────────────────────────────────────────────────────────────
-              1. TOOLBAR / NAVIGATION BAR (Hidden on print)
-          ───────────────────────────────────────────────────────────────────────────── */}
+    <div className="max-w-5xl w-full mx-auto space-y-6 print:max-w-none">
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          1. TOOLBAR / NAVIGATION BAR (Hidden on print)
+      ───────────────────────────────────────────────────────────────────────────── */}
           <div className="print:hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
             <Link
               href="/dashboard/notulensi"
@@ -377,8 +360,6 @@ ${minute.followUp || '-'}`;
               </div>
             </article>
           )}
-        </main>
-      </div>
     </div>
   );
 }

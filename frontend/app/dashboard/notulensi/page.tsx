@@ -19,8 +19,6 @@ import {
   AlertTriangle,
   ClipboardList,
 } from 'lucide-react';
-import { Sidebar } from '@/components/layout/Sidebar';
-import { Navbar } from '@/components/layout/Navbar';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
@@ -55,9 +53,7 @@ export default function NotulensiListPage() {
   const toast = useToast();
 
   // Layout & Auth State
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userRole, setUserRole] = useState<'ADMIN' | 'MEMBER'>('MEMBER');
-  const [userName, setUserName] = useState('Anggota Taruna');
 
   // Data State
   const [minutes, setMinutes] = useState<MeetingMinuteItem[]>([]);
@@ -92,9 +88,6 @@ export default function NotulensiListPage() {
         const u = JSON.parse(stored);
         if (u.role === 'ADMIN' || u.role === 'MEMBER') {
           setUserRole(u.role);
-        }
-        if (u.name || u.member?.name || u.username) {
-          setUserName(u.name || u.member?.name || u.username);
         }
       }
     } catch {
@@ -309,16 +302,10 @@ export default function NotulensiListPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={userRole} />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <Navbar onMenuToggle={() => setSidebarOpen(true)} user={{ name: userName, role: userRole }} />
-
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-8">
-          {/* ─────────────────────────────────────────────────────────────────────────────
-              1. PAGE HEADER
-          ───────────────────────────────────────────────────────────────────────────── */}
+    <div className="space-y-8">
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          1. PAGE HEADER
+      ───────────────────────────────────────────────────────────────────────────── */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
@@ -795,8 +782,6 @@ export default function NotulensiListPage() {
               </div>
             </div>
           </Modal>
-        </main>
-      </div>
     </div>
   );
 }
