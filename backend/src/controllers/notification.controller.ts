@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { NotificationService } from '../services/notification.service';
+import { ReminderService } from '../services/reminder.service';
 import { sendSuccess } from '../utils/response';
 import { AppError } from '../utils/appError';
 
@@ -123,6 +124,26 @@ export class NotificationController {
       });
 
       sendSuccess(res, result.message || 'Notifikasi berhasil dikirim', result, 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/notifications/run-reminders
+   * Menjalankan pengecekan dan pembuatan reminder otomatis (Admin atau manual trigger)
+   */
+  static async runReminders(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { testDate } = req.body;
+      const targetDate = testDate ? new Date(testDate) : undefined;
+      const result = await ReminderService.checkAndCreateReminders(targetDate);
+      sendSuccess(
+        res,
+        `Pengecekan reminder selesai. ${result.createdNotificationsCount} notifikasi reminder berhasil diterbitkan.`,
+        result,
+        200
+      );
     } catch (error) {
       next(error);
     }

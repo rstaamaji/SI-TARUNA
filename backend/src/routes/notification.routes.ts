@@ -14,7 +14,8 @@ router.patch('/:id/read', NotificationController.markRead);
 router.post('/read-all', NotificationController.markAllRead);
 router.delete('/:id', NotificationController.delete);
 
-// Admin-Only: Broadcast notifikasi custom ke seluruh pengguna
+// Admin-Only: Broadcast notifikasi custom ke seluruh pengguna & Trigger reminder scheduler
 router.post('/broadcast', requireAdmin, NotificationController.broadcast);
+router.post('/run-reminders', NotificationController.runReminders);
 
 export default router;

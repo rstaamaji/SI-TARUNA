@@ -8,6 +8,7 @@ import { requestLogger } from './middleware/logger.middleware';
 import { notFoundHandler } from './middleware/notFound.middleware';
 import { errorHandler } from './middleware/error.middleware';
 import { initSocketServer } from './socket';
+import { ReminderService } from './services/reminder.service';
 
 const app = express();
 const server = http.createServer(app);
@@ -76,10 +77,14 @@ if (process.env.NODE_ENV !== 'test') {
     console.log(`📡 Port: ${config.port} | Mode: ${config.env}`);
     console.log(`🔗 Health: http://localhost:${config.port}/api/health`);
     console.log(`===============================================`);
+
+    // Inisialisasi Automatic Event Reminder Scheduler (Module 24)
+    ReminderService.startScheduler();
   });
 
   const handleShutdown = async (signal: string) => {
     console.log(`\n[${signal}] Received. Shutting down gracefully...`);
+    ReminderService.stopScheduler();
     server.close(async () => {
       console.log('HTTP server closed.');
       await prisma.$disconnect();

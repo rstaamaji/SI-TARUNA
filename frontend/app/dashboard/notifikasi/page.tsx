@@ -386,6 +386,22 @@ export default function NotifikasiPage() {
     }
   };
 
+  // Manual Trigger Scheduler Reminder (Admin)
+  const handleTriggerReminders = async () => {
+    setIsProcessing(true);
+    try {
+      const res = await api.post('/notifications/run-reminders');
+      const msg = res.data?.message || 'Pengecekan reminder selesai';
+      toast.success(msg, 'Scheduler Berhasil Dijalankan');
+      await fetchNotifications();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Gagal memproses reminder otomatis';
+      toast.error(msg, 'Gagal');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   // Filtered Notifications
   const filteredNotifications = useMemo(() => {
     return notifications.filter((item) => {
@@ -471,13 +487,26 @@ export default function NotifikasiPage() {
           </Button>
 
           {userRole === 'ADMIN' && (
-            <Button
-              onClick={() => setIsBroadcastModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 rounded-xl shadow-md transition-all font-semibold"
-            >
-              <Send className="w-4 h-4" />
-              <span>Broadcast Notifikasi</span>
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleTriggerReminders}
+                disabled={isProcessing}
+                className="flex items-center gap-2 rounded-xl border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20 font-semibold"
+              >
+                <Clock className="w-4 h-4" />
+                <span className="hidden sm:inline">Cek Reminder</span> (H-3/H-1)
+              </Button>
+
+              <Button
+                onClick={() => setIsBroadcastModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 rounded-xl shadow-md transition-all font-semibold"
+              >
+                <Send className="w-4 h-4" />
+                <span>Broadcast Notifikasi</span>
+              </Button>
+            </>
           )}
         </div>
       </div>
