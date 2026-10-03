@@ -275,3 +275,23 @@ model Notification {
 
   @@map("notifications")
 }
+
+model OrganizationSetting {
+  id          String   @id @default("default")
+  orgName     String   @default("Karang Taruna Setya Bakti")
+  logoUrl     String?  @default("/assets/logo.png")
+  phone       String?  @default("0812-3456-7890")
+  email       String?  @default("setyabakti.tukuluh@gmail.com")
+  socialMedia String?  @default("@karangtaruna_setyabakti")
+  address     String   @default("Dusun Tuk Uluh, Desa Sringin, Kec. Jumantono, Kab. Karanganyar, Jawa Tengah")
+  hamlet      String?  @default("Tuk Uluh")
+  village     String?  @default("Sringin")
+  subDistrict String?  @default("Jumantono")
+  district    String?  @default("Karanganyar")
+  period      String   @default("2024 - 2027")
+  description String?  @default("Wadah pembinaan dan pengembangan generasi muda Dusun Tuk Uluh, Desa Sringin, Kecamatan Jumantono.")
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  @@map("organization_settings")
+}

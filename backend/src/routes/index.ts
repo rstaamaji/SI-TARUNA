@@ -13,6 +13,7 @@ import meetingMinuteRoutes from './meetingMinute.routes';
 import arisanRoutes from './arisan.routes';
 import jimpitanRoutes from './jimpitan.routes';
 import notificationRoutes from './notification.routes';
+import settingRoutes from './setting.routes';
 import { authenticate } from '../middleware/auth.middleware';
 import { AdminDashboardController } from '../controllers/adminDashboard.controller';
 import { MemberDashboardController } from '../controllers/memberDashboard.controller';
@@ -97,6 +98,13 @@ router.use('/jimpitans', jimpitanRoutes);
 // 15. Notification System (Module 22): /api/notifications, /api/notifikasi
 router.use('/notifications', notificationRoutes);
 router.use('/notifikasi', notificationRoutes);
+
+// 16. Admin Settings & Organization Configuration (Module 27): /api/settings, /api/pengaturan, /api/organization
+router.use('/settings', settingRoutes);
+router.use('/setting', settingRoutes);
+router.use('/pengaturan', settingRoutes);
+router.use('/organization', settingRoutes);
+router.use('/organisasi', settingRoutes);
 
 export default router;
 

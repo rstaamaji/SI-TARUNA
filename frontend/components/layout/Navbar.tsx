@@ -285,22 +285,28 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               </div>
               <div className="py-1">
-                <a
-                  href="#profile"
-                  onClick={(e) => e.preventDefault()}
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 rounded-xl hover:bg-taruna-surface dark:hover:bg-slate-800 hover:text-taruna-dark dark:hover:text-white transition"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    router.push('/dashboard/profil');
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 rounded-xl hover:bg-taruna-surface dark:hover:bg-slate-800 hover:text-taruna-dark dark:hover:text-white transition text-left"
                 >
                   <User className="w-4 h-4 text-gray-400 dark:text-slate-500" />
                   Profil Saya
-                </a>
-                <a
-                  href="#settings"
-                  onClick={(e) => e.preventDefault()}
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 rounded-xl hover:bg-taruna-surface dark:hover:bg-slate-800 hover:text-taruna-dark dark:hover:text-white transition"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    router.push(user.role === 'ADMIN' ? '/admin/settings' : '/dashboard/profil');
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-700 dark:text-slate-300 rounded-xl hover:bg-taruna-surface dark:hover:bg-slate-800 hover:text-taruna-dark dark:hover:text-white transition text-left"
                 >
                   <Settings className="w-4 h-4 text-gray-400 dark:text-slate-500" />
-                  Pengaturan
-                </a>
+                  {user.role === 'ADMIN' ? 'Pengaturan Organisasi' : 'Pengaturan Akun'}
+                </button>
               </div>
               <div className="pt-1 border-t border-taruna-border dark:border-slate-800">
                 <a

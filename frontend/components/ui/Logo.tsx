@@ -4,12 +4,15 @@ import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
+import { useOrganization } from '@/context/OrganizationContext';
+
 interface LogoProps {
   className?: string;
   size?: number;
   showText?: boolean;
   href?: string;
   subtitle?: string;
+  src?: string;
 }
 
 export const Logo: React.FC<LogoProps> = ({
@@ -17,9 +20,14 @@ export const Logo: React.FC<LogoProps> = ({
   size = 46,
   showText = true,
   href,
-  subtitle = 'Tuk Uluh, Sringin, Jumantono',
+  subtitle,
+  src,
 }) => {
+  const { config } = useOrganization();
   const [imageError, setImageError] = useState(false);
+
+  const effectiveLogoUrl = src || config.logoUrl || '/assets/logo.png';
+  const effectiveSubtitle = subtitle || (config.hamlet ? `${config.hamlet}, ${config.village}, ${config.subDistrict}` : 'Tuk Uluh, Sringin, Jumantono');
 
   const LogoContent = (
     <div className={cn('flex items-center gap-3 select-none group', className)}>
@@ -39,8 +47,8 @@ export const Logo: React.FC<LogoProps> = ({
         {!imageError ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src="/assets/logo.png"
-            alt="Logo Karang Taruna Setya Bakti - Tuk Uluh, Sringin, Jumantono"
+            src={effectiveLogoUrl}
+            alt="Logo Karang Taruna"
             width={size}
             height={size}
             style={{
@@ -115,7 +123,7 @@ export const Logo: React.FC<LogoProps> = ({
             </span>
           </div>
           <span className="text-[11px] font-bold text-taruna-red-600 dark:text-red-400 tracking-wide mt-1 whitespace-nowrap truncate">
-            {subtitle}
+            {effectiveSubtitle}
           </span>
         </div>
       )}

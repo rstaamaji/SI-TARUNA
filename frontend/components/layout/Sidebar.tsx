@@ -24,6 +24,7 @@ import {
   BarChart3,
   ClipboardList,
   BarChart2,
+  Settings,
 } from 'lucide-react';
 
 export interface SidebarProps {
@@ -128,6 +129,13 @@ export const navigationItems: NavItem[] = [
     icon: ShieldCheck,
     badge: 'Admin',
     adminOnly: true, // Khusus ADMIN, disembunyikan dari MEMBER
+  },
+  {
+    name: 'Pengaturan',
+    href: '/admin/settings',
+    icon: Settings,
+    badge: 'Admin',
+    adminOnly: true, // Khusus ADMIN
   },
   {
     name: 'Notifikasi',
