@@ -11,6 +11,7 @@ import cashWithdrawalRoutes from './cashWithdrawal.routes';
 import attendanceRoutes from './attendance.routes';
 import meetingMinuteRoutes from './meetingMinute.routes';
 import arisanRoutes from './arisan.routes';
+import jimpitanRoutes from './jimpitan.routes';
 import { authenticate } from '../middleware/auth.middleware';
 import { AdminDashboardController } from '../controllers/adminDashboard.controller';
 import { MemberDashboardController } from '../controllers/memberDashboard.controller';
@@ -85,6 +86,10 @@ router.use('/minute', meetingMinuteRoutes);
 // 13. Arisan Management (Module 20): /api/arisan, /api/arisans
 router.use('/arisan', arisanRoutes);
 router.use('/arisans', arisanRoutes);
+
+// 14. Jimpitan Management (Module 21): /api/jimpitan, /api/jimpitans
+router.use('/jimpitan', jimpitanRoutes);
+router.use('/jimpitans', jimpitanRoutes);
 
 export default router;
 
