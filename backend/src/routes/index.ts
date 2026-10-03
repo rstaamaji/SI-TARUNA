@@ -52,10 +52,12 @@ router.use('/announcements', announcementRoutes);
 router.use('/announcement', announcementRoutes);
 router.use('/pengumuman', announcementRoutes);
 
-// 8. Member Management CRUD: /api/members, /api/member, /api/anggota
+// 8. Member Management CRUD: /api/members, /api/member, /api/anggota, /api/profile, /api/profil
 router.use('/members', memberRoutes);
 router.use('/member', memberRoutes);
 router.use('/anggota', memberRoutes);
+router.use('/profile', memberRoutes);
+router.use('/profil', memberRoutes);
 
 // 9. Financial Transparency (Module 10-14): /api/finance, /api/finances, /api/keuangan, /api/reports
 router.use('/finance', financeRoutes);

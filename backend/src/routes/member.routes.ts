@@ -44,6 +44,12 @@ router.get('/view-data', authenticate, requireMember, (req: Request, res: Respon
 // MEMBER MANAGEMENT CRUD (MODULE 07)
 // ─────────────────────────────────────────────────────────────────────────────
 
+// 0. MEMBER PROFILE (MODULE 26) - Akses dan ubah data profil pribadi anggota
+router.get('/profile', authenticate, MemberController.getProfile);
+router.get('/profile/me', authenticate, MemberController.getProfile);
+router.put('/profile', authenticate, MemberController.updateProfile);
+router.put('/profile/me', authenticate, MemberController.updateProfile);
+
 // 1. GET /api/members - Seluruh pengguna terautentikasi dapat melihat daftar anggota
 router.get(
   '/',

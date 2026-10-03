@@ -1,6 +1,7 @@
 import { Gender, MemberStatus, Prisma } from '@prisma/client';
 import prisma from '../utils/prisma';
 import { AppError } from '../utils/appError';
+import bcrypt from 'bcrypt';
 
 export interface MemberFilterOptions {
   search?: string;
@@ -309,5 +310,269 @@ export class MemberService {
       message: 'Data anggota berhasil dihapus secara permanen dari sistem.',
       member: existing,
     };
+  }
+
+  /**
+   * Mengambil data profil lengkap anggota (Module 26: Member Profile)
+   * Menyajikan:
+   * - Data Diri (Nama, Nomor Anggota, Nomor HP, Alamat, Tanggal Bergabung, Status)
+   * - Statistik Keaktifan (Total Kegiatan, Hadir, Izin, Tidak Hadir, Persentase Kehadiran)
+   * - Riwayat Absensi
+   * - Notifikasi
+   */
+  static async getMemberProfile(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        member: true,
+      },
+    });
+
+    if (!user) {
+      throw new AppError('Pengguna tidak ditemukan', 404);
+    }
+
+    let member = user.member;
+
+    // Jika user belum terhubung ke member, cari berdasarkan kecocokan nama/username
+    if (!member) {
+      member = await prisma.member.findFirst({
+        where: {
+          OR: [
+            { name: { contains: user.username, mode: 'insensitive' } },
+            { phone: user.username },
+          ],
+        },
+      });
+
+      // Hubungkan jika ditemukan
+      if (member && !member.userId) {
+        member = await prisma.member.update({
+          where: { id: member.id },
+          data: { userId: user.id },
+        });
+      }
+    }
+
+    // Jika masih belum ada data member (misal Admin murni), sediakan entitas representasi
+    if (!member) {
+      member = await prisma.member.create({
+        data: {
+          userId: user.id,
+          memberNumber: user.role === 'ADMIN' ? 'ADMIN-001' : `MBR-${user.id.slice(0, 6).toUpperCase()}`,
+          name: user.username,
+          gender: 'MALE',
+          phone: '081234567890',
+          address: 'Dusun Tuk Uluh, Desa Sringin, Karanganyar',
+          joinDate: user.createdAt,
+          status: 'ACTIVE',
+        },
+      });
+    }
+
+    // 1. Ambil Statistik Keaktifan Absensi
+    const totalEventsInSystem = await prisma.event.count();
+
+    const attendances = await prisma.attendance.findMany({
+      where: { memberId: member.id },
+      include: {
+        event: {
+          select: {
+            id: true,
+            title: true,
+            eventDate: true,
+            location: true,
+            type: true,
+          },
+        },
+      },
+      orderBy: {
+        event: {
+          eventDate: 'desc',
+        },
+      },
+    });
+
+    const presentCount = attendances.filter((a) => a.status === 'PRESENT').length;
+    const excusedCount = attendances.filter((a) => a.status === 'EXCUSED').length;
+    const absentCount = attendances.filter((a) => a.status === 'ABSENT').length;
+    const totalEvents = Math.max(totalEventsInSystem, attendances.length);
+    const attendanceRate = totalEvents > 0 ? Math.round((presentCount / totalEvents) * 100) : 0;
+
+    // 2. Ambil Notifikasi Anggota
+    const notifications = await prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+
+    return {
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt.toISOString(),
+      },
+      member: {
+        id: member.id,
+        memberNumber: member.memberNumber,
+        name: member.name,
+        gender: member.gender,
+        phone: member.phone,
+        address: member.address,
+        joinDate: member.joinDate.toISOString(),
+        status: member.status,
+      },
+      stats: {
+        totalEvents,
+        presentCount,
+        excusedCount,
+        absentCount,
+        attendanceRate,
+      },
+      attendances: attendances.map((a) => ({
+        id: a.id,
+        status: a.status,
+        notes: a.notes,
+        updatedAt: a.updatedAt.toISOString(),
+        event: {
+          id: a.event.id,
+          title: a.event.title,
+          eventDate: a.event.eventDate.toISOString(),
+          location: a.event.location,
+          type: a.event.type,
+        },
+      })),
+      notifications: notifications.map((n) => ({
+        id: n.id,
+        title: n.title,
+        message: n.message,
+        type: n.type,
+        isRead: n.isRead,
+        createdAt: n.createdAt.toISOString(),
+        link: n.link,
+      })),
+    };
+  }
+
+  /**
+   * Mengubah profil anggota secara mandiri (Module 26)
+   * ATURAN KEAMANAN:
+   * - Jangan izinkan member mengubah role
+   * - Member tidak dapat mengubah memberNumber, status, atau joinDate
+   * - Field yang diizinkan diubah: name, phone, address, gender, email, password
+   */
+  static async updateMemberProfile(userId: string, input: any) {
+    // SECURITY CHECK: Larang keras perubahan role oleh member
+    if (input.role !== undefined) {
+      throw new AppError('Perubahan role akun tidak diizinkan. Role hanya dapat dikelola oleh Administrator.', 403);
+    }
+    if (input.memberNumber !== undefined || input.status !== undefined || input.joinDate !== undefined) {
+      throw new AppError('Nomor anggota, status, dan tanggal bergabung tidak dapat diubah secara mandiri.', 400);
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { member: true },
+    });
+
+    if (!user) {
+      throw new AppError('Pengguna tidak ditemukan', 404);
+    }
+
+    let member = user.member;
+    if (!member) {
+      const matched = await prisma.member.findFirst({
+        where: {
+          OR: [
+            { name: { contains: user.username, mode: 'insensitive' } },
+            { phone: user.username },
+          ],
+        },
+      });
+      if (matched) {
+        member = await prisma.member.update({
+          where: { id: matched.id },
+          data: { userId: user.id },
+        });
+      } else {
+        member = await prisma.member.create({
+          data: {
+            userId: user.id,
+            memberNumber: user.role === 'ADMIN' ? 'ADMIN-001' : `MBR-${user.id.slice(0, 6).toUpperCase()}`,
+            name: input.name?.trim() || user.username,
+            gender: input.gender || 'MALE',
+            phone: input.phone?.trim() || null,
+            address: input.address?.trim() || 'Dusun Tuk Uluh, Desa Sringin',
+            status: 'ACTIVE',
+          },
+        });
+      }
+    }
+
+    // 1. Update Password User jika diminta
+    if (input.newPassword && input.newPassword.trim()) {
+      if (!input.currentPassword) {
+        throw new AppError('Kata sandi saat ini (current password) wajib dimasukkan untuk mengganti kata sandi.', 400);
+      }
+      const isMatch = await bcrypt.compare(input.currentPassword, user.password);
+      if (!isMatch) {
+        throw new AppError('Kata sandi saat ini tidak cocok.', 400);
+      }
+      if (input.newPassword.trim().length < 6) {
+        throw new AppError('Kata sandi baru minimal 6 karakter.', 400);
+      }
+      const hashedPassword = await bcrypt.hash(input.newPassword.trim(), 10);
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { password: hashedPassword },
+      });
+    }
+
+    // 2. Update Email User jika diminta
+    if (input.email && input.email.trim() && input.email.trim() !== user.email) {
+      const emailTaken = await prisma.user.findFirst({
+        where: {
+          email: input.email.trim(),
+          id: { not: user.id },
+        },
+      });
+      if (emailTaken) {
+        throw new AppError('Email tersebut sudah digunakan oleh akun lain.', 400);
+      }
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { email: input.email.trim() },
+      });
+    }
+
+    // 3. Update Member Data yang diizinkan (Nama, Phone, Address, Gender)
+    const memberUpdateData: Prisma.MemberUpdateInput = {};
+    if (input.name !== undefined) {
+      if (!input.name.trim()) throw new AppError('Nama lengkap tidak boleh kosong.', 400);
+      memberUpdateData.name = input.name.trim();
+    }
+    if (input.phone !== undefined) {
+      memberUpdateData.phone = input.phone ? input.phone.trim() : null;
+    }
+    if (input.address !== undefined) {
+      if (!input.address.trim()) throw new AppError('Alamat tidak boleh kosong.', 400);
+      memberUpdateData.address = input.address.trim();
+    }
+    if (input.gender !== undefined) {
+      if (input.gender === 'MALE' || input.gender === 'FEMALE') {
+        memberUpdateData.gender = input.gender;
+      }
+    }
+
+    if (Object.keys(memberUpdateData).length > 0) {
+      await prisma.member.update({
+        where: { id: member.id },
+        data: memberUpdateData,
+      });
+    }
+
+    return this.getMemberProfile(userId);
   }
 }

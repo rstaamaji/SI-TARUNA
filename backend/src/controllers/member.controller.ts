@@ -115,4 +115,52 @@ export class MemberController {
       next(error);
     }
   }
+
+  /**
+   * GET /api/members/profile/me & GET /api/members/profile
+   * Melihat profil anggota sendiri lengkap dengan statistik keaktifan, notifikasi, dan riwayat absensi (Module 26)
+   */
+  static async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(401).json({ success: false, message: 'Pengguna tidak terautentikasi' });
+        return;
+      }
+
+      const profile = await MemberService.getMemberProfile(userId);
+      sendSuccess(res, 'Berhasil memuat data profil anggota', profile, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * PUT /api/members/profile/me & PUT /api/members/profile
+   * Mengubah data profil yang diizinkan (Nama, HP, Alamat, Gender, Email, Password)
+   * Menolak perubahan role!
+   */
+  static async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(401).json({ success: false, message: 'Pengguna tidak terautentikasi' });
+        return;
+      }
+
+      // Pastikan role tidak diizinkan diubah oleh member
+      if (req.body.role !== undefined) {
+        res.status(403).json({
+          success: false,
+          message: 'Dilarang: Member tidak diizinkan mengubah role akun.',
+        });
+        return;
+      }
+
+      const updated = await MemberService.updateMemberProfile(userId, req.body);
+      sendSuccess(res, 'Profil berhasil diperbarui', updated, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
