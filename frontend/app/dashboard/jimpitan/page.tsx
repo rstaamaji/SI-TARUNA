@@ -234,6 +234,7 @@ export default function JimpitanPage() {
 
   // History Filters
   const [historyYear, setHistoryYear] = useState<string>('ALL');
+  const [historyMonth, setHistoryMonth] = useState<string>('ALL');
   const [historyGroupId, setHistoryGroupId] = useState<string>('ALL');
   const [historySearch, setHistorySearch] = useState<string>('');
 
@@ -367,10 +368,16 @@ export default function JimpitanPage() {
     [groups]
   );
 
-  // 4. Fetch History Data
+  // 4. Fetch History Data with Server-Side Search and Filtering (API-level)
   const fetchHistory = useCallback(async () => {
     try {
-      const res = await api.get('/jimpitan/history');
+      const params: Record<string, any> = {};
+      if (historyYear !== 'ALL') params.year = historyYear;
+      if (historyMonth !== 'ALL') params.month = historyMonth;
+      if (historyGroupId !== 'ALL') params.groupId = historyGroupId;
+      if (historySearch.trim()) params.search = historySearch.trim();
+
+      const res = await api.get('/jimpitan/history', { params });
       if (res.data?.data) {
         setHistoryList(res.data.data.records || []);
         setMonthlyHistory(res.data.data.monthlyHistory || []);
@@ -378,7 +385,7 @@ export default function JimpitanPage() {
     } catch (err: any) {
       console.error('Error fetching jimpitan history:', err);
     }
-  }, []);
+  }, [historyYear, historyMonth, historyGroupId, historySearch]);
 
   // Initial load
   useEffect(() => {
@@ -391,6 +398,11 @@ export default function JimpitanPage() {
     }
     loadAll();
   }, [fetchGroups, fetchDashboard, fetchHistory, selectedMonth, selectedYear]);
+
+  // Re-fetch history when history filters change
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
 
   // Refresh trigger
   const handleRefresh = async () => {
@@ -1164,6 +1176,22 @@ export default function JimpitanPage() {
                     {YEAR_OPTIONS.map((y) => (
                       <option key={y.value} value={y.value}>
                         {y.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                  <span>Bulan:</span>
+                  <select
+                    value={historyMonth}
+                    onChange={(e) => setHistoryMonth(e.target.value)}
+                    className="text-xs font-semibold px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900"
+                  >
+                    <option value="ALL">Semua Bulan</option>
+                    {MONTH_OPTIONS.map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
                       </option>
                     ))}
                   </select>

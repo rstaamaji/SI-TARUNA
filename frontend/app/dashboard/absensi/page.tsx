@@ -83,6 +83,7 @@ export default function MemberAttendancePage() {
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PRESENT' | 'ABSENT' | 'EXCUSED'>('ALL');
+  const [dateFilter, setDateFilter] = useState('');
 
   const getAuthToken = (): string | null => {
     if (typeof window === 'undefined') return null;
@@ -161,10 +162,11 @@ export default function MemberAttendancePage() {
         (item.notes && item.notes.toLowerCase().includes(searchQuery.toLowerCase().trim()));
 
       const matchStatus = statusFilter === 'ALL' || item.status === statusFilter;
+      const matchDate = !dateFilter || item.eventDate.split('T')[0] === dateFilter;
 
-      return matchSearch && matchStatus;
+      return matchSearch && matchStatus && matchDate;
     });
-  }, [attendanceData?.history, searchQuery, statusFilter]);
+  }, [attendanceData?.history, searchQuery, statusFilter, dateFilter]);
 
   // Status Badge Helper
   const getStatusBadge = (status: 'PRESENT' | 'ABSENT' | 'EXCUSED') => {
@@ -368,7 +370,7 @@ export default function MemberAttendancePage() {
           </div>
 
           {/* ── FILTER & SEARCH ── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-taruna-border dark:border-slate-800 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-taruna-border dark:border-slate-800 shadow-xs flex-wrap">
             <div className="w-full sm:w-72">
               <Input
                 placeholder="Cari kegiatan atau lokasi..."
@@ -378,17 +380,37 @@ export default function MemberAttendancePage() {
               />
             </div>
 
-            <div className="w-full sm:w-48">
-              <Select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as any)}
-                options={[
-                  { value: 'ALL', label: 'Semua Status' },
-                  { value: 'PRESENT', label: 'Hanya Hadir' },
-                  { value: 'EXCUSED', label: 'Hanya Izin' },
-                  { value: 'ABSENT', label: 'Hanya Tidak Hadir' },
-                ]}
-              />
+            <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+              <div className="w-full sm:w-44">
+                <Select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as any)}
+                  options={[
+                    { value: 'ALL', label: 'Semua Status' },
+                    { value: 'PRESENT', label: 'Hanya Hadir' },
+                    { value: 'EXCUSED', label: 'Hanya Izin' },
+                    { value: 'ABSENT', label: 'Hanya Tidak Hadir' },
+                  ]}
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  title="Filter Berdasarkan Tanggal"
+                  className="px-3 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500/50"
+                />
+                {dateFilter && (
+                  <button
+                    onClick={() => setDateFilter('')}
+                    className="px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
+                  >
+                    Reset Tgl
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

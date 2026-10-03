@@ -87,6 +87,27 @@ interface EventAttendanceSheetResponse {
   attendances: MemberAttendanceRow[];
 }
 
+interface AttendanceRecordItem {
+  id: string;
+  status: 'PRESENT' | 'ABSENT' | 'EXCUSED';
+  notes: string | null;
+  updatedAt: string;
+  member: {
+    id: string;
+    memberNumber: string;
+    name: string;
+    gender: string;
+    phone: string | null;
+  };
+  event: {
+    id: string;
+    title: string;
+    eventDate: string;
+    location: string;
+    type: string;
+  };
+}
+
 export default function AdminAttendancePage() {
   const toast = useToast();
 
@@ -98,6 +119,9 @@ export default function AdminAttendancePage() {
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isAdmin = currentUser.role === 'ADMIN';
+
+  // Navigation Tabs: SHEET vs RECORDS (Pencarian & Rekap Server API)
+  const [activeTab, setActiveTab] = useState<'SHEET' | 'RECORDS'>('SHEET');
 
   // Events & Selected Sheet
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -111,9 +135,21 @@ export default function AdminAttendancePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
 
-  // Filters
+  // Filters for Sheet Tab
   const [searchMember, setSearchMember] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PRESENT' | 'ABSENT' | 'EXCUSED'>('ALL');
+
+  // Server-side API Search & Filter State for All Attendance Records
+  const [recordsList, setRecordsList] = useState<AttendanceRecordItem[]>([]);
+  const [recordsTotal, setRecordsTotal] = useState(0);
+  const [recordsTotalPages, setRecordsTotalPages] = useState(1);
+  const [recordsPage, setRecordsPage] = useState(1);
+  const [recordsLimit] = useState(15);
+  const [recordsSearch, setRecordsSearch] = useState('');
+  const [recordsEventId, setRecordsEventId] = useState('ALL');
+  const [recordsStatus, setRecordsStatus] = useState<'ALL' | 'PRESENT' | 'ABSENT' | 'EXCUSED'>('ALL');
+  const [recordsDate, setRecordsDate] = useState('');
+  const [isLoadingRecords, setIsLoadingRecords] = useState(false);
 
   // Form New Event
   const [newEventTitle, setNewEventTitle] = useState('');
@@ -209,6 +245,48 @@ export default function AdminAttendancePage() {
       fetchEventSheet(selectedEventId);
     }
   }, [selectedEventId, fetchEventSheet]);
+
+  // Fetch All Attendance Records from Server API with Filters & Pagination
+  const fetchAttendanceRecords = useCallback(async () => {
+    setIsLoadingRecords(true);
+    try {
+      const token = getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const params = new URLSearchParams();
+      if (recordsSearch.trim()) params.append('search', recordsSearch.trim());
+      if (recordsEventId && recordsEventId !== 'ALL') params.append('eventId', recordsEventId);
+      if (recordsStatus && recordsStatus !== 'ALL') params.append('status', recordsStatus);
+      if (recordsDate) params.append('date', recordsDate);
+      params.append('page', String(recordsPage));
+      params.append('limit', String(recordsLimit));
+
+      const apiBase = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : 'http://localhost:5000/api';
+
+      const res = await fetch(`${apiBase}/attendance/records?${params.toString()}`, { headers });
+      const json = await res.json();
+      if (res.ok && json.success && json.data) {
+        setRecordsList(json.data.records || []);
+        if (json.data.pagination) {
+          setRecordsTotal(json.data.pagination.total);
+          setRecordsTotalPages(json.data.pagination.totalPages);
+        }
+      }
+    } catch {
+      // offline fallback
+    } finally {
+      setIsLoadingRecords(false);
+    }
+  }, [recordsSearch, recordsEventId, recordsStatus, recordsDate, recordsPage, recordsLimit]);
+
+  useEffect(() => {
+    if (activeTab === 'RECORDS') {
+      fetchAttendanceRecords();
+    }
+  }, [activeTab, fetchAttendanceRecords]);
 
   // Handle Status Change for a member
   const handleStatusChange = (memberId: string, newStatus: 'PRESENT' | 'ABSENT' | 'EXCUSED') => {
@@ -420,9 +498,38 @@ export default function AdminAttendancePage() {
             </div>
           </div>
 
-          {/* ── EVENT SELECTOR CARD ── */}
-          <Card>
-            <CardHeader className="pb-3">
+          {/* ── TAB NAVIGATION ── */}
+          <div className="flex items-center gap-2 border-b border-taruna-border dark:border-slate-800 pb-2 flex-wrap">
+            <button
+              onClick={() => setActiveTab('SHEET')}
+              className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition flex items-center gap-2 ${
+                activeTab === 'SHEET'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border border-taruna-border dark:border-slate-800 hover:bg-gray-50'
+              }`}
+            >
+              <CalendarCheck2 className="w-4 h-4" />
+              Lembar Presensi Kegiatan
+            </button>
+            <button
+              onClick={() => setActiveTab('RECORDS')}
+              className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition flex items-center gap-2 ${
+                activeTab === 'RECORDS'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border border-taruna-border dark:border-slate-800 hover:bg-gray-50'
+              }`}
+            >
+              <Search className="w-4 h-4" />
+              Pencarian &amp; Filter Absensi (Server API)
+            </button>
+          </div>
+
+          {/* ── TAB 1: LEMBAR PRESENSI PER KEGIATAN ── */}
+          {activeTab === 'SHEET' && (
+            <div className="space-y-6">
+              {/* ── EVENT SELECTOR CARD ── */}
+              <Card>
+                <CardHeader className="pb-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2">
@@ -721,7 +828,269 @@ export default function AdminAttendancePage() {
               Simpan Absensi Kegiatan
             </Button>
           </div>
-        </main>
+        </div>
+      )}
+
+      {/* ── TAB 2: PENCARIAN & FILTER SELURUH CATATAN ABSENSI (SERVER API) ── */}
+      {activeTab === 'RECORDS' && (
+        <div className="space-y-6">
+          {/* Filter Card */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Search className="w-4 h-4 text-emerald-600" />
+                Pencarian &amp; Filter Absensi (Database API)
+              </CardTitle>
+              <CardDescription>
+                Pencarian data absensi yang dieksekusi langsung di level backend API untuk menangani volume data besar secara efisien.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {/* 1. Filter Nama */}
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1">
+                    Nama / No Anggota
+                  </label>
+                  <Input
+                    placeholder="Ketik nama anggota..."
+                    value={recordsSearch}
+                    onChange={(e) => {
+                      setRecordsSearch(e.target.value);
+                      setRecordsPage(1);
+                    }}
+                    leftIcon={<Search className="w-4 h-4 text-gray-400" />}
+                  />
+                </div>
+
+                {/* 2. Filter Kegiatan */}
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1">
+                    Kegiatan
+                  </label>
+                  <Select
+                    value={recordsEventId}
+                    onChange={(e) => {
+                      setRecordsEventId(e.target.value);
+                      setRecordsPage(1);
+                    }}
+                    options={[
+                      { value: 'ALL', label: 'Semua Kegiatan' },
+                      ...events.map((ev) => ({
+                        value: ev.id,
+                        label: ev.title,
+                      })),
+                    ]}
+                  />
+                </div>
+
+                {/* 3. Filter Status */}
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1">
+                    Status Kehadiran
+                  </label>
+                  <Select
+                    value={recordsStatus}
+                    onChange={(e) => {
+                      setRecordsStatus(e.target.value as any);
+                      setRecordsPage(1);
+                    }}
+                    options={[
+                      { value: 'ALL', label: 'Semua Status' },
+                      { value: 'PRESENT', label: 'Hadir' },
+                      { value: 'EXCUSED', label: 'Izin' },
+                      { value: 'ABSENT', label: 'Tidak Hadir' },
+                    ]}
+                  />
+                </div>
+
+                {/* 4. Filter Tanggal */}
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1">
+                    Tanggal Kegiatan
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="date"
+                      value={recordsDate}
+                      onChange={(e) => {
+                        setRecordsDate(e.target.value);
+                        setRecordsPage(1);
+                      }}
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50"
+                    />
+                    {recordsDate && (
+                      <button
+                        onClick={() => {
+                          setRecordsDate('');
+                          setRecordsPage(1);
+                        }}
+                        className="px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors whitespace-nowrap"
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Reset All Filters Button */}
+              {(recordsSearch || recordsEventId !== 'ALL' || recordsStatus !== 'ALL' || recordsDate) && (
+                <div className="mt-3 pt-3 border-t border-taruna-border dark:border-slate-800 flex justify-end">
+                  <button
+                    onClick={() => {
+                      setRecordsSearch('');
+                      setRecordsEventId('ALL');
+                      setRecordsStatus('ALL');
+                      setRecordsDate('');
+                      setRecordsPage(1);
+                    }}
+                    className="text-xs font-bold text-emerald-600 hover:underline"
+                  >
+                    Reset Semua Filter
+                  </button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Table Result Card */}
+          <Card>
+            <CardHeader className="flex-row items-center justify-between flex-wrap gap-2 pb-2">
+              <div>
+                <CardTitle className="text-base">Daftar Hasil Pencarian Absensi</CardTitle>
+                <CardDescription>
+                  Data presensi yang tersaring via query server Prisma database.
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={fetchAttendanceRecords}
+                  disabled={isLoadingRecords}
+                  leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isLoadingRecords ? 'animate-spin' : ''}`} />}
+                >
+                  Segarkan
+                </Button>
+                <Badge variant="primary">
+                  Total {recordsTotal} Catatan
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12 text-center">No</TableHead>
+                      <TableHead>Nama Anggota</TableHead>
+                      <TableHead>Kegiatan &amp; Tanggal</TableHead>
+                      <TableHead>Lokasi</TableHead>
+                      <TableHead className="text-center w-36">Status</TableHead>
+                      <TableHead>Catatan</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoadingRecords ? (
+                      Array.from({ length: 5 }).map((_, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell colSpan={6} className="text-center py-4">
+                            <div className="h-6 bg-gray-100 dark:bg-slate-800 rounded-md animate-pulse w-full" />
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : recordsList.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-10 text-gray-500">
+                          Tidak ditemukan catatan absensi yang sesuai kriteria pencarian.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      recordsList.map((rec, idx) => {
+                        const num = (recordsPage - 1) * recordsLimit + idx + 1;
+                        return (
+                          <TableRow key={rec.id}>
+                            <TableCell className="text-center text-xs text-gray-500">{num}</TableCell>
+                            <TableCell>
+                              <div className="font-bold text-sm text-taruna-dark dark:text-white">
+                                {rec.member?.name || '-'}
+                              </div>
+                              <div className="text-[11px] text-gray-400 font-mono">
+                                {rec.member?.memberNumber || '-'}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="font-bold text-sm text-emerald-700 dark:text-emerald-400">
+                                {rec.event?.title || '-'}
+                              </div>
+                              <div className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                                <Calendar className="w-3 h-3" />
+                                {rec.event?.eventDate ? new Date(rec.event.eventDate).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-xs text-gray-600 dark:text-slate-300">
+                              {rec.event?.location || '-'}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {rec.status === 'PRESENT' && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                                  <CheckCircle2 className="w-3.5 h-3.5" /> HADIR
+                                </span>
+                              )}
+                              {rec.status === 'EXCUSED' && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                                  <Clock className="w-3.5 h-3.5" /> IZIN
+                                </span>
+                              )}
+                              {rec.status === 'ABSENT' && (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300">
+                                  <XCircle className="w-3.5 h-3.5" /> TIDAK HADIR
+                                </span>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-xs text-gray-500 italic">
+                              {rec.notes || '-'}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination Footer */}
+              {recordsTotalPages > 1 && (
+                <div className="p-4 border-t border-taruna-border dark:border-slate-800 flex items-center justify-between text-xs">
+                  <span className="text-gray-500">
+                    Halaman {recordsPage} dari {recordsTotalPages} ({recordsTotal} total catatan)
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={recordsPage <= 1}
+                      onClick={() => setRecordsPage((p) => Math.max(1, p - 1))}
+                    >
+                      Sebelumnya
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={recordsPage >= recordsTotalPages}
+                      onClick={() => setRecordsPage((p) => Math.min(recordsTotalPages, p + 1))}
+                    >
+                      Selanjutnya
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </main>
       </div>
 
       {/* ── MODAL: BUAT KEGIATAN BARU ── */}

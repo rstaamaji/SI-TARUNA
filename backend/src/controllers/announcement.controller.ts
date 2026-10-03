@@ -6,12 +6,16 @@ import { AnnouncementType } from '@prisma/client';
 export class AnnouncementController {
   static async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { type, isAttention, search } = req.query;
+      const { type, isAttention, search, startDate, endDate, month, year } = req.query;
 
       const announcements = await AnnouncementService.getAllAnnouncements({
         type: type as AnnouncementType | 'ALL',
         isAttention: isAttention !== undefined ? isAttention === 'true' : undefined,
         search: search as string,
+        startDate: startDate as string,
+        endDate: endDate as string,
+        month: month ? Number(month) : undefined,
+        year: year ? Number(year) : undefined,
       });
 
       sendSuccess(res, 'Berhasil memuat daftar pengumuman', announcements, 200);

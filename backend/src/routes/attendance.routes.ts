@@ -7,6 +7,10 @@ const router = Router();
 // Semua endpoint absensi memerlukan login
 router.use(authenticate);
 
+// 0. GET /api/attendance & /records - Pencarian dan filter catatan absensi (nama, kegiatan, status, tanggal)
+router.get('/', AttendanceController.getAllRecords);
+router.get('/records', AttendanceController.getAllRecords);
+
 // 1. GET /api/attendance/my-history & /history - Riwayat absensi pribadi pengguna login (MEMBER & ADMIN)
 router.get('/my-history', AttendanceController.getMyHistory);
 router.get('/history', AttendanceController.getMyHistory);

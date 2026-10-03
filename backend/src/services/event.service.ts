@@ -69,6 +69,8 @@ export class EventService {
     type?: string;
     month?: number;
     year?: number;
+    startDate?: string;
+    endDate?: string;
   }) {
     const whereClause: any = {};
 
@@ -84,17 +86,29 @@ export class EventService {
       whereClause.type = normalizeEventType(filters.type);
     }
 
-    if (filters?.year) {
-      const year = Number(filters.year);
-      const startOfYear = new Date(year, 0, 1);
-      const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
+    // Tanggal filtering
+    if (filters?.startDate && filters?.endDate) {
+      const s = new Date(filters.startDate);
+      s.setHours(0, 0, 0, 0);
+      const e = new Date(filters.endDate);
+      e.setHours(23, 59, 59, 999);
       whereClause.eventDate = {
-        gte: startOfYear,
-        lte: endOfYear,
+        gte: s,
+        lte: e,
       };
-    }
-
-    if (filters?.month && filters?.year) {
+    } else if (filters?.startDate) {
+      const s = new Date(filters.startDate);
+      s.setHours(0, 0, 0, 0);
+      whereClause.eventDate = {
+        gte: s,
+      };
+    } else if (filters?.endDate) {
+      const e = new Date(filters.endDate);
+      e.setHours(23, 59, 59, 999);
+      whereClause.eventDate = {
+        lte: e,
+      };
+    } else if (filters?.month && filters?.year) {
       const year = Number(filters.year);
       const month = Number(filters.month) - 1;
       const startOfMonth = new Date(year, month, 1);
@@ -102,6 +116,14 @@ export class EventService {
       whereClause.eventDate = {
         gte: startOfMonth,
         lte: endOfMonth,
+      };
+    } else if (filters?.year) {
+      const year = Number(filters.year);
+      const startOfYear = new Date(year, 0, 1);
+      const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
+      whereClause.eventDate = {
+        gte: startOfYear,
+        lte: endOfYear,
       };
     }
 

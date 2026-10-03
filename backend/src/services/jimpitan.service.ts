@@ -211,11 +211,23 @@ export class JimpitanService {
     year?: number;
     month?: number;
     groupId?: string;
+    groupNumber?: number;
+    search?: string;
   }) {
     const where: any = {};
-    if (filters?.year) where.year = Number(filters.year);
-    if (filters?.month) where.month = Number(filters.month);
-    if (filters?.groupId) where.groupId = filters.groupId;
+    if (filters?.year && filters.year > 0) where.year = Number(filters.year);
+    if (filters?.month && filters.month > 0) where.month = Number(filters.month);
+    if (filters?.groupId && filters.groupId !== 'ALL') where.groupId = filters.groupId;
+    if (filters?.groupNumber && filters.groupNumber > 0) {
+      where.group = { groupNumber: Number(filters.groupNumber) };
+    }
+    if (filters?.search && filters.search.trim()) {
+      const q = filters.search.trim();
+      where.OR = [
+        { notes: { contains: q, mode: 'insensitive' } },
+        { group: { name: { contains: q, mode: 'insensitive' } } },
+      ];
+    }
 
     const records = await prisma.jimpitanRecord.findMany({
       where,

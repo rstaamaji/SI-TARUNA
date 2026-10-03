@@ -26,6 +26,10 @@ export interface AnnouncementFilter {
   type?: AnnouncementType | 'ALL';
   isAttention?: boolean;
   search?: string;
+  startDate?: string;
+  endDate?: string;
+  month?: number;
+  year?: number;
 }
 
 export class AnnouncementService {
@@ -49,6 +53,34 @@ export class AnnouncementService {
         { title: { contains: q, mode: 'insensitive' } },
         { content: { contains: q, mode: 'insensitive' } },
       ];
+    }
+
+    // Tanggal filtering
+    if (filter?.startDate && filter?.endDate) {
+      const s = new Date(filter.startDate);
+      s.setHours(0, 0, 0, 0);
+      const e = new Date(filter.endDate);
+      e.setHours(23, 59, 59, 999);
+      where.announcementDate = { gte: s, lte: e };
+    } else if (filter?.startDate) {
+      const s = new Date(filter.startDate);
+      s.setHours(0, 0, 0, 0);
+      where.announcementDate = { gte: s };
+    } else if (filter?.endDate) {
+      const e = new Date(filter.endDate);
+      e.setHours(23, 59, 59, 999);
+      where.announcementDate = { lte: e };
+    } else if (filter?.year && filter?.month) {
+      const year = Number(filter.year);
+      const month = Number(filter.month) - 1;
+      const startOfMonth = new Date(year, month, 1);
+      const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999);
+      where.announcementDate = { gte: startOfMonth, lte: endOfMonth };
+    } else if (filter?.year) {
+      const year = Number(filter.year);
+      const startOfYear = new Date(year, 0, 1);
+      const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
+      where.announcementDate = { gte: startOfYear, lte: endOfYear };
     }
 
     return prisma.announcement.findMany({

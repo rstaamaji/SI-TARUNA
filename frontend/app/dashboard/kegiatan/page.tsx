@@ -136,6 +136,7 @@ export default function KegiatanPage() {
   const [selectedStatus, setSelectedStatus] = useState<'ALL' | 'UPCOMING' | 'PAST'>('ALL');
   const [selectedMonth, setSelectedMonth] = useState('ALL');
   const [selectedYear, setSelectedYear] = useState('2026');
+  const [selectedDate, setSelectedDate] = useState<string>('');
 
   // Modal Detail State
   const [detailEvent, setDetailEvent] = useState<EventScheduleItem | null>(null);
@@ -206,36 +207,55 @@ export default function KegiatanPage() {
     return 'http://localhost:5000/api';
   };
 
-  // Fetch Events from API
-  const fetchEvents = useCallback(async (isManual = false) => {
-    if (isManual) setIsRefreshing(true);
-    else setIsLoading(true);
+  // Fetch Events from API with Server-Side Search and Filter
+  const fetchEvents = useCallback(
+    async (isManual = false) => {
+      if (isManual) setIsRefreshing(true);
+      else setIsLoading(true);
 
-    try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
-      const headers: Record<string, string> = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
+        const headers: Record<string, string> = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const apiBase = getApiBase();
-      const res = await fetch(`${apiBase}/events`, { headers });
-      const json = await res.json();
+        const apiBase = getApiBase();
 
-      if (res.ok && json.success && Array.isArray(json.data)) {
-        setEvents(json.data);
-        if (isManual) {
-          toast.success('Daftar jadwal kegiatan berhasil disegarkan.');
+        const params = new URLSearchParams();
+        if (searchQuery.trim()) params.append('search', searchQuery.trim());
+        if (selectedType && selectedType !== 'ALL') params.append('type', selectedType);
+        if (selectedMonth && selectedMonth !== 'ALL') params.append('month', selectedMonth);
+        if (selectedYear && selectedYear !== 'ALL') params.append('year', selectedYear);
+        if (selectedDate) {
+          params.append('startDate', selectedDate);
+          params.append('endDate', selectedDate);
         }
-      } else {
-        // Fallback demo events for Dusun Tuk Uluh
+
+        const qs = params.toString();
+        const res = await fetch(`${apiBase}/events${qs ? `?${qs}` : ''}`, { headers });
+        const json = await res.json();
+
+        if (res.ok && json.success && Array.isArray(json.data)) {
+          setEvents(json.data);
+          if (isManual) {
+            toast.success('Daftar jadwal kegiatan berhasil disegarkan.');
+          }
+        } else {
+          // Fallback demo events for Dusun Tuk Uluh
+          loadFallbackEvents();
+        }
+      } catch {
         loadFallbackEvents();
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
       }
-    } catch {
-      loadFallbackEvents();
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [toast]);
+    },
+    [searchQuery, selectedType, selectedMonth, selectedYear, selectedDate, toast]
+  );
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   const loadFallbackEvents = () => {
     setEvents([
@@ -858,6 +878,26 @@ export default function KegiatanPage() {
               <option value="2026">2026</option>
               <option value="2025">2025</option>
             </select>
+
+            {/* Input Tanggal Khusus */}
+            <div className="flex items-center gap-1">
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                title="Filter Tanggal Spesifik"
+                className="px-3 py-1.5 text-xs rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-800 text-taruna-dark dark:text-slate-200 font-semibold focus:outline-hidden"
+              />
+              {selectedDate && (
+                <button
+                  onClick={() => setSelectedDate('')}
+                  className="px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
+                  title="Reset Tanggal"
+                >
+                  Reset Tgl
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -866,7 +906,7 @@ export default function KegiatanPage() {
           <span>
             Menampilkan <strong className="text-taruna-dark dark:text-white">{filteredEvents.length}</strong> kegiatan
           </span>
-          {(searchQuery || selectedType !== 'ALL' || selectedStatus !== 'ALL' || selectedMonth !== 'ALL' || selectedYear !== '2026') && (
+          {(searchQuery || selectedType !== 'ALL' || selectedStatus !== 'ALL' || selectedMonth !== 'ALL' || selectedYear !== '2026' || selectedDate) && (
             <button
               onClick={() => {
                 setSearchQuery('');
@@ -874,6 +914,7 @@ export default function KegiatanPage() {
                 setSelectedStatus('ALL');
                 setSelectedMonth('ALL');
                 setSelectedYear('2026');
+                setSelectedDate('');
               }}
               className="text-taruna-yellow-600 dark:text-taruna-yellow-400 hover:underline font-bold"
             >

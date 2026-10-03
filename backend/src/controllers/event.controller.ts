@@ -5,12 +5,14 @@ import { sendSuccess } from '../utils/response';
 export class EventController {
   static async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { search, type, month, year } = req.query;
+      const { search, type, month, year, startDate, endDate } = req.query;
       const events = await EventService.getAllEvents({
         search: search as string,
         type: type as string,
         month: month ? Number(month) : undefined,
         year: year ? Number(year) : undefined,
+        startDate: startDate as string,
+        endDate: endDate as string,
       });
       sendSuccess(res, 'Berhasil memuat daftar kegiatan', events, 200);
     } catch (error) {

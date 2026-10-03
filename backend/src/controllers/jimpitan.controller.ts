@@ -43,11 +43,13 @@ export class JimpitanController {
    */
   static async getHistory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { year, month, groupId } = req.query;
+      const { year, month, groupId, groupNumber, search } = req.query;
       const history = await JimpitanService.getHistory({
-        year: year ? Number(year) : undefined,
-        month: month ? Number(month) : undefined,
-        groupId: groupId as string,
+        year: year && year !== 'ALL' ? Number(year) : undefined,
+        month: month && month !== 'ALL' ? Number(month) : undefined,
+        groupId: groupId && groupId !== 'ALL' ? (groupId as string) : undefined,
+        groupNumber: groupNumber && groupNumber !== 'ALL' ? Number(groupNumber) : undefined,
+        search: search as string,
       });
       sendSuccess(res, 'Berhasil memuat history jimpitan', history, 200);
     } catch (error) {

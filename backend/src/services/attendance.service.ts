@@ -1,6 +1,6 @@
 import prisma from '../utils/prisma';
 import { AppError } from '../utils/appError';
-import { AttendanceStatus, EventType } from '@prisma/client';
+import { AttendanceStatus, EventType, Prisma } from '@prisma/client';
 
 export interface AttendanceInputItem {
   memberId: string;
@@ -20,7 +20,153 @@ export interface CreateEventDto {
   type?: EventType;
 }
 
+export interface AttendanceFilter {
+  memberName?: string;
+  eventId?: string;
+  eventTitle?: string;
+  status?: AttendanceStatus | 'ALL';
+  startDate?: string;
+  endDate?: string;
+  date?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
 export class AttendanceService {
+  /**
+   * 0. Get all attendance records with server-side filtering & pagination (API-level for large datasets)
+   * Supports:
+   * - nama (member.name)
+   * - kegiatan (event.id / event.title)
+   * - status (PRESENT, EXCUSED, ABSENT)
+   * - tanggal (eventDate range / specific date)
+   */
+  static async getAllAttendanceRecords(filter: AttendanceFilter = {}) {
+    const page = Math.max(1, filter.page || 1);
+    const limit = Math.max(1, Math.min(100, filter.limit || 20));
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.AttendanceWhereInput = {};
+
+    // 1. Status filter
+    if (filter.status && filter.status !== 'ALL') {
+      where.status = filter.status as AttendanceStatus;
+    }
+
+    // 2. Member / nama filter
+    if (filter.memberName || filter.search) {
+      const q = (filter.memberName || filter.search)!.trim();
+      where.member = {
+        OR: [
+          { name: { contains: q, mode: 'insensitive' } },
+          { memberNumber: { contains: q, mode: 'insensitive' } },
+        ],
+      };
+    }
+
+    // 3. Kegiatan & Tanggal filter
+    const eventConditions: Prisma.EventWhereInput = {};
+    if (filter.eventId && filter.eventId !== 'ALL') {
+      where.eventId = filter.eventId;
+    }
+    if (filter.eventTitle && filter.eventTitle.trim()) {
+      eventConditions.title = { contains: filter.eventTitle.trim(), mode: 'insensitive' };
+    }
+
+    // Tanggal filtering
+    if (filter.startDate && filter.endDate) {
+      const s = new Date(filter.startDate);
+      s.setHours(0, 0, 0, 0);
+      const e = new Date(filter.endDate);
+      e.setHours(23, 59, 59, 999);
+      eventConditions.eventDate = { gte: s, lte: e };
+    } else if (filter.startDate) {
+      const s = new Date(filter.startDate);
+      s.setHours(0, 0, 0, 0);
+      eventConditions.eventDate = { gte: s };
+    } else if (filter.endDate) {
+      const e = new Date(filter.endDate);
+      e.setHours(23, 59, 59, 999);
+      eventConditions.eventDate = { lte: e };
+    } else if (filter.date) {
+      const d = new Date(filter.date);
+      const s = new Date(d);
+      s.setHours(0, 0, 0, 0);
+      const e = new Date(d);
+      e.setHours(23, 59, 59, 999);
+      eventConditions.eventDate = { gte: s, lte: e };
+    }
+
+    if (Object.keys(eventConditions).length > 0) {
+      where.event = eventConditions;
+    }
+
+    const [total, records] = await Promise.all([
+      prisma.attendance.count({ where }),
+      prisma.attendance.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: {
+          event: {
+            eventDate: 'desc',
+          },
+        },
+        include: {
+          member: {
+            select: {
+              id: true,
+              memberNumber: true,
+              name: true,
+              gender: true,
+              phone: true,
+            },
+          },
+          event: {
+            select: {
+              id: true,
+              title: true,
+              eventDate: true,
+              location: true,
+              type: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit) || 1;
+
+    return {
+      records: records.map((r) => ({
+        id: r.id,
+        status: r.status,
+        notes: r.notes,
+        updatedAt: r.updatedAt.toISOString(),
+        member: {
+          id: r.member.id,
+          memberNumber: r.member.memberNumber,
+          name: r.member.name,
+          gender: r.member.gender,
+          phone: r.member.phone,
+        },
+        event: {
+          id: r.event.id,
+          title: r.event.title,
+          eventDate: r.event.eventDate.toISOString(),
+          location: r.event.location,
+          type: r.event.type,
+        },
+      })),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+    };
+  }
   /**
    * 1. Get all events with attendance statistics
    * Used by Admin to pick an event for attendance recording

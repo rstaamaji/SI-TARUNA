@@ -137,6 +137,9 @@ export default function PengumumanPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
   const [onlyAttention, setOnlyAttention] = useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedMonth, setSelectedMonth] = useState<string>('ALL');
+  const [selectedYear, setSelectedYear] = useState<string>('ALL');
 
   // ── Modal State (Admin Form) ──
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -176,37 +179,52 @@ export default function PengumumanPage() {
 
   const isAdmin = userRole === 'ADMIN';
 
-  // ── API Fetch ──
-  const fetchAnnouncements = useCallback(async (isManualRefresh = false) => {
-    if (isManualRefresh) setIsRefreshing(true);
-    else setIsLoading(true);
+  // ── API Fetch with Server-Side Search & Filtering ──
+  const fetchAnnouncements = useCallback(
+    async (isManualRefresh = false) => {
+      if (isManualRefresh) setIsRefreshing(true);
+      else setIsLoading(true);
 
-    try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
-      const headers: Record<string, string> = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
+        const headers: Record<string, string> = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const apiBase = process.env.NEXT_PUBLIC_API_URL
-        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
-        : 'http://localhost:5000/api';
+        const apiBase = process.env.NEXT_PUBLIC_API_URL
+          ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+          : 'http://localhost:5000/api';
 
-      const res = await fetch(`${apiBase}/announcements`, { headers });
-      const json = await res.json();
+        const params = new URLSearchParams();
+        if (searchQuery.trim()) params.append('search', searchQuery.trim());
+        if (selectedType && selectedType !== 'ALL') params.append('type', selectedType);
+        if (onlyAttention) params.append('isAttention', 'true');
+        if (selectedDate) {
+          params.append('startDate', selectedDate);
+          params.append('endDate', selectedDate);
+        }
+        if (selectedMonth && selectedMonth !== 'ALL') params.append('month', selectedMonth);
+        if (selectedYear && selectedYear !== 'ALL') params.append('year', selectedYear);
 
-      if (res.ok && json.success && Array.isArray(json.data)) {
-        setAnnouncements(json.data);
-      } else if (isManualRefresh) {
-        toast.error(json.message || 'Gagal memuat daftar pengumuman');
+        const qs = params.toString();
+        const res = await fetch(`${apiBase}/announcements${qs ? `?${qs}` : ''}`, { headers });
+        const json = await res.json();
+
+        if (res.ok && json.success && Array.isArray(json.data)) {
+          setAnnouncements(json.data);
+        } else if (isManualRefresh) {
+          toast.error(json.message || 'Gagal memuat daftar pengumuman');
+        }
+      } catch {
+        if (isManualRefresh) {
+          toast.error('Gagal terhubung ke server pengumuman');
+        }
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
       }
-    } catch {
-      if (isManualRefresh) {
-        toast.error('Gagal terhubung ke server pengumuman');
-      }
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, []);
+    },
+    [searchQuery, selectedType, onlyAttention, selectedDate, selectedMonth, selectedYear]
+  );
 
   useEffect(() => {
     fetchAnnouncements();
@@ -647,9 +665,9 @@ export default function PengumumanPage() {
                 </p>
               </div>
 
-              {/* Search Bar */}
-              <div className="flex items-center gap-3">
-                <div className="relative w-full sm:w-72">
+              {/* Search Bar & Date Filter */}
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <div className="relative w-full sm:w-60">
                   <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
@@ -664,6 +682,64 @@ export default function PengumumanPage() {
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
                     >
                       ×
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter Tanggal & Periode */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    title="Filter Tanggal Pengumuman"
+                    className="px-3 py-1.5 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500/50"
+                  />
+
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    title="Filter Bulan Pengumuman"
+                    className="px-2.5 py-1.5 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 font-semibold focus:outline-hidden"
+                  >
+                    <option value="ALL">Semua Bulan</option>
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3">Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                  </select>
+
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    title="Filter Tahun Pengumuman"
+                    className="px-2.5 py-1.5 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 font-semibold focus:outline-hidden"
+                  >
+                    <option value="ALL">Semua Tahun</option>
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                  </select>
+
+                  {(selectedDate || selectedMonth !== 'ALL' || selectedYear !== 'ALL') && (
+                    <button
+                      onClick={() => {
+                        setSelectedDate('');
+                        setSelectedMonth('ALL');
+                        setSelectedYear('ALL');
+                      }}
+                      className="px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
+                      title="Hapus filter tanggal dan periode"
+                    >
+                      Reset Tgl
                     </button>
                   )}
                 </div>

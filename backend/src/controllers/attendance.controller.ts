@@ -5,6 +5,45 @@ import { AppError } from '../utils/appError';
 
 export class AttendanceController {
   /**
+   * GET /api/attendance & GET /api/attendance/records
+   * Mendapatkan seluruh catatan absensi dengan filter (nama, kegiatan, status, tanggal)
+   * Dilengkapi paginasi untuk dataset besar
+   */
+  static async getAllRecords(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {
+        memberName,
+        search,
+        eventId,
+        eventTitle,
+        status,
+        startDate,
+        endDate,
+        date,
+        page,
+        limit,
+      } = req.query;
+
+      const result = await AttendanceService.getAllAttendanceRecords({
+        memberName: memberName as string,
+        search: search as string,
+        eventId: eventId as string,
+        eventTitle: eventTitle as string,
+        status: status as any,
+        startDate: startDate as string,
+        endDate: endDate as string,
+        date: date as string,
+        page: page ? Number(page) : undefined,
+        limit: limit ? Number(limit) : undefined,
+      });
+
+      sendSuccess(res, 'Berhasil memuat catatan absensi', result, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * GET /api/attendance/events
    * Daftar kegiatan beserta statistik kehadiran
    */
