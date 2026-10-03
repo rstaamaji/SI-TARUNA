@@ -344,6 +344,10 @@ export class ReminderService {
    * - Satu kali saat server baru menyala (startup)
    */
   public static startScheduler(): void {
+    if (process.env.NODE_ENV === 'test') {
+      return;
+    }
+
     if (this.cronTask) {
       console.log('ℹ️ [ReminderService] Scheduler sudah berjalan.');
       return;
