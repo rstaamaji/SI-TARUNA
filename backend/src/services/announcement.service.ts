@@ -1,6 +1,7 @@
 import prisma from '../utils/prisma';
 import { AppError } from '../utils/appError';
-import { AnnouncementType, Prisma } from '@prisma/client';
+import { AnnouncementType, NotificationType, Prisma } from '@prisma/client';
+import { NotificationService } from './notification.service';
 
 export interface CreateAnnouncementDto {
   title: string;
@@ -179,6 +180,36 @@ export class AnnouncementService {
         },
       },
     });
+
+    // Otomatis buat notifikasi untuk seluruh pengguna/anggota
+    try {
+      let notifType: NotificationType = NotificationType.ANNOUNCEMENT;
+      let title = `Pengumuman Baru: ${created.title}`;
+
+      if (created.isAttention) {
+        notifType = NotificationType.ATTENTION;
+        title = `[PENTING] ${created.title}`;
+      } else if (created.type === 'RAPAT') {
+        notifType = NotificationType.RAPAT;
+        title = `Pengumuman Rapat: ${created.title}`;
+      } else if (created.type === 'KERJA_BAKTI') {
+        notifType = NotificationType.KERJA_BAKTI;
+        title = `Pengumuman Kerja Bakti: ${created.title}`;
+      }
+
+      await NotificationService.broadcastNotification({
+        title,
+        message:
+          created.content.length > 120
+            ? `${created.content.substring(0, 117)}...`
+            : created.content,
+        type: notifType,
+        link: '/dashboard/pengumuman',
+        excludeUserId: dto.createdById,
+      });
+    } catch (err) {
+      console.error('Failed to broadcast announcement notification:', err);
+    }
 
     return created;
   }

@@ -133,7 +133,7 @@ export const navigationItems: NavItem[] = [
     name: 'Notifikasi',
     href: '/dashboard/notifikasi',
     icon: Bell,
-    badge: '3',
+    badge: null,
   },
   {
     name: 'Profil',

@@ -61,7 +61,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <Navbar
             onMenuToggle={() => setSidebarOpen(true)}
             user={currentUser}
-            notificationCount={3}
           />
         </div>
 
