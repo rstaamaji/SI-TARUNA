@@ -88,6 +88,7 @@ export interface MemberDashboardData {
     nextDrawDate: string;
     nextDrawLocation: string;
     memberStatus: string;
+    nearestArisan?: any;
     recentDraws: {
       id: string;
       month: number;
@@ -899,72 +900,97 @@ export const MemberDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Card: Jadwal Arisan */}
+        {/* Card: Arisan Terdekat (Module 20) */}
         <Card>
-          <CardHeader className="flex-row items-center justify-between pb-3">
+          <CardHeader className="flex-row items-center justify-between pb-3 flex-wrap gap-2">
             <div className="flex items-center gap-2.5">
               <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
                 <Gift className="w-5 h-5" />
               </div>
               <div>
-                <CardTitle>Jadwal Arisan Pemuda</CardTitle>
+                <CardTitle>Arisan Terdekat</CardTitle>
                 <CardDescription>
-                  Putaran Arisan Periode {data.arisanSummary.currentCycleMonth} / {data.arisanSummary.currentCycleYear}
+                  Putaran Arisan Periode {data.arisanSummary.currentCycleMonth} / {data.arisanSummary.currentCycleYear} •{' '}
+                  <Link
+                    href="/dashboard/arisan"
+                    className="text-amber-700 dark:text-amber-400 font-bold hover:underline inline-flex items-center gap-0.5"
+                  >
+                    Buka Jadwal Arisan <ChevronRight className="w-3 h-3" />
+                  </Link>
                 </CardDescription>
               </div>
             </div>
-            <Badge variant="warning" dot>
-              Rp {formatRupiah(data.arisanSummary.totalPot)}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="warning" size="sm" dot>
+                UPCOMING
+              </Badge>
+              <Badge variant="warning">
+                Rp {formatRupiah(data.arisanSummary.totalPot)}
+              </Badge>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Box Status Pribadi Arisan */}
-            <div className="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 flex items-center justify-between gap-4">
-              <div>
-                <span className="text-xs font-bold uppercase text-amber-800 dark:text-amber-300">
-                  Status Undian Anda
-                </span>
-                <p className="text-base font-black text-taruna-dark dark:text-white mt-0.5">
-                  {data.arisanSummary.memberStatus === 'BELUM_DAPAT'
-                    ? 'Belum Mendapatkan Undian'
-                    : 'Sudah Pernah Menerima Undian'}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
-                  Iuran bulanan: {formatRupiah(data.arisanSummary.monthlyFee)} / anggota
-                </p>
+            {/* Box Arisan Terdekat Info */}
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100/40 dark:from-amber-950/30 dark:to-slate-800/60 border border-amber-200 dark:border-amber-800/40 space-y-3">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                    Arisan {data.arisanSummary.nearestArisan?.monthName || 'Oktober'} {data.arisanSummary.currentCycleYear}
+                  </span>
+                  <p className="text-base font-black text-taruna-dark dark:text-white mt-0.5">
+                    Penerima: <span className="text-amber-700 dark:text-amber-400">{data.arisanSummary.nearestArisan?.recipientName || 'Anggota 05'}</span>
+                  </p>
+                </div>
+                <Badge variant="warning" size="sm" dot>
+                  Status: UPCOMING
+                </Badge>
               </div>
-              <div className="text-right shrink-0">
-                <span className="text-xs font-semibold text-gray-500 dark:text-slate-400 block">
-                  Kocokan Berikutnya:
-                </span>
-                <span className="text-xs font-bold text-amber-700 dark:text-amber-400">
-                  {new Date(data.arisanSummary.nextDrawDate).toLocaleDateString('id-ID', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs pt-2 border-t border-amber-200/60 dark:border-slate-800">
+                <div className="flex items-center gap-2 text-gray-600 dark:text-slate-300">
+                  <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>
+                    Tanggal:{' '}
+                    <strong className="text-taruna-dark dark:text-white">
+                      {new Date(data.arisanSummary.nextDrawDate).toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </strong>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600 dark:text-slate-300">
+                  <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                  <span className="truncate">
+                    Tempat:{' '}
+                    <strong className="text-taruna-dark dark:text-white">
+                      {data.arisanSummary.nextDrawLocation || 'Rumah Anggota 05'}
+                    </strong>
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Lokasi Tuan Rumah Arisan (Bergilir antar rumah anggota) */}
-            <div className="p-3.5 rounded-2xl bg-amber-50/60 dark:bg-slate-800/60 border border-amber-200/70 dark:border-slate-700/60 flex items-center justify-between gap-3 text-xs flex-wrap sm:flex-nowrap">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 shrink-0">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-gray-500 dark:text-slate-400 block text-[11px] font-medium">
-                    Tuan Rumah &amp; Tempat Pertemuan:
-                  </span>
-                  <span className="font-bold text-taruna-dark dark:text-white">
-                    {data.arisanSummary.nextDrawLocation || 'Kediaman Anggota (Bergilir)'}
-                  </span>
-                </div>
+            {/* Box Status Pribadi Arisan */}
+            <div className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border/80 dark:border-slate-800 flex items-center justify-between gap-4 text-xs">
+              <div>
+                <span className="text-gray-400 block font-medium">Status Undian Anda:</span>
+                <strong className="text-taruna-dark dark:text-white text-sm font-bold block mt-0.5">
+                  {data.arisanSummary.memberStatus === 'BELUM_DAPAT'
+                    ? 'Belum Mendapatkan Undian'
+                    : 'Sudah Pernah Menerima Undian'}
+                </strong>
+                <span className="text-[11px] text-gray-400">
+                  Iuran bulanan: {formatRupiah(data.arisanSummary.monthlyFee)} / anggota
+                </span>
               </div>
-              <Badge variant="warning" size="sm">
-                Bergilir Antar Rumah
-              </Badge>
+              <Link
+                href="/dashboard/arisan"
+                className="px-3 py-1.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 hover:bg-amber-100 font-bold transition shrink-0"
+              >
+                Lihat Jadwal
+              </Link>
             </div>
 
             {/* Riwayat Pemenang Sebelumnya */}

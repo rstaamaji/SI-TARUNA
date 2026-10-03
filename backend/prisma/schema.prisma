@@ -38,6 +38,7 @@ enum AttendanceStatus {
 
 enum ArisanStatus {
   PENDING
+  UPCOMING
   WON
   PAID
 }
@@ -214,12 +215,15 @@ model MeetingMinute {
 
 model Arisan {
   id        String       @id @default(uuid())
-  memberId  String
-  member    Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId  String?
+  member    Member?      @relation(fields: [memberId], references: [id], onDelete: SetNull)
   month     Int
   year      Int
   drawDate  DateTime?
+  location  String?      @default("Balai Dusun Tuk Uluh")
   status    ArisanStatus @default(PENDING)
+  notes     String?
+  amount    Decimal?     @db.Decimal(12, 2) @default(500000)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 

@@ -10,6 +10,7 @@ import financeRoutes from './finance.routes';
 import cashWithdrawalRoutes from './cashWithdrawal.routes';
 import attendanceRoutes from './attendance.routes';
 import meetingMinuteRoutes from './meetingMinute.routes';
+import arisanRoutes from './arisan.routes';
 import { authenticate } from '../middleware/auth.middleware';
 import { AdminDashboardController } from '../controllers/adminDashboard.controller';
 import { MemberDashboardController } from '../controllers/memberDashboard.controller';
@@ -80,6 +81,10 @@ router.use('/meeting-minute', meetingMinuteRoutes);
 router.use('/notulensi', meetingMinuteRoutes);
 router.use('/minutes', meetingMinuteRoutes);
 router.use('/minute', meetingMinuteRoutes);
+
+// 13. Arisan Management (Module 20): /api/arisan, /api/arisans
+router.use('/arisan', arisanRoutes);
+router.use('/arisans', arisanRoutes);
 
 export default router;
 

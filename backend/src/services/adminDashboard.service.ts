@@ -1,4 +1,5 @@
 import prisma from '../utils/prisma';
+import { ArisanService } from './arisan.service';
 
 export interface AdminDashboardData {
   metrics: {
@@ -72,6 +73,7 @@ export interface AdminDashboardData {
     followUp: string | null;
     author: string;
   } | null;
+  nearestArisan?: any;
 }
 
 export class AdminDashboardService {
@@ -411,6 +413,9 @@ export class AdminDashboardService {
         }
       : null;
 
+    // 10. Arisan Terdekat
+    const nearestArisan = await ArisanService.getNearestUpcoming();
+
     return {
       metrics: {
         totalActiveMembers,
@@ -429,6 +434,7 @@ export class AdminDashboardService {
       upcomingEvents,
       recentAnnouncements,
       latestMeetingMinute,
+      nearestArisan,
     };
   }
 }

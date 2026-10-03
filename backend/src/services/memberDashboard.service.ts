@@ -1,5 +1,6 @@
 import prisma from '../utils/prisma';
 import { AppError } from '../utils/appError';
+import { ArisanService } from './arisan.service';
 
 export interface AttentionItem {
   id: string;
@@ -149,31 +150,35 @@ export class MemberDashboardService {
       }
     }
 
+    // 6. Jadwal Arisan & Arisan Terdekat
+    const nearestArisan = await ArisanService.getNearestUpcoming();
+
     // Find upcoming arisan or meeting event if exists to get dynamic rotated home location
     const arisanEvent = rawEvents.find(
       (e) =>
         e.title.toLowerCase().includes('arisan') ||
         e.type === 'MEETING'
     );
-    const nextDrawLocation = arisanEvent ? arisanEvent.location : 'Balai Dusun Tuk Uluh';
-    const nextDrawDate = arisanEvent ? arisanEvent.eventDate.toISOString() : '2026-10-05T19:30:00.000Z';
+    const nextDrawLocation = nearestArisan?.location || (arisanEvent ? arisanEvent.location : 'Balai Dusun Tuk Uluh');
+    const nextDrawDate = nearestArisan?.drawDate || (arisanEvent ? arisanEvent.eventDate.toISOString() : '2026-10-05T19:30:00.000Z');
 
     const arisanSummary = {
       monthlyFee: 20000,
-      totalPot: 500000,
-      currentCycleMonth: 10,
-      currentCycleYear: 2026,
+      totalPot: nearestArisan?.amount || 500000,
+      currentCycleMonth: nearestArisan?.month || 10,
+      currentCycleYear: nearestArisan?.year || 2026,
       nextDrawDate,
       nextDrawLocation,
       memberStatus: memberArisanStatus,
+      nearestArisan,
       recentDraws: arisans.map((a) => ({
         id: a.id,
         month: a.month,
         year: a.year,
         drawDate: a.drawDate ? a.drawDate.toISOString() : null,
         status: a.status,
-        winnerName: a.member.name,
-        winnerNumber: a.member.memberNumber,
+        winnerName: a.member ? a.member.name : (a.status === 'WON' || a.status === 'PAID' ? 'Penerima Tercatat' : 'Belum Ditentukan'),
+        winnerNumber: a.member ? a.member.memberNumber : '-',
       })),
     };
 
