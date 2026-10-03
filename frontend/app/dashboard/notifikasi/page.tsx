@@ -243,7 +243,7 @@ export default function NotifikasiPage() {
     }
   }, []);
 
-  // Initial load
+  // Initial load & Realtime listener
   useEffect(() => {
     async function load() {
       setIsLoading(true);
@@ -251,6 +251,34 @@ export default function NotifikasiPage() {
       setIsLoading(false);
     }
     load();
+
+    const handleRealtimeNotif = (e: any) => {
+      const data = e.detail;
+      if (data) {
+        setNotifications((prev) => [
+          {
+            id: data.id || `notif-${Date.now()}`,
+            title: data.title,
+            message: data.message,
+            type: data.type || 'ANNOUNCEMENT',
+            isRead: false,
+            link: data.link || '/dashboard/pengumuman',
+            createdAt: data.createdAt || new Date().toISOString(),
+          },
+          ...prev,
+        ]);
+        setUnreadCount((c) => c + 1);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('si_taruna_notification', handleRealtimeNotif);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('si_taruna_notification', handleRealtimeNotif);
+      }
+    };
   }, [fetchNotifications]);
 
   // Refresh

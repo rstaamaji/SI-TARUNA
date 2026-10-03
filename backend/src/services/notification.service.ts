@@ -1,6 +1,7 @@
 import prisma from '../utils/prisma';
 import { AppError } from '../utils/appError';
 import { NotificationType } from '@prisma/client';
+import { emitToUser, broadcastRealtimeNotification } from '../socket';
 
 export interface CreateNotificationDto {
   userId: string;
@@ -331,7 +332,7 @@ export class NotificationService {
    * Membuat notifikasi untuk satu user spesifik
    */
   static async createNotification(dto: CreateNotificationDto) {
-    return prisma.notification.create({
+    const created = await prisma.notification.create({
       data: {
         userId: dto.userId,
         title: dto.title,
@@ -341,6 +342,22 @@ export class NotificationService {
         isRead: false,
       },
     });
+
+    try {
+      emitToUser(dto.userId, 'notification:new', {
+        id: created.id,
+        title: created.title,
+        message: created.message,
+        type: created.type,
+        link: created.link,
+        isRead: false,
+        createdAt: created.createdAt.toISOString(),
+      });
+    } catch (err) {
+      console.warn('Realtime emit to user error:', err);
+    }
+
+    return created;
   }
 
   /**
@@ -370,6 +387,22 @@ export class NotificationService {
     const result = await prisma.notification.createMany({
       data: notifData,
     });
+
+    // Realtime Broadcast via Socket.IO
+    try {
+      broadcastRealtimeNotification(
+        {
+          title: dto.title,
+          message: dto.message,
+          type: dto.type || NotificationType.ANNOUNCEMENT,
+          link: dto.link || '/dashboard/pengumuman',
+          createdAt: new Date().toISOString(),
+        },
+        dto.excludeUserId
+      );
+    } catch (err) {
+      console.warn('Realtime broadcast error:', err);
+    }
 
     return {
       count: result.count,

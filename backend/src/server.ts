@@ -7,9 +7,13 @@ import apiRoutes from './routes';
 import { requestLogger } from './middleware/logger.middleware';
 import { notFoundHandler } from './middleware/notFound.middleware';
 import { errorHandler } from './middleware/error.middleware';
+import { initSocketServer } from './socket';
 
 const app = express();
 const server = http.createServer(app);
+
+// Inisialisasi Socket.IO Realtime Server
+const io = initSocketServer(server);
 
 // 1. Basic Middleware
 app.use(
@@ -88,4 +92,4 @@ if (process.env.NODE_ENV !== 'test') {
   process.on('SIGTERM', () => handleShutdown('SIGTERM'));
 }
 
-export { app, server };
+export { app, server, io };

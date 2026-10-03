@@ -49,6 +49,34 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   useEffect(() => {
     fetchNavbarNotifications();
+
+    const handleRealtimeEvent = (event: any) => {
+      const data = event.detail;
+      setLiveUnreadCount((prev) => prev + 1);
+      if (data) {
+        setRecentNotifs((prev) => [
+          {
+            id: data.id || `notif-${Date.now()}`,
+            title: data.title,
+            message: data.message,
+            type: data.type || 'ANNOUNCEMENT',
+            link: data.link || '/dashboard/pengumuman',
+            isRead: false,
+            createdAt: data.createdAt || new Date().toISOString(),
+          },
+          ...prev.slice(0, 4),
+        ]);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('si_taruna_notification', handleRealtimeEvent);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('si_taruna_notification', handleRealtimeEvent);
+      }
+    };
   }, [fetchNavbarNotifications]);
 
   const handleToggleNotifMenu = () => {
