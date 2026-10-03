@@ -3,6 +3,8 @@ import { authenticate, requireAdmin } from '../middleware/auth.middleware';
 import { sendSuccess } from '../utils/response';
 import { AdminDashboardController } from '../controllers/adminDashboard.controller';
 
+import { SecurityAuditService } from '../services/securityAudit.service';
+
 const router = Router();
 
 // Seluruh endpoint di bawah ini WAJIB lolos authenticate dan requireAdmin
@@ -15,6 +17,15 @@ router.use(authenticate, requireAdmin);
 router.get('/', AdminDashboardController.getOverview);
 router.get('/dashboard', AdminDashboardController.getOverview);
 router.get('/overview', AdminDashboardController.getOverview);
+
+/**
+ * GET /api/admin/security-audit
+ * Audit Keamanan Sistem SI-TARUNA (Module 28)
+ */
+router.get('/security-audit', async (_req: Request, res: Response) => {
+  const auditReport = await SecurityAuditService.runComprehensiveAudit();
+  sendSuccess(res, 'Audit keamanan aplikasi berhasil dijalankan', auditReport, 200);
+});
 
 /**
  * GET /api/admin/management-data

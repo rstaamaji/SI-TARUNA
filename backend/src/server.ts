@@ -9,36 +9,64 @@ import { notFoundHandler } from './middleware/notFound.middleware';
 import { errorHandler } from './middleware/error.middleware';
 import { initSocketServer } from './socket';
 import { ReminderService } from './services/reminder.service';
+import { securityHeaders, xssSanitizer } from './middleware/security.middleware';
 
 const app = express();
 const server = http.createServer(app);
 
+// Sembunyikan informasi banner server Express untuk keamanan
+app.disable('x-powered-by');
+
 // Inisialisasi Socket.IO Realtime Server
 const io = initSocketServer(server);
 
-// 1. Basic Middleware
+// 1. Security Headers (Anti-Sniffing, Anti-Clickjacking, XSS Protection)
+app.use(securityHeaders);
+
+// 2. CORS (Cross-Origin Resource Sharing) Terkonfigurasi Aman
+const allowedOrigins = [
+  config.clientUrl,
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:3000',
+];
+
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Izinkan request tanpa origin (seperti curl, mobile app, postman, server-to-server)
       if (!origin) return callback(null, true);
+
+      // Mode development: Izinkan localhost dan 127.0.0.1
       if (
         config.isDevelopment &&
         (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'))
       ) {
         return callback(null, true);
       }
-      if (origin === config.clientUrl) {
+
+      // Mode production: Cek whitelist origin
+      if (allowedOrigins.includes(origin) || origin === config.clientUrl) {
         return callback(null, true);
       }
-      return callback(null, true);
+
+      return callback(new Error(`Akses diblokir oleh CORS policy: Origin ${origin} tidak diizinkan`));
     },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     credentials: true,
+    maxAge: 86400, // 24 jam preflight cache
   })
 );
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// 2. Request Logger Middleware
+// 3. Body Parser dengan Pembatasan Ukuran Payload
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// 4. XSS Input Sanitizer Middleware
+app.use(xssSanitizer);
+
+// 5. Request Logger Middleware
 app.use(requestLogger);
 
 // 3. API Routes

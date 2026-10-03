@@ -60,6 +60,14 @@ export const organizationService = {
     const res = await api.get('/settings/security-status');
     return res.data.data;
   },
+
+  /**
+   * Menjalankan audit keamanan komprehensif 11 poin arsitektur SI-TARUNA (Module 28)
+   */
+  async getSecurityAudit(): Promise<any> {
+    const res = await api.get('/admin/security-audit');
+    return res.data.data;
+  },
 };
 
 export default organizationService;

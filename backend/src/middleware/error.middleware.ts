@@ -42,7 +42,12 @@ export const errorHandler = (
       return sendError(res, 'Data yang diminta tidak ditemukan di database', [], 404);
     }
 
-    return sendError(res, `Database error: ${err.message}`, [], 400);
+    if (process.env.NODE_ENV === 'production') {
+      return sendError(res, 'Terjadi kesalahan pada pemrosesan database', [], 400);
+    }
+    // Saring pesan agar tidak membocorkan query SQL internal atau kredensial
+    const sanitizedMsg = String(err.message || '').replace(/password=[^&]*/gi, 'password=***');
+    return sendError(res, `Kesalahan data: ${sanitizedMsg}`, [], 400);
   }
 
   // 4. Malformed JSON Body
@@ -52,10 +57,12 @@ export const errorHandler = (
 
   // 5. Default Internal Server Error
   console.error('[Unhandled Error]', err);
-  const message =
-    process.env.NODE_ENV === 'production'
-      ? 'Terjadi kesalahan internal pada server'
-      : err.message || 'Internal Server Error';
+  
+  // Pastikan tidak membocorkan stack trace, kredensial, atau path direktori internal
+  let safeMessage = 'Terjadi kesalahan internal pada server. Silakan hubungi admin sistem.';
+  if (process.env.NODE_ENV !== 'production') {
+    safeMessage = err.message || 'Internal Server Error';
+  }
 
-  return sendError(res, message, [], 500);
+  return sendError(res, safeMessage, [], 500);
 };
