@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/ui/Logo';
-import { ShieldCheck, Heart, Sparkles } from 'lucide-react';
+import { ShieldCheck, Heart } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -101,15 +101,6 @@ export const Footer: React.FC = () => {
               <li className="flex flex-col pt-1">
                 <span className="text-[11px] text-gray-400 dark:text-slate-500">Tahun Kepengurusan:</span>
                 <span className="font-semibold text-taruna-dark dark:text-white">2026 - 2029</span>
-              </li>
-              <li className="pt-2">
-                <Link
-                  href="/dashboard/pengumuman"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-taruna-red-600 dark:text-red-400 hover:underline"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Papan Pengumuman Warga
-                </Link>
               </li>
             </ul>
           </div>
