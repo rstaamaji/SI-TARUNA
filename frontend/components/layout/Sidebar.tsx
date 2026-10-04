@@ -31,7 +31,7 @@ export interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   notificationCount?: number;
-  userRole?: 'ADMIN' | 'MEMBER';
+  userRole?: 'SUPERADMIN' | 'ADMIN' | 'MEMBER';
 }
 
 export interface NavItem {
@@ -159,9 +159,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
 
-  // Filter menu: sembunyikan menu adminOnly jika bukan ADMIN
+  // Filter menu: sembunyikan menu adminOnly jika bukan ADMIN atau SUPERADMIN
   const visibleItems = navigationItems.filter((item) => {
-    if (item.adminOnly && userRole !== 'ADMIN') {
+    if (item.adminOnly && userRole !== 'ADMIN' && userRole !== 'SUPERADMIN') {
       return false;
     }
     return true;

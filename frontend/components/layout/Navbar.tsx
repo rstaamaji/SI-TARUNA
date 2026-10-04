@@ -13,7 +13,7 @@ export interface NavbarProps {
   onMenuToggle: () => void;
   user?: {
     name: string;
-    role: 'ADMIN' | 'MEMBER';
+    role: 'SUPERADMIN' | 'ADMIN' | 'MEMBER';
     avatarUrl?: string;
   };
   notificationCount?: number;

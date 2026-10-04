@@ -3,8 +3,6 @@
 import React, { useState } from 'react';
 import {
   Lock,
-  User,
-  ShieldCheck,
   ArrowRight,
   LogOut,
   Info,
