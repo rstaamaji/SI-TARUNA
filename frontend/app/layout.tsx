@@ -6,8 +6,8 @@ import { RealtimeNotificationProvider } from '@/components/providers/RealtimeNot
 import { OrganizationProvider } from '@/context/OrganizationContext';
 
 export const metadata: Metadata = {
-  title: 'SI-TARUNA | Karang Taruna Setya Bakti - Tuk Uluh, Sringin, Jumantono',
-  description: 'Sistem Informasi Karang Taruna Setya Bakti - Tuk Uluh, Sringin, Jumantono',
+  title: 'SI-TARUNA | Sistem Informasi Karang Taruna - Springin, Jumantono',
+  description: 'SI-TARUNA - Sistem Informasi Karang Taruna Springin - Jumantono. Transparansi keuangan kas & jimpitan, absensi kegiatan, arisan dan pengumuman warga.',
 };
 
 export default function RootLayout({

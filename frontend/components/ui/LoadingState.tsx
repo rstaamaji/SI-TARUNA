@@ -30,7 +30,7 @@ export const Skeleton: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   return (
     <div
       className={cn(
-        'animate-pulse rounded-xl bg-gray-200/80',
+        'animate-pulse rounded-xl bg-gray-200/80 dark:bg-slate-800',
         className
       )}
       {...props}
@@ -40,7 +40,7 @@ export const Skeleton: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 
 export const CardSkeleton: React.FC = () => {
   return (
-    <div className="p-6 rounded-2xl border border-taruna-border bg-white shadow-sm space-y-4">
+    <div className="p-6 rounded-2xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-4">
       <div className="flex items-center justify-between">
         <Skeleton className="h-5 w-1/3" />
         <Skeleton className="h-8 w-8 rounded-full" />
@@ -53,8 +53,8 @@ export const CardSkeleton: React.FC = () => {
 
 export const TableSkeleton: React.FC<{ rows?: number }> = ({ rows = 4 }) => {
   return (
-    <div className="w-full rounded-2xl border border-taruna-border overflow-hidden bg-white shadow-sm">
-      <div className="p-4 bg-taruna-surface border-b border-taruna-border">
+    <div className="w-full rounded-2xl border border-taruna-border dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900 shadow-xs">
+      <div className="p-4 bg-taruna-surface dark:bg-slate-800/80 border-b border-taruna-border dark:border-slate-800">
         <Skeleton className="h-5 w-48" />
       </div>
       <div className="p-4 space-y-3">
@@ -82,10 +82,10 @@ export const LoadingState: React.FC<{
         className
       )}
     >
-      <div className="p-3 rounded-2xl bg-taruna-yellow-50 text-taruna-yellow-600 ring-4 ring-taruna-yellow-100/50">
+      <div className="p-3 rounded-2xl bg-taruna-yellow-50 dark:bg-slate-800 text-taruna-yellow-600 dark:text-taruna-yellow-400 ring-4 ring-taruna-yellow-100/50 dark:ring-slate-700/50 shadow-xs">
         <Spinner size="lg" />
       </div>
-      <p className="text-sm font-semibold text-gray-600">{message}</p>
+      <p className="text-sm font-semibold text-gray-600 dark:text-slate-300">{message}</p>
     </div>
   );
 };

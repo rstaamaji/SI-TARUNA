@@ -18,6 +18,7 @@ import { Logo } from '@/components/ui/Logo';
 import { MemberDashboard } from '@/components/dashboard/MemberDashboard';
 import { AdminDashboard } from '@/components/dashboard/AdminDashboard';
 import { ThemeToggle } from '@/components/theme/ThemeProvider';
+import { Footer } from '@/components/layout/Footer';
 
 interface CurrentUser {
   id: string;
@@ -39,6 +40,28 @@ export default function UnifiedMainPage() {
 
   // Dashboard UI State
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Check existing session
+  React.useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('si_taruna_user');
+      const storedToken = localStorage.getItem('si_taruna_token');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        if (parsed.name && (parsed.role === 'ADMIN' || parsed.role === 'MEMBER')) {
+          setCurrentUser({
+            id: parsed.id || 'current-user-id',
+            name: parsed.name,
+            role: parsed.role,
+            username: parsed.username || 'user',
+            token: storedToken || undefined,
+          });
+        }
+      }
+    } catch {
+      // Ignore parse error
+    }
+  }, []);
 
   // Real backend login request with fallback
   const handleLogin = async (e?: React.FormEvent) => {
@@ -67,6 +90,15 @@ export default function UnifiedMainPage() {
           token: json.data.token,
         };
         setCurrentUser(user);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('si_taruna_token', json.data.token);
+          localStorage.setItem('si_taruna_user', JSON.stringify({
+            id: user.id,
+            name: user.name,
+            role: user.role,
+            username: user.username,
+          }));
+        }
         toast.success(`Berhasil masuk sebagai ${user.role}!`);
       } else {
         const errMsg = json.message || 'Username atau password salah.';
@@ -84,6 +116,10 @@ export default function UnifiedMainPage() {
           username: 'admin',
         };
         setCurrentUser(user);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('si_taruna_token', 'mock-token-admin');
+          localStorage.setItem('si_taruna_user', JSON.stringify(user));
+        }
         toast.success('Login sebagai ADMIN (Sesi Lokal)');
       } else if (trimmedUser === 'member' && passwordInput === 'member123') {
         const user: CurrentUser = {
@@ -93,6 +129,10 @@ export default function UnifiedMainPage() {
           username: 'member',
         };
         setCurrentUser(user);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('si_taruna_token', 'mock-token-member');
+          localStorage.setItem('si_taruna_user', JSON.stringify(user));
+        }
         toast.success('Login sebagai MEMBER (Sesi Lokal)');
       } else {
         setLoginError('Kredensial tidak valid');
@@ -105,6 +145,10 @@ export default function UnifiedMainPage() {
 
   const handleLogout = () => {
     setCurrentUser(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('si_taruna_token');
+      localStorage.removeItem('si_taruna_user');
+    }
     toast.info('Anda telah keluar dari sistem.');
   };
 
@@ -133,10 +177,13 @@ export default function UnifiedMainPage() {
                 <Lock className="w-6 h-6" />
               </div>
               <h2 className="text-2xl font-black text-taruna-dark dark:text-white tracking-tight">
-                Masuk ke SI-TARUNA
+                SI-TARUNA
               </h2>
-              <p className="text-xs text-gray-500 dark:text-slate-400">
-                Karang Taruna Setya Bakti — Tuk Uluh, Sringin, Jumantono
+              <p className="text-xs font-semibold text-taruna-yellow-600 dark:text-taruna-yellow-400">
+                Sistem Informasi Karang Taruna
+              </p>
+              <p className="text-[11px] font-bold text-taruna-red-600 dark:text-red-400">
+                Karang Taruna Springin - Jumantono
               </p>
             </div>
 
@@ -222,9 +269,7 @@ export default function UnifiedMainPage() {
         </main>
 
         {/* Footer */}
-        <footer className="py-4 text-center text-xs text-gray-500 dark:text-slate-500 border-t border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900">
-          &copy; {new Date().getFullYear()} Karang Taruna Setya Bakti | Tuk Uluh, Sringin, Jumantono.
-        </footer>
+        <Footer />
       </div>
     );
   }
@@ -288,6 +333,8 @@ export default function UnifiedMainPage() {
             <AdminDashboard />
           )}
         </main>
+
+        <Footer />
       </div>
     </div>
   );

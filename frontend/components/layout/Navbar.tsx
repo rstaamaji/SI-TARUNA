@@ -309,17 +309,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               </div>
               <div className="pt-1 border-t border-taruna-border dark:border-slate-800">
-                <a
-                  href="#logout"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    window.location.reload();
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      localStorage.removeItem('si_taruna_token');
+                      localStorage.removeItem('si_taruna_user');
+                    }
+                    setShowProfileMenu(false);
+                    router.push('/');
                   }}
-                  className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-taruna-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 transition"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-taruna-red-600 dark:text-red-400 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/40 transition text-left"
                 >
                   <LogOut className="w-4 h-4 text-taruna-red-600 dark:text-red-400" />
                   Keluar Akun
-                </a>
+                </button>
               </div>
             </div>
           )}

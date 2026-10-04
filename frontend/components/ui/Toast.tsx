@@ -91,10 +91,10 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const borders = {
-    success: 'border-emerald-200 bg-emerald-50/90 text-emerald-950',
-    error: 'border-taruna-red-200 bg-red-50/90 text-red-950',
-    warning: 'border-amber-200 bg-amber-50/90 text-amber-950',
-    info: 'border-blue-200 bg-blue-50/90 text-blue-950',
+    success: 'border-emerald-200 dark:border-emerald-800/80 bg-emerald-50/95 dark:bg-emerald-950/90 text-emerald-950 dark:text-emerald-100',
+    error: 'border-taruna-red-200 dark:border-red-900/80 bg-red-50/95 dark:bg-red-950/90 text-red-950 dark:text-red-100',
+    warning: 'border-amber-200 dark:border-amber-800/80 bg-amber-50/95 dark:bg-amber-950/90 text-amber-950 dark:text-amber-100',
+    info: 'border-blue-200 dark:border-blue-800/80 bg-blue-50/95 dark:bg-blue-950/90 text-blue-950 dark:text-blue-100',
   };
 
   return (
@@ -106,7 +106,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           <div
             key={t.id}
             className={cn(
-              'pointer-events-auto flex items-start gap-3 p-4 rounded-2xl border shadow-lg backdrop-blur transition-all duration-300 transform translate-y-0',
+              'pointer-events-auto flex items-start gap-3 p-4 rounded-2xl border shadow-xl backdrop-blur transition-all duration-300 transform translate-y-0',
               borders[t.type]
             )}
           >
@@ -117,7 +117,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             </div>
             <button
               onClick={() => removeToast(t.id)}
-              className="p-1 rounded-lg hover:bg-black/5 text-gray-500 transition"
+              className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 text-gray-500 dark:text-slate-400 transition"
               aria-label="Tutup notifikasi"
             >
               <X className="w-4 h-4" />

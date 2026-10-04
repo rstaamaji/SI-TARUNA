@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -594,6 +595,7 @@ export default function CashWithdrawalPage() {
             </CardContent>
           </Card>
         </main>
+        <Footer />
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════════

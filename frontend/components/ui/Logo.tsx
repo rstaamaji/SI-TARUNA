@@ -27,7 +27,7 @@ export const Logo: React.FC<LogoProps> = ({
   const [imageError, setImageError] = useState(false);
 
   const effectiveLogoUrl = src || config.logoUrl || '/assets/logo.png';
-  const effectiveSubtitle = subtitle || (config.hamlet ? `${config.hamlet}, ${config.village}, ${config.subDistrict}` : 'Tuk Uluh, Sringin, Jumantono');
+  const effectiveSubtitle = subtitle || 'Sistem Informasi Karang Taruna';
 
   const LogoContent = (
     <div className={cn('flex items-center gap-3 select-none group', className)}>
@@ -119,10 +119,10 @@ export const Logo: React.FC<LogoProps> = ({
               SI-TARUNA
             </span>
             <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold bg-taruna-yellow-100 dark:bg-amber-950/80 text-taruna-yellow-900 dark:text-amber-300 border border-taruna-yellow-200 dark:border-amber-800/60 whitespace-nowrap shrink-0">
-              SETYA BAKTI
+              Springin
             </span>
           </div>
-          <span className="text-[11px] font-bold text-taruna-red-600 dark:text-red-400 tracking-wide mt-1 whitespace-nowrap truncate">
+          <span className="text-[11px] font-medium text-gray-500 dark:text-slate-400 tracking-wide mt-0.5 whitespace-nowrap truncate">
             {effectiveSubtitle}
           </span>
         </div>

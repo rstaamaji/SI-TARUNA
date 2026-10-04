@@ -284,10 +284,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Logo size={36} showText={false} />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-taruna-dark dark:text-white truncate">
-                Karang Taruna Setya Bakti
+                SI-TARUNA
               </p>
-              <p className="text-[11px] text-gray-500 dark:text-slate-400 truncate">
-                Tuk Uluh, Sringin, Jumantono
+              <p className="text-[11px] font-medium text-taruna-red-600 dark:text-red-400 truncate">
+                Karang Taruna Springin - Jumantono
               </p>
             </div>
           </div>
