@@ -23,7 +23,7 @@ import { Footer } from '@/components/layout/Footer';
 interface CurrentUser {
   id: string;
   name: string;
-  role: 'ADMIN' | 'MEMBER';
+  role: 'SUPERADMIN' | 'ADMIN' | 'MEMBER';
   username: string;
   token?: string;
 }
@@ -33,8 +33,8 @@ export default function UnifiedMainPage() {
 
   // Authentication State
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const [usernameInput, setUsernameInput] = useState('admin');
-  const [passwordInput, setPasswordInput] = useState('admin123');
+  const [usernameInput, setUsernameInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState('');
 
@@ -48,7 +48,7 @@ export default function UnifiedMainPage() {
       const storedToken = localStorage.getItem('si_taruna_token');
       if (storedUser) {
         const parsed = JSON.parse(storedUser);
-        if (parsed.name && (parsed.role === 'ADMIN' || parsed.role === 'MEMBER')) {
+        if (parsed.name && (parsed.role === 'SUPERADMIN' || parsed.role === 'ADMIN' || parsed.role === 'MEMBER')) {
           setCurrentUser({
             id: parsed.id || 'current-user-id',
             name: parsed.name,
@@ -198,7 +198,7 @@ export default function UnifiedMainPage() {
               <Input
                 label="Username"
                 type="text"
-                placeholder="Masukkan username (admin / member)"
+                placeholder="Masukkan username"
                 value={usernameInput}
                 onChange={(e) => setUsernameInput(e.target.value)}
                 required
@@ -223,48 +223,6 @@ export default function UnifiedMainPage() {
                 Masuk ke Dashboard
               </Button>
             </form>
-
-            {/* Quick Demo Credentials Helper */}
-            <div className="pt-4 border-t border-taruna-border dark:border-slate-800 text-center">
-              <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 mb-2">
-                Akun Demo Cepat:
-              </p>
-              <div className="grid grid-cols-2 gap-2 text-left">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUsernameInput('admin');
-                    setPasswordInput('admin123');
-                  }}
-                  className="p-2.5 rounded-xl border border-taruna-yellow-200 dark:border-taruna-yellow-800/40 bg-taruna-yellow-50 dark:bg-taruna-yellow-950/30 hover:bg-taruna-yellow-100 dark:hover:bg-taruna-yellow-900/40 text-left transition flex flex-col group"
-                >
-                  <span className="text-xs font-bold text-taruna-yellow-900 dark:text-taruna-yellow-300 flex items-center justify-between">
-                    Akun ADMIN
-                    <ShieldCheck className="w-3.5 h-3.5 text-taruna-red-600 dark:text-red-400" />
-                  </span>
-                  <span className="text-[11px] text-taruna-yellow-700 dark:text-taruna-yellow-400 font-mono mt-0.5">
-                    admin / admin123
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUsernameInput('member');
-                    setPasswordInput('member123');
-                  }}
-                  className="p-2.5 rounded-xl border border-taruna-border dark:border-slate-800 bg-taruna-surface dark:bg-slate-800/60 hover:bg-gray-100 dark:hover:bg-slate-800 text-left transition flex flex-col group"
-                >
-                  <span className="text-xs font-bold text-taruna-dark dark:text-slate-200 flex items-center justify-between">
-                    Akun MEMBER
-                    <User className="w-3.5 h-3.5 text-gray-400 dark:text-slate-400" />
-                  </span>
-                  <span className="text-[11px] text-gray-500 dark:text-slate-400 font-mono mt-0.5">
-                    member / member123
-                  </span>
-                </button>
-              </div>
-            </div>
           </div>
         </main>
 
