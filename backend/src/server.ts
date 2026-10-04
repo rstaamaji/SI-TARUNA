@@ -24,13 +24,6 @@ const io = initSocketServer(server);
 app.use(securityHeaders);
 
 // 2. CORS (Cross-Origin Resource Sharing) Terkonfigurasi Aman
-const allowedOrigins = [
-  config.clientUrl,
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://127.0.0.1:3000',
-];
-
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -46,7 +39,7 @@ app.use(
       }
 
       // Mode production: Cek whitelist origin
-      if (allowedOrigins.includes(origin) || origin === config.clientUrl) {
+      if (config.allowedOrigins.includes(origin) || origin === config.clientUrl) {
         return callback(null, true);
       }
 

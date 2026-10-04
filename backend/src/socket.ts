@@ -29,10 +29,10 @@ export function initSocketServer(server: http.Server): SocketIOServer {
         ) {
           return callback(null, true);
         }
-        if (origin === config.clientUrl) {
+        if (config.allowedOrigins.includes(origin) || origin === config.clientUrl) {
           return callback(null, true);
         }
-        return callback(null, true);
+        return callback(new Error(`Origin ${origin} tidak diizinkan oleh Socket.IO CORS`));
       },
       credentials: true,
       methods: ['GET', 'POST'],

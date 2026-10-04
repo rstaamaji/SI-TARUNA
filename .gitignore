@@ -28,6 +28,8 @@ secrets/
 !.env.example
 !backend/.env.example
 !frontend/.env.example
+!backend/.env.production.example
+!frontend/.env.production.example
 
 # Next.js build
 .next/

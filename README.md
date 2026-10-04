@@ -23,6 +23,7 @@ SI-TARUNA mendigitalisasi seluruh administrasi organisasi: transparansi pembukua
 13. [User Roles](#13-user-roles)
 14. [Screenshots](#14-screenshots)
 15. [Development Guide](#15-development-guide)
+16. [Production Deployment Guide](#16-production-deployment-guide)
 
 ---
 
@@ -624,6 +625,151 @@ npm test
 1. **Branching:** Gunakan branch fitur untuk setiap modul baru (`git checkout -b feature/nama-fitur`).
 2. **Linting & Type Safety:** Pastikan `npm run build` berhasil tanpa error TypeScript di backend maupun frontend.
 3. **Commit Messages:** Gunakan format conventional commits (contoh: `feat: add jimpitan group comparison chart`, `fix: prevent duplicate attendance record`).
+
+---
+
+## 16. Production Deployment Guide
+
+Bagian ini memandu proses deployment SI-TARUNA ke server produksi (VPS Linux Ubuntu/Debian, Nginx, PM2, dan PostgreSQL).
+
+### 📋 Checklist Kesiapan Produksi (*Production Readiness*)
+- [x] **Frontend Production Build:** `npm run build` berhasil tanpa error linting & tipe.
+- [x] **Backend Production Build & Start:** `npm run build` (`tsc`) dan `npm start` (`node dist/server.js`) berjalan lancar.
+- [x] **Database URL via Environment:** Menggunakan variabel `DATABASE_URL` dengan SSL (`sslmode=prefer` atau `require`).
+- [x] **JWT Secret Aman:** Diharuskan menggunakan kunci rahasia acak minimal 32 karakter via environment `JWT_SECRET` (aplikasi menolak default dev key saat `NODE_ENV=production`).
+- [x] **CORS Multi-Origin:** Dikonfigurasi fleksibel via `ALLOWED_ORIGINS` dan `CLIENT_URL`.
+- [x] **Zero Secrets in Git:** Seluruh file `.env` diabaikan oleh `.gitignore`. Hanya file template `.env.production.example` yang tersimpan di repositori.
+- [x] **Health Check Endpoint:** Endpoint `/api/health` aktif untuk pemantauan uptime server & koneksi database.
+
+---
+
+### Langkah Deployment ke Server VPS (Ubuntu / Debian)
+
+#### 1. Persiapan Server & Dependensi
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl git nginx postgresql postgresql-contrib
+
+# Install Node.js 20 LTS & PM2
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+sudo npm install -g pm2
+```
+
+#### 2. Konfigurasi Database PostgreSQL
+```bash
+sudo -u postgres psql
+```
+```sql
+CREATE DATABASE si_taruna_prod;
+CREATE USER taruna_admin WITH ENCRYPTED PASSWORD 'KatasandiKuatDatabase123!';
+GRANT ALL PRIVILEGES ON DATABASE si_taruna_prod TO taruna_admin;
+\q
+```
+
+#### 3. Clone Repositori & Setup Environment
+```bash
+cd /var/www
+sudo git clone https://github.com/rstaamaji/SI-TARUNA.git
+cd SI-TARUNA
+
+# Konfigurasi Backend
+cd backend
+cp .env.production.example .env
+nano .env # Sesuaikan DATABASE_URL, JWT_SECRET, dan ALLOWED_ORIGINS
+
+# Konfigurasi Frontend
+cd ../frontend
+cp .env.production.example .env.production
+nano .env.production # Sesuaikan NEXT_PUBLIC_API_URL dan NEXT_PUBLIC_SOCKET_URL
+```
+
+#### 4. Build & Migrasi Database
+```bash
+# Backend Setup
+cd /var/www/SI-TARUNA/backend
+npm install --omit=dev
+npx prisma generate
+npx prisma migrate deploy
+npm run build
+
+# Frontend Setup
+cd /var/www/SI-TARUNA/frontend
+npm install
+npm run build
+```
+
+#### 5. Menjalankan Layanan dengan PM2 Process Manager
+```bash
+# Jalankan Backend API Server
+cd /var/www/SI-TARUNA/backend
+pm2 start dist/server.js --name "si-taruna-backend" --env NODE_ENV=production
+
+# Jalankan Frontend Next.js Server
+cd /var/www/SI-TARUNA/frontend
+pm2 start npm --name "si-taruna-frontend" -- start
+
+# Simpan state PM2 agar otomatis berjalan saat reboot
+pm2 save
+pm2 startup
+```
+
+#### 6. Konfigurasi Nginx Reverse Proxy (Termasuk WebSocket Support)
+Buat file konfigurasi `/etc/nginx/sites-available/si-taruna`:
+```nginx
+server {
+    server_name taruna-springin.id www.taruna-springin.id;
+
+    # Frontend Next.js Reverse Proxy
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+    # Backend REST API Reverse Proxy
+    location /api/ {
+        proxy_pass http://127.0.0.1:5000/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # WebSocket Realtime (Socket.IO) Reverse Proxy
+    location /socket.io/ {
+        proxy_pass http://127.0.0.1:5000/socket.io/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+Aktifkan konfigurasi dan restart Nginx:
+```bash
+sudo ln -s /etc/nginx/sites-available/si-taruna /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+#### 7. Pasang Sertifikat SSL Gratis (Let's Encrypt Certbot)
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d taruna-springin.id -d www.taruna-springin.id
+```
+
+#### 8. Verifikasi Uptime & Health Check
+```bash
+curl -I https://taruna-springin.id/api/health
+```
+Respons HTTP `200 OK` menandakan sistem telah aktif dan siap melayani warga.
 
 ---
 
