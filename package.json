@@ -2,7 +2,7 @@
   "name": "si-taruna",
   "version": "1.0.0",
   "private": true,
-  "description": "Sistem Informasi Karang Taruna Springin - Jumantono",
+  "description": "Sistem Informasi Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono",
   "scripts": {
     "dev:frontend": "npm run dev --prefix frontend",
     "dev:backend": "npm run dev --prefix backend",
@@ -17,6 +17,6 @@
     "express",
     "typescript"
   ],
-  "author": "Karang Taruna Springin",
+  "author": "Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono",
   "license": "ISC"
 }

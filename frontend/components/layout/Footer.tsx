@@ -24,7 +24,7 @@ export const Footer: React.FC = () => {
                   Sistem Informasi Karang Taruna
                 </p>
                 <p className="text-xs font-bold text-taruna-red-600 dark:text-red-400">
-                  Karang Taruna Springin - Jumantono
+                  Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono
                 </p>
               </div>
             </div>
@@ -121,7 +121,7 @@ export const Footer: React.FC = () => {
             <span className="font-bold text-taruna-dark dark:text-white">SI-TARUNA</span>
             <span>&bull;</span>
             <span className="font-medium text-taruna-red-600 dark:text-red-400">
-              Karang Taruna Springin - Jumantono
+              Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono
             </span>
             <span className="hidden sm:inline">&bull;</span>
             <span>Hak Cipta &copy; {currentYear}</span>

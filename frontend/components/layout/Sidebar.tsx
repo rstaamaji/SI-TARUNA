@@ -287,7 +287,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 SI-TARUNA
               </p>
               <p className="text-[11px] font-medium text-taruna-red-600 dark:text-red-400 truncate">
-                Karang Taruna Springin - Jumantono
+                Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono
               </p>
             </div>
           </div>

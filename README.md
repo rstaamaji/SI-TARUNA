@@ -1,7 +1,7 @@
 # SI-TARUNA
-### Sistem Informasi Karang Taruna Springin - Jumantono
+### Sistem Informasi Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono
 
-Aplikasi tata kelola organisasi modern, transparan, dan terintegrasi untuk pemuda-pemudi **Karang Taruna Springin - Jumantono** (Dusun Tuk Uluh, Desa Sringin, Kecamatan Jumantono, Kabupaten Karanganyar, Jawa Tengah).
+Aplikasi tata kelola organisasi modern, transparan, dan terintegrasi untuk pemuda-pemudi **Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono** (Desa Sringin, Kecamatan Jumantono, Kabupaten Karanganyar, Jawa Tengah).
 
 SI-TARUNA mendigitalisasi seluruh administrasi organisasi: transparansi pembukuan kas & penarikan dana, presensi kegiatan warga, rekapitulasi iuran jimpitan 7 kelompok, jadwal pengundian arisan, notulensi rapat, serta pengiriman pengumuman realtime berbasis WebSockets.
 
@@ -718,7 +718,7 @@ pm2 startup
 Buat file konfigurasi `/etc/nginx/sites-available/si-taruna`:
 ```nginx
 server {
-    server_name taruna-springin.id www.taruna-springin.id;
+    server_name taruna-sringin.id www.taruna-sringin.id;
 
     # Frontend Next.js Reverse Proxy
     location / {
@@ -762,16 +762,16 @@ sudo systemctl restart nginx
 #### 7. Pasang Sertifikat SSL Gratis (Let's Encrypt Certbot)
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d taruna-springin.id -d www.taruna-springin.id
+sudo certbot --nginx -d taruna-sringin.id -d www.taruna-sringin.id
 ```
 
 #### 8. Verifikasi Uptime & Health Check
 ```bash
-curl -I https://taruna-springin.id/api/health
+curl -I https://taruna-sringin.id/api/health
 ```
 Respons HTTP `200 OK` menandakan sistem telah aktif dan siap melayani warga.
 
 ---
 
-**SI-TARUNA** &bull; Karang Taruna Springin - Jumantono  
+**SI-TARUNA** &bull; Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono  
 *Membangun generasi pemuda yang mandiri, tertib administrasi, dan berintegritas tinggi.*

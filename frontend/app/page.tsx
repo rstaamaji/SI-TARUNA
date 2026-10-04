@@ -183,7 +183,7 @@ export default function UnifiedMainPage() {
                 Sistem Informasi Karang Taruna
               </p>
               <p className="text-[11px] font-bold text-taruna-red-600 dark:text-red-400">
-                Karang Taruna Springin - Jumantono
+                Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono
               </p>
             </div>
 

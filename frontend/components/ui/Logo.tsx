@@ -119,7 +119,7 @@ export const Logo: React.FC<LogoProps> = ({
               SI-TARUNA
             </span>
             <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold bg-taruna-yellow-100 dark:bg-amber-950/80 text-taruna-yellow-900 dark:text-amber-300 border border-taruna-yellow-200 dark:border-amber-800/60 whitespace-nowrap shrink-0">
-              Springin
+              Dusun Tuk Uluh, Sringin, Jumantono
             </span>
           </div>
           <span className="text-[11px] font-medium text-gray-500 dark:text-slate-400 tracking-wide mt-0.5 whitespace-nowrap truncate">
