@@ -83,7 +83,7 @@ export const authenticate = async (
 
 /**
  * Middleware: requireAdmin
- * Memastikan pengguna yang mengakses adalah ADMIN.
+ * Memastikan pengguna yang mengakses adalah ADMIN atau SUPERADMIN.
  * Member atau pengguna tanpa hak akses akan langsung ditolak dengan HTTP 403 Forbidden.
  */
 export const requireAdmin = (
@@ -96,11 +96,39 @@ export const requireAdmin = (
     return;
   }
 
-  if (req.user.role !== Role.ADMIN) {
+  if (req.user.role !== Role.ADMIN && req.user.role !== Role.SUPERADMIN) {
     sendError(
       res,
-      'Akses Terlarang (403 Forbidden): Fitur management ini hanya dapat diakses oleh ADMIN Karang Taruna.',
-      [{ requiredRole: Role.ADMIN, currentRole: req.user.role }],
+      'Akses Terlarang (403 Forbidden): Fitur management ini hanya dapat diakses oleh Admin atau Superadmin.',
+      [{ requiredRoles: [Role.ADMIN, Role.SUPERADMIN], currentRole: req.user.role }],
+      403
+    );
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Middleware: requireSuperAdmin
+ * Memastikan pengguna yang mengakses adalah SUPERADMIN.
+ * Admin biasa atau Member akan ditolak dengan HTTP 403 Forbidden.
+ */
+export const requireSuperAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  if (!req.user) {
+    sendError(res, 'Akses ditolak: Anda belum terautentikasi.', [], 401);
+    return;
+  }
+
+  if (req.user.role !== Role.SUPERADMIN) {
+    sendError(
+      res,
+      'Akses Terlarang (403 Forbidden): Tindakan ini memerlukan hak akses tingkat SUPERADMIN.',
+      [{ requiredRole: Role.SUPERADMIN, currentRole: req.user.role }],
       403
     );
     return;

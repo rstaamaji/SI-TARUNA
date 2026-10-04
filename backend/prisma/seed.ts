@@ -7,29 +7,58 @@ async function main() {
   console.log('🌱 Starting database seeding for SI-TARUNA...');
 
   // 1. Password Hashing
-  const hashedPasswordAdmin = await bcrypt.hash('admin123', 10);
-  const hashedPasswordMember = await bcrypt.hash('member123', 10);
+  const hashedPasswordSuperadmin = await bcrypt.hash('superadmin', 10);
+  const hashedPasswordTukuluhJaya = await bcrypt.hash('TukuluhJaya', 10);
 
   // 2. Create Users
-  const adminUser = await prisma.user.upsert({
-    where: { username: 'admin' },
-    update: {},
+  // Superadmin: rustaamaji / superadmin
+  const superadminUser = await prisma.user.upsert({
+    where: { username: 'rustaamaji' },
+    update: {
+      password: hashedPasswordSuperadmin,
+      role: Role.SUPERADMIN,
+      isApproved: true,
+    },
     create: {
-      username: 'admin',
-      email: 'admin@taruna-setyabakti.id',
-      password: hashedPasswordAdmin,
-      role: Role.ADMIN,
+      username: 'rustaamaji',
+      email: 'rustaamaji@taruna-setyabakti.id',
+      password: hashedPasswordSuperadmin,
+      role: Role.SUPERADMIN,
+      isApproved: true,
     },
   });
 
-  const memberUser = await prisma.user.upsert({
-    where: { username: 'member' },
-    update: {},
+  // Admin: admin / TukuluhJaya (Wajib dikonfirmasi oleh Superadmin, default isApproved = false)
+  const adminUser = await prisma.user.upsert({
+    where: { username: 'admin' },
+    update: {
+      password: hashedPasswordTukuluhJaya,
+      role: Role.ADMIN,
+      isApproved: false,
+    },
     create: {
-      username: 'member',
-      email: 'member@taruna-setyabakti.id',
-      password: hashedPasswordMember,
+      username: 'admin',
+      email: 'admin@taruna-setyabakti.id',
+      password: hashedPasswordTukuluhJaya,
+      role: Role.ADMIN,
+      isApproved: false,
+    },
+  });
+
+  // Member: Nama Lengkap sebagai username / TukuluhJaya
+  const memberUser = await prisma.user.upsert({
+    where: { username: 'Bambang Pamungkas' },
+    update: {
+      password: hashedPasswordTukuluhJaya,
       role: Role.MEMBER,
+      isApproved: true,
+    },
+    create: {
+      username: 'Bambang Pamungkas',
+      email: 'bambang.pamungkas@taruna-setyabakti.id',
+      password: hashedPasswordTukuluhJaya,
+      role: Role.MEMBER,
+      isApproved: true,
     },
   });
 
@@ -43,11 +72,11 @@ async function main() {
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
       joinDate: new Date('2023-01-10'),
       status: MemberStatus.ACTIVE,
-      userId: adminUser.id,
+      userId: superadminUser.id,
     },
     {
       memberNumber: 'KT-SB-002',
-      name: 'Anggota 2',
+      name: 'Bambang Pamungkas',
       gender: Gender.MALE,
       phone: '081234567802',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -264,11 +293,26 @@ async function main() {
     },
   ];
 
+  // Unlink legacy users from members before re-linking
+  await prisma.member.updateMany({
+    data: { userId: null },
+  });
+  await prisma.user.deleteMany({
+    where: { username: 'member' },
+  });
+
   const createdMembers: any[] = [];
   for (const m of dummyMembersData) {
     const member = await prisma.member.upsert({
       where: { memberNumber: m.memberNumber },
-      update: { name: m.name },
+      update: {
+        name: m.name,
+        userId: m.userId || null,
+        phone: m.phone,
+        address: m.address,
+        gender: m.gender,
+        status: m.status,
+      },
       create: m,
     });
     createdMembers.push(member);
