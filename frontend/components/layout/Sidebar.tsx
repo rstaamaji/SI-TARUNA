@@ -19,6 +19,7 @@ import {
   UserCircle,
   X,
   ChevronRight,
+  ChevronDown,
   ShieldCheck,
   Banknote,
   BarChart3,
@@ -34,6 +35,14 @@ export interface SidebarProps {
   userRole?: 'SUPERADMIN' | 'ADMIN' | 'MEMBER';
 }
 
+export interface NavSubItem {
+  name: string;
+  href: string;
+  icon?: any;
+  badge?: string | null;
+  adminOnly?: boolean;
+}
+
 export interface NavItem {
   name: string;
   href: string;
@@ -41,6 +50,7 @@ export interface NavItem {
   badge?: string | null;
   adminOnly?: boolean;
   superAdminOnly?: boolean;
+  subItems?: NavSubItem[];
 }
 
 export const navigationItems: NavItem[] = [
@@ -61,18 +71,23 @@ export const navigationItems: NavItem[] = [
     href: '/finance',
     icon: Wallet,
     badge: null,
-  },
-  {
-    name: 'Pengambilan Kas',
-    href: '/finance/withdrawal',
-    icon: Banknote,
-    badge: null,
-  },
-  {
-    name: 'Laporan Keuangan',
-    href: '/finance/reports',
-    icon: BarChart3,
-    badge: null,
+    subItems: [
+      {
+        name: 'Buku Kas Umum',
+        href: '/finance',
+        icon: Wallet,
+      },
+      {
+        name: 'Pengambilan Kas',
+        href: '/finance/withdrawal',
+        icon: Banknote,
+      },
+      {
+        name: 'Laporan Keuangan',
+        href: '/finance/reports',
+        icon: BarChart3,
+      },
+    ],
   },
   {
     name: 'Absensi',
@@ -160,6 +175,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
 
+  // State untuk menu yang memiliki sub-item / sub-bab
+  const [expandedMenus, setExpandedMenus] = React.useState<Record<string, boolean>>({
+    Keuangan: true,
+  });
+
+  // Otomatis buka sub-menu jika rute aktif berada di dalamnya
+  React.useEffect(() => {
+    if (pathname.startsWith('/finance')) {
+      setExpandedMenus((prev) => ({ ...prev, Keuangan: true }));
+    }
+  }, [pathname]);
+
   // Filter menu: sembunyikan menu superAdminOnly/adminOnly jika role tidak berhak
   const visibleItems = navigationItems.filter((item) => {
     if (item.superAdminOnly && userRole !== 'SUPERADMIN') {
@@ -222,15 +249,120 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           {visibleItems.map((item) => {
-            const isActive =
+            const hasSub = Boolean(item.subItems && item.subItems.length > 0);
+            const isSubExpanded = Boolean(expandedMenus[item.name]);
+            const isChildActive = hasSub && item.subItems!.some((sub) => pathname === sub.href);
+            const isSelfActive =
               pathname === item.href ||
               (item.href !== '/dashboard' && pathname.startsWith(item.href));
+            const isActive = isSelfActive || isChildActive;
             const Icon = item.icon;
 
             const badgeValue =
               item.name === 'Notifikasi' && notificationCount > 0
                 ? String(notificationCount)
                 : item.badge;
+
+            // Render Accordion Item jika memiliki sub-bab / subItems
+            if (hasSub) {
+              return (
+                <div key={item.name} className="space-y-1">
+                  <div
+                    onClick={() => {
+                      setExpandedMenus((prev) => ({
+                        ...prev,
+                        [item.name]: !prev[item.name],
+                      }));
+                    }}
+                    className={cn(
+                      'group flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 cursor-pointer select-none',
+                      isActive
+                        ? 'bg-taruna-yellow-50 dark:bg-taruna-yellow-500/15 text-taruna-yellow-800 dark:text-taruna-yellow-400 font-semibold shadow-xs border border-taruna-yellow-200/80 dark:border-taruna-yellow-500/30'
+                        : 'text-gray-600 dark:text-slate-300 hover:bg-taruna-surface dark:hover:bg-slate-800 hover:text-taruna-dark dark:hover:text-white'
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={cn(
+                          'p-1.5 rounded-lg transition-colors',
+                          isActive
+                            ? 'bg-taruna-yellow-500 text-white shadow-xs'
+                            : 'text-gray-400 dark:text-slate-500 group-hover:text-taruna-yellow-600 dark:group-hover:text-taruna-yellow-400 group-hover:bg-taruna-yellow-50 dark:group-hover:bg-slate-800'
+                        )}
+                      >
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span>{item.name}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      {badgeValue && (
+                        <span
+                          className={cn(
+                            'text-[10px] font-bold px-2 py-0.5 rounded-full',
+                            item.superAdminOnly
+                              ? 'bg-amber-500 text-white'
+                              : item.adminOnly
+                              ? 'bg-taruna-red-600 text-white'
+                              : 'bg-taruna-yellow-100 dark:bg-taruna-yellow-950/60 text-taruna-yellow-800 dark:text-taruna-yellow-300'
+                          )}
+                        >
+                          {badgeValue}
+                        </span>
+                      )}
+                      {isSubExpanded ? (
+                        <ChevronDown className="w-4 h-4 text-taruna-yellow-600 dark:text-taruna-yellow-400 transition-transform duration-200" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-gray-400 dark:text-slate-500 group-hover:text-taruna-dark dark:group-hover:text-white transition-transform duration-200" />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Sub-item / Sub-bab Accordion List */}
+                  {isSubExpanded && (
+                    <div className="pl-4 pr-1 py-1 space-y-1 ml-4 border-l-2 border-taruna-yellow-300/80 dark:border-slate-800 transition-all duration-200">
+                      {item.subItems!.map((sub) => {
+                        const isCurrentSubActive = pathname === sub.href;
+                        const SubIcon = sub.icon;
+
+                        return (
+                          <Link
+                            key={sub.name}
+                            href={sub.href}
+                            onClick={() => {
+                              if (window.innerWidth < 1024) onClose();
+                            }}
+                            className={cn(
+                              'group flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200',
+                              isCurrentSubActive
+                                ? 'bg-taruna-yellow-500 text-white shadow-xs font-bold'
+                                : 'text-gray-600 dark:text-slate-400 hover:text-taruna-dark dark:hover:text-white hover:bg-taruna-surface dark:hover:bg-slate-800'
+                            )}
+                          >
+                            <div className="flex items-center gap-2.5">
+                              {SubIcon && (
+                                <SubIcon
+                                  className={cn(
+                                    'w-3.5 h-3.5 transition-colors',
+                                    isCurrentSubActive
+                                      ? 'text-white'
+                                      : 'text-gray-400 dark:text-slate-500 group-hover:text-taruna-yellow-600 dark:group-hover:text-taruna-yellow-400'
+                                  )}
+                                />
+                              )}
+                              <span>{sub.name}</span>
+                            </div>
+                            {isCurrentSubActive && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
 
             return (
               <Link
