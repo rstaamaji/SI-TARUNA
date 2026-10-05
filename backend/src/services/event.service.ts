@@ -146,15 +146,19 @@ export class EventService {
 
   /**
    * Get upcoming events (Kegiatan Terdekat) sorted by eventDate asc
+   * Hanya menampilkan kegiatan mendatang. Kegiatan yang telah lewat otomatis tidak disertakan.
    */
   static async getUpcomingEvents(limit = 10) {
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+    const nowWib = new Date(Date.now() + 7 * 60 * 60 * 1000);
+    const startOfTodayUtc = new Date(
+      Date.UTC(nowWib.getUTCFullYear(), nowWib.getUTCMonth(), nowWib.getUTCDate(), 0, 0, 0, 0) -
+        7 * 60 * 60 * 1000
+    );
 
-    let upcoming = await prisma.event.findMany({
+    const upcoming = await prisma.event.findMany({
       where: {
         eventDate: {
-          gte: startOfToday,
+          gte: startOfTodayUtc,
         },
       },
       orderBy: { eventDate: 'asc' },
@@ -169,23 +173,6 @@ export class EventService {
         },
       },
     });
-
-    // If no future events exist yet, fallback to all events ordered by date asc
-    if (upcoming.length === 0) {
-      upcoming = await prisma.event.findMany({
-        orderBy: { eventDate: 'asc' },
-        take: limit,
-        include: {
-          attendances: {
-            select: {
-              id: true,
-              status: true,
-              memberId: true,
-            },
-          },
-        },
-      });
-    }
 
     return upcoming.map((ev) => this.formatEventRecord(ev));
   }

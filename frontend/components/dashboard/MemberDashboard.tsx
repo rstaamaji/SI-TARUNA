@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Users,
@@ -233,7 +233,7 @@ const FALLBACK_DASHBOARD: MemberDashboardData = {
       title: 'Pertemuan Rutin & Arisan Pemuda Oktober 2026',
       description:
         'Pertemuan rutin bulanan Karang Taruna Setya Bakti, evaluasi kas, dan penarikan undian arisan.',
-      eventDate: '2026-10-05T19:30:00.000Z',
+      eventDate: '2026-10-05T12:30:00.000Z',
       location: 'Balai Dusun Tuk Uluh',
       type: 'MEETING',
       myAttendance: 'PRESENT',
@@ -263,7 +263,7 @@ const FALLBACK_DASHBOARD: MemberDashboardData = {
     totalPot: 500000,
     currentCycleMonth: 10,
     currentCycleYear: 2026,
-    nextDrawDate: '2026-10-05T19:30:00.000Z',
+    nextDrawDate: '2026-10-05T12:30:00.000Z',
     nextDrawLocation: 'Balai Dusun Tuk Uluh',
     memberStatus: 'BELUM_DAPAT',
     recentDraws: [
@@ -445,15 +445,42 @@ export const MemberDashboard: React.FC = () => {
   });
   const [notifFilter, setNotifFilter] = useState<'ALL' | 'UNREAD'>('ALL');
 
+  // Dynamic API base and token retrieval
+  const getApiBase = () => {
+    return typeof window !== 'undefined' && window.location.hostname
+      ? `http://${window.location.hostname}:5000/api`
+      : process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') || 'http://localhost:5000/api';
+  };
+
+  const getAuthToken = () => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('token') || localStorage.getItem('si_taruna_token');
+  };
+
+  // Filter only upcoming events (today or later) and sort nearest first.
+  // Expired events are automatically excluded.
+  const activeUpcomingEvents = useMemo(() => {
+    if (!data?.upcomingEvents || !Array.isArray(data.upcomingEvents)) return [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return data.upcomingEvents
+      .filter((event) => {
+        const evDate = new Date(event.eventDate);
+        return !isNaN(evDate.getTime()) && evDate.getTime() >= today.getTime();
+      })
+      .sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
+  }, [data?.upcomingEvents]);
+
   // Load dashboard data from API with fallback
   const fetchDashboard = useCallback(async () => {
     setIsLoading(true);
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
+      const token = getAuthToken();
       const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const res = await fetch('http://localhost:5000/api/member/dashboard', { headers });
+      const apiBase = getApiBase();
+      const res = await fetch(`${apiBase}/member/dashboard`, { headers });
       const json = await res.json();
 
       if (res.ok && json.success && json.data) {
@@ -477,9 +504,10 @@ export const MemberDashboard: React.FC = () => {
   // Handle Mark single notification read
   const handleMarkNotificationRead = async (notifId: string) => {
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
+      const token = getAuthToken();
       if (token) {
-        await fetch(`http://localhost:5000/api/member/dashboard/notifications/${notifId}/read`, {
+        const apiBase = getApiBase();
+        await fetch(`${apiBase}/member/dashboard/notifications/${notifId}/read`, {
           method: 'PATCH',
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -501,9 +529,10 @@ export const MemberDashboard: React.FC = () => {
   // Handle Mark all notifications read
   const handleMarkAllRead = async () => {
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
+      const token = getAuthToken();
       if (token) {
-        await fetch('http://localhost:5000/api/member/dashboard/notifications/read-all', {
+        const apiBase = getApiBase();
+        await fetch(`${apiBase}/member/dashboard/notifications/read-all`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -812,8 +841,17 @@ export const MemberDashboard: React.FC = () => {
             </Badge>
           </CardHeader>
           <CardContent className="space-y-3.5">
-            {data.upcomingEvents.map((event) => {
-              const isRsvpd = !!rsvpState[event.id];
+            {activeUpcomingEvents.length === 0 ? (
+              <div className="py-8 px-4 text-center border border-dashed border-taruna-border dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center">
+                <CalendarCheck2 className="w-10 h-10 text-gray-300 dark:text-slate-600 mb-2" />
+                <p className="text-sm font-bold text-gray-700 dark:text-slate-300">Belum Ada Agenda Terdekat</p>
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 max-w-xs">
+                  Semua kegiatan sebelumnya telah selesai atau belum ada jadwal kegiatan baru yang diagendakan.
+                </p>
+              </div>
+            ) : (
+              activeUpcomingEvents.map((event) => {
+                const isRsvpd = !!rsvpState[event.id];
               return (
                 <div
                   key={event.id}
@@ -896,7 +934,8 @@ export const MemberDashboard: React.FC = () => {
                   </div>
                 </div>
               );
-            })}
+            })
+          )}
           </CardContent>
         </Card>
 

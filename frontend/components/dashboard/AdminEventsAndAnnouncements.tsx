@@ -102,14 +102,13 @@ export const AdminEventsAndAnnouncements: React.FC<AdminEventsAndAnnouncementsPr
   // Helper token
   const getAuthToken = (): string | null => {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('si_taruna_token');
+    return localStorage.getItem('token') || localStorage.getItem('si_taruna_token');
   };
 
   const getApiBase = () => {
-    if (process.env.NEXT_PUBLIC_API_URL) {
-      return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
-    }
-    return 'http://localhost:5000/api';
+    return typeof window !== 'undefined' && window.location.hostname
+      ? `http://${window.location.hostname}:5000/api`
+      : process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') || 'http://localhost:5000/api';
   };
 
   // Fetch events and announcements from API

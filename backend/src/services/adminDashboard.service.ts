@@ -322,28 +322,27 @@ export class AdminDashboardService {
       ];
     }
 
-    // 8. Kegiatan Terdekat (Prioritize future events sorted by nearest date)
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+    // 8. Kegiatan Terdekat (Hanya kegiatan mendatang, kegiatan yang sudah lewat otomatis tidak ditampilkan)
+    const nowWib = new Date(Date.now() + 7 * 60 * 60 * 1000);
+    const startOfTodayUtc = new Date(
+      Date.UTC(nowWib.getUTCFullYear(), nowWib.getUTCMonth(), nowWib.getUTCDate(), 0, 0, 0, 0) -
+        7 * 60 * 60 * 1000
+    );
 
-    let rawUpcomingEvents = await prisma.event.findMany({
-      where: { eventDate: { gte: startOfToday } },
+    const rawUpcomingEvents = await prisma.event.findMany({
+      where: { eventDate: { gte: startOfTodayUtc } },
       orderBy: { eventDate: 'asc' },
-      take: 4,
+      take: 6,
     });
-
-    if (rawUpcomingEvents.length === 0) {
-      rawUpcomingEvents = await prisma.event.findMany({
-        orderBy: { eventDate: 'asc' },
-        take: 4,
-      });
-    }
 
     const daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     const upcomingEvents = rawUpcomingEvents.map((ev) => {
       const d = new Date(ev.eventDate);
-      const dayOfWeek = ev.dayOfWeek || daysIndo[d.getDay()];
-      const time = ev.time || `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} WIB`;
+      const wibD = new Date(d.getTime() + 7 * 60 * 60 * 1000);
+      const dayOfWeek = ev.dayOfWeek || daysIndo[wibD.getUTCDay()];
+      const hours = String(wibD.getUTCHours()).padStart(2, '0');
+      const mins = String(wibD.getUTCMinutes()).padStart(2, '0');
+      const time = ev.time || `${hours}:${mins} WIB`;
       return {
         id: ev.id,
         title: ev.title,

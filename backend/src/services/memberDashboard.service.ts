@@ -75,14 +75,17 @@ export class MemberDashboardService {
       author: a.createdBy.member?.name || a.createdBy.username,
     }));
 
-    // 5. Kegiatan Terdekat (Prioritize future events sorted by nearest date)
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+    // 5. Kegiatan Terdekat (Hanya kegiatan mendatang, kegiatan yang sudah lewat otomatis tidak ditampilkan)
+    const nowWib = new Date(Date.now() + 7 * 60 * 60 * 1000);
+    const startOfTodayUtc = new Date(
+      Date.UTC(nowWib.getUTCFullYear(), nowWib.getUTCMonth(), nowWib.getUTCDate(), 0, 0, 0, 0) -
+        7 * 60 * 60 * 1000
+    );
 
-    let rawEvents = await prisma.event.findMany({
-      where: { eventDate: { gte: startOfToday } },
+    const rawEvents = await prisma.event.findMany({
+      where: { eventDate: { gte: startOfTodayUtc } },
       orderBy: { eventDate: 'asc' },
-      take: 4,
+      take: 6,
       include: {
         attendances: user.member
           ? {
@@ -92,26 +95,15 @@ export class MemberDashboardService {
       },
     });
 
-    if (rawEvents.length === 0) {
-      rawEvents = await prisma.event.findMany({
-        orderBy: { eventDate: 'asc' },
-        take: 4,
-        include: {
-          attendances: user.member
-            ? {
-                where: { memberId: user.member.id },
-              }
-            : false,
-        },
-      });
-    }
-
     const daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     const upcomingEvents = rawEvents.map((e) => {
       const myAttendance = e.attendances && e.attendances.length > 0 ? e.attendances[0].status : null;
       const d = new Date(e.eventDate);
-      const dayOfWeek = e.dayOfWeek || daysIndo[d.getDay()];
-      const time = e.time || `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} WIB`;
+      const wibD = new Date(d.getTime() + 7 * 60 * 60 * 1000);
+      const dayOfWeek = e.dayOfWeek || daysIndo[wibD.getUTCDay()];
+      const hours = String(wibD.getUTCHours()).padStart(2, '0');
+      const mins = String(wibD.getUTCMinutes()).padStart(2, '0');
+      const time = e.time || `${hours}:${mins} WIB`;
       return {
         id: e.id,
         title: e.title,

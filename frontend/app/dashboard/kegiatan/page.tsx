@@ -357,14 +357,8 @@ export default function KegiatanPage() {
       })
       .sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
 
-    if (futureOnly.length > 0) {
-      return futureOnly.slice(0, 3);
-    }
-
-    // Fallback: If no future events exist, display nearest events from the full list
-    return [...events]
-      .sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime())
-      .slice(0, 3);
+    // Return only future events, sorted nearest first
+    return futureOnly.slice(0, 3);
   }, [events]);
 
   // Filtered full list
