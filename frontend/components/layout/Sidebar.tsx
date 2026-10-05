@@ -411,9 +411,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       {badgeValue}
                     </span>
                   )}
-                  {isActive && (
-                    <ChevronRight className="w-3.5 h-3.5 text-taruna-yellow-600 dark:text-taruna-yellow-400" />
-                  )}
                 </div>
               </Link>
             );
