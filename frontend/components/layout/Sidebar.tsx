@@ -329,6 +329,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           <Link
                             key={sub.name}
                             href={sub.href}
+                            prefetch={true}
                             onClick={() => {
                               if (window.innerWidth < 1024) onClose();
                             }}
@@ -368,6 +369,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Link
                 key={item.name}
                 href={item.href}
+                prefetch={true}
                 onClick={() => {
                   if (window.innerWidth < 1024) onClose();
                 }}

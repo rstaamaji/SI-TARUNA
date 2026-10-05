@@ -89,7 +89,7 @@ app.use(errorHandler);
 
 // 6. Server Initialization & Graceful Shutdown
 if (process.env.NODE_ENV !== 'test') {
-  server.listen(config.port, () => {
+  server.listen(config.port, '0.0.0.0', () => {
     console.log(`===============================================`);
     console.log(`🚀 SI-TARUNA Backend API Server`);
     console.log(`📡 Port: ${config.port} | Mode: ${config.env}`);

@@ -68,12 +68,12 @@ export default function MemberAttendancePage() {
   const toast = useToast();
 
   // Auth & Session
-  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: 'ADMIN' | 'MEMBER' }>({
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: 'SUPERADMIN' | 'ADMIN' | 'MEMBER' }>({
     id: 'user-default',
     name: 'Anggota Karang Taruna',
     role: 'MEMBER',
   });
-  const isAdmin = currentUser.role === 'ADMIN';
+  const isAdmin = currentUser.role === 'ADMIN' || currentUser.role === 'SUPERADMIN';
 
   // Data
   const [attendanceData, setAttendanceData] = useState<PersonalAttendanceResponse | null>(null);
@@ -87,19 +87,19 @@ export default function MemberAttendancePage() {
 
   const getAuthToken = (): string | null => {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('si_taruna_token');
+    return localStorage.getItem('token') || localStorage.getItem('si_taruna_token');
   };
 
   // Load User Session
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('si_taruna_user');
+      const stored = localStorage.getItem('si_taruna_user') || localStorage.getItem('user');
       if (stored) {
         const parsed = JSON.parse(stored);
         setCurrentUser({
           id: parsed.id || 'user-id',
-          name: parsed.member?.name || parsed.username || 'Anggota',
-          role: parsed.role === 'ADMIN' ? 'ADMIN' : 'MEMBER',
+          name: parsed.member?.name || parsed.name || parsed.username || 'Anggota',
+          role: parsed.role === 'SUPERADMIN' ? 'SUPERADMIN' : parsed.role === 'ADMIN' ? 'ADMIN' : 'MEMBER',
         });
       }
     } catch {
@@ -118,9 +118,10 @@ export default function MemberAttendancePage() {
         const headers: Record<string, string> = {};
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
-        const apiBase = process.env.NEXT_PUBLIC_API_URL
-          ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
-          : 'http://localhost:5000/api';
+        const apiBase =
+          typeof window !== 'undefined' && window.location.hostname
+            ? `http://${window.location.hostname}:5000/api`
+            : process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') || 'http://localhost:5000/api';
 
         const res = await fetch(`${apiBase}/attendance/my-history`, {
           headers,
@@ -143,7 +144,7 @@ export default function MemberAttendancePage() {
         setIsRefreshing(false);
       }
     },
-    []
+    [toast]
   );
 
   useEffect(() => {
