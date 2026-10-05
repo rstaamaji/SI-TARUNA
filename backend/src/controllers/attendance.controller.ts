@@ -153,4 +153,28 @@ export class AttendanceController {
       next(error);
     }
   }
+
+  /**
+   * GET /api/attendance/recap
+   * Rekap absensi seluruh anggota dalam 1 periode (MEMBER & ADMIN)
+   */
+  static async getRecap(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { startDate, endDate, month, year, limit, type, search } = req.query;
+
+      const recap = await AttendanceService.getAttendanceRecap({
+        startDate: startDate as string,
+        endDate: endDate as string,
+        month: month ? Number(month) : undefined,
+        year: year ? Number(year) : undefined,
+        limit: limit ? Number(limit) : undefined,
+        type: type as string,
+        search: search as string,
+      });
+
+      sendSuccess(res, 'Berhasil memuat rekap absensi periode', recap, 200);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

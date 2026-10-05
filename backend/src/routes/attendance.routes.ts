@@ -11,6 +11,9 @@ router.use(authenticate);
 router.get('/', AttendanceController.getAllRecords);
 router.get('/records', AttendanceController.getAllRecords);
 
+// 0.5. GET /api/attendance/recap - Rekap absensi seluruh anggota dalam 1 periode (MEMBER & ADMIN)
+router.get('/recap', AttendanceController.getRecap);
+
 // 1. GET /api/attendance/my-history & /history - Riwayat absensi pribadi pengguna login (MEMBER & ADMIN)
 router.get('/my-history', AttendanceController.getMyHistory);
 router.get('/history', AttendanceController.getMyHistory);

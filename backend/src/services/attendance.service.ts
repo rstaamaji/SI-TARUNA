@@ -33,6 +33,47 @@ export interface AttendanceFilter {
   limit?: number;
 }
 
+export interface AttendanceRecapFilter {
+  startDate?: string;
+  endDate?: string;
+  month?: number;
+  year?: number;
+  limit?: number;
+  type?: string;
+  search?: string;
+}
+
+const INDO_DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const INDO_MONTHS = [
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+];
+
+function normalizeEventType(rawType?: EventType | string): EventType | undefined {
+  if (!rawType || rawType === 'ALL') return undefined;
+  const upper = String(rawType).toUpperCase().replace(/\s+/g, '_');
+  if (upper === 'RAPAT' || upper === 'MEETING') return EventType.MEETING;
+  if (upper === 'KERJA_BAKTI' || upper === 'COMMUNITY_SERVICE') return EventType.COMMUNITY_SERVICE;
+  if (upper === 'ARISAN') return EventType.ARISAN;
+  if (upper === 'SOSIAL' || upper === 'KEGIATAN_SOSIAL' || upper === 'SOCIAL') return EventType.SOCIAL;
+  if (upper === 'TARUNA' || upper === 'KEGIATAN_KARANG_TARUNA') return EventType.TARUNA;
+  if (upper === 'SPORTS' || upper === 'OLAHRAGA') return EventType.SPORTS;
+  if (Object.values(EventType).includes(upper as EventType)) {
+    return upper as EventType;
+  }
+  return undefined;
+}
+
 export class AttendanceService {
   /**
    * 0. Get all attendance records with server-side filtering & pagination (API-level for large datasets)
@@ -638,5 +679,212 @@ export class AttendanceService {
     });
 
     return event;
+  }
+
+  /**
+   * 7. Rekap Absensi Komprehensif Seluruh Anggota dalam 1 Periode
+   * Mengakumulasi kehadiran (Hadir, Izin, Alpa) seluruh anggota untuk seluruh kegiatan (termasuk Arisan, kecuali Jimpitan)
+   * Dapat diakses oleh seluruh anggota & admin, serta siap untuk diekspor ke file Excel/CSV/PDF
+   */
+  static async getAttendanceRecap(filter: AttendanceRecapFilter = {}) {
+    const eventWhere: Prisma.EventWhereInput = {
+      // Kecualikan jika ada kegiatan bertema jimpitan
+      NOT: [
+        { title: { contains: 'jimpitan', mode: 'insensitive' } },
+        { description: { contains: 'jimpitan', mode: 'insensitive' } },
+      ],
+    };
+
+    // Filter tanggal / periode
+    if (filter.startDate && filter.endDate) {
+      const s = new Date(filter.startDate);
+      s.setHours(0, 0, 0, 0);
+      const e = new Date(filter.endDate);
+      e.setHours(23, 59, 59, 999);
+      eventWhere.eventDate = { gte: s, lte: e };
+    } else if (filter.startDate) {
+      const s = new Date(filter.startDate);
+      s.setHours(0, 0, 0, 0);
+      eventWhere.eventDate = { gte: s };
+    } else if (filter.endDate) {
+      const e = new Date(filter.endDate);
+      e.setHours(23, 59, 59, 999);
+      eventWhere.eventDate = { lte: e };
+    } else if (filter.month && filter.year) {
+      const y = Number(filter.year);
+      const m = Number(filter.month) - 1;
+      const startOfMonth = new Date(y, m, 1);
+      const endOfMonth = new Date(y, m + 1, 0, 23, 59, 59, 999);
+      eventWhere.eventDate = { gte: startOfMonth, lte: endOfMonth };
+    } else if (filter.year) {
+      const y = Number(filter.year);
+      const startOfYear = new Date(y, 0, 1);
+      const endOfYear = new Date(y, 11, 31, 23, 59, 59, 999);
+      eventWhere.eventDate = { gte: startOfYear, lte: endOfYear };
+    }
+
+    if (filter.type && filter.type !== 'ALL') {
+      const normalized = normalizeEventType(filter.type);
+      if (normalized) {
+        eventWhere.type = normalized;
+      }
+    }
+
+    // Ambil daftar event
+    let rawEvents = [];
+    if (filter.limit && Number(filter.limit) > 0) {
+      // Ambil N kegiatan terakhir
+      rawEvents = await prisma.event.findMany({
+        where: eventWhere,
+        orderBy: { eventDate: 'desc' },
+        take: Number(filter.limit),
+      });
+      // Balik urutan agar berurutan kronologis dari yang terlama ke terbaru (kiri ke kanan)
+      rawEvents.reverse();
+    } else {
+      rawEvents = await prisma.event.findMany({
+        where: eventWhere,
+        orderBy: { eventDate: 'asc' },
+      });
+    }
+
+    const eventIds = rawEvents.map((e) => e.id);
+
+    // Filter pencarian nama / nomor anggota
+    const memberWhere: Prisma.MemberWhereInput = {};
+    if (filter.search && filter.search.trim()) {
+      const q = filter.search.trim();
+      memberWhere.OR = [
+        { name: { contains: q, mode: 'insensitive' } },
+        { memberNumber: { contains: q, mode: 'insensitive' } },
+      ];
+    }
+
+    const members = await prisma.member.findMany({
+      where: memberWhere,
+      orderBy: { memberNumber: 'asc' },
+      select: {
+        id: true,
+        memberNumber: true,
+        name: true,
+        gender: true,
+        phone: true,
+        status: true,
+        attendances: {
+          where: {
+            eventId: { in: eventIds },
+          },
+          select: {
+            id: true,
+            eventId: true,
+            status: true,
+            notes: true,
+          },
+        },
+      },
+    });
+
+    const formattedEvents = rawEvents.map((ev) => {
+      const d = new Date(ev.eventDate);
+      const wibD = new Date(d.getTime() + 7 * 60 * 60 * 1000);
+      const day = INDO_DAYS[wibD.getUTCDay()] || 'Minggu';
+      const dateFormatted = `${wibD.getUTCDate()} ${INDO_MONTHS[wibD.getUTCMonth()]} ${wibD.getUTCFullYear()}`;
+      const hours = String(wibD.getUTCHours()).padStart(2, '0');
+      const mins = String(wibD.getUTCMinutes()).padStart(2, '0');
+      return {
+        id: ev.id,
+        title: ev.title,
+        type: ev.type,
+        location: ev.location,
+        eventDate: ev.eventDate.toISOString(),
+        dayOfWeek: ev.dayOfWeek || day,
+        time: ev.time || `${hours}:${mins} WIB`,
+        formattedDate: dateFormatted,
+      };
+    });
+
+    const totalEvents = formattedEvents.length;
+
+    // Hitung per anggota
+    const memberRecaps = members.map((m) => {
+      const attendanceMap = new Map<string, { status: AttendanceStatus; notes: string | null }>();
+      m.attendances.forEach((att) => {
+        attendanceMap.set(att.eventId, { status: att.status, notes: att.notes });
+      });
+
+      let presentCount = 0;
+      let excusedCount = 0;
+      let absentCount = 0;
+      let unrecordedCount = 0;
+
+      const eventAttendanceDetails: Record<
+        string,
+        { status: AttendanceStatus | 'UNRECORDED'; notes: string | null }
+      > = {};
+
+      formattedEvents.forEach((ev) => {
+        const att = attendanceMap.get(ev.id);
+        if (att) {
+          eventAttendanceDetails[ev.id] = { status: att.status, notes: att.notes };
+          if (att.status === AttendanceStatus.PRESENT) presentCount++;
+          else if (att.status === AttendanceStatus.EXCUSED) excusedCount++;
+          else if (att.status === AttendanceStatus.ABSENT) absentCount++;
+        } else {
+          eventAttendanceDetails[ev.id] = { status: 'UNRECORDED', notes: null };
+          unrecordedCount++;
+          absentCount++;
+        }
+      });
+
+      const attendanceRate = totalEvents > 0 ? Math.round((presentCount / totalEvents) * 100) : 0;
+
+      let activityCategory = 'Kurang Aktif';
+      if (attendanceRate >= 80) activityCategory = 'Sangat Aktif';
+      else if (attendanceRate >= 60) activityCategory = 'Aktif';
+      else if (attendanceRate >= 40) activityCategory = 'Cukup Aktif';
+
+      return {
+        memberId: m.id,
+        memberNumber: m.memberNumber,
+        name: m.name,
+        gender: m.gender,
+        phone: m.phone,
+        status: m.status,
+        totalEvents,
+        presentCount,
+        excusedCount,
+        absentCount,
+        unrecordedCount,
+        attendanceRate,
+        activityCategory,
+        eventAttendances: eventAttendanceDetails,
+      };
+    });
+
+    // Ringkasan global
+    const totalPresentAll = memberRecaps.reduce((sum, r) => sum + r.presentCount, 0);
+    const totalExcusedAll = memberRecaps.reduce((sum, r) => sum + r.excusedCount, 0);
+    const totalAbsentAll = memberRecaps.reduce((sum, r) => sum + r.absentCount, 0);
+    const averageRate =
+      memberRecaps.length > 0
+        ? Math.round(memberRecaps.reduce((sum, r) => sum + r.attendanceRate, 0) / memberRecaps.length)
+        : 0;
+
+    return {
+      periodInfo: {
+        totalEvents,
+        totalMembers: members.length,
+        startDate: rawEvents.length > 0 ? rawEvents[0].eventDate.toISOString() : null,
+        endDate: rawEvents.length > 0 ? rawEvents[rawEvents.length - 1].eventDate.toISOString() : null,
+      },
+      summary: {
+        totalPresent: totalPresentAll,
+        totalExcused: totalExcusedAll,
+        totalAbsent: totalAbsentAll,
+        averageRate,
+      },
+      events: formattedEvents,
+      members: memberRecaps,
+    };
   }
 }
