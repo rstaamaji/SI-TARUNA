@@ -23,10 +23,8 @@ export function initSocketServer(server: http.Server): SocketIOServer {
     cors: {
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);
-        if (
-          config.isDevelopment &&
-          (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'))
-        ) {
+        // Mode development: Izinkan semua origin lokal
+        if (config.isDevelopment) {
           return callback(null, true);
         }
         if (config.allowedOrigins.includes(origin) || origin === config.clientUrl) {

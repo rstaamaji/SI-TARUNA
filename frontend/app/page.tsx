@@ -68,7 +68,12 @@ export default function UnifiedMainPage() {
     setIsLoggingIn(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const apiHost =
+        typeof window !== 'undefined' && window.location.hostname
+          ? `http://${window.location.hostname}:5000/api`
+          : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
+      const res = await fetch(`${apiHost}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -89,13 +94,26 @@ export default function UnifiedMainPage() {
         };
         setCurrentUser(user);
         if (typeof window !== 'undefined') {
+          localStorage.setItem('token', json.data.token);
           localStorage.setItem('si_taruna_token', json.data.token);
-          localStorage.setItem('si_taruna_user', JSON.stringify({
-            id: user.id,
-            name: user.name,
-            role: user.role,
-            username: user.username,
-          }));
+          localStorage.setItem(
+            'user',
+            JSON.stringify({
+              id: user.id,
+              name: user.name,
+              role: user.role,
+              username: user.username,
+            })
+          );
+          localStorage.setItem(
+            'si_taruna_user',
+            JSON.stringify({
+              id: user.id,
+              name: user.name,
+              role: user.role,
+              username: user.username,
+            })
+          );
         }
         toast.success(`Berhasil masuk sebagai ${user.role}!`);
       } else {
@@ -106,32 +124,51 @@ export default function UnifiedMainPage() {
     } catch {
       // Local fallback if backend temporarily unreachable
       const trimmedUser = usernameInput.trim().toLowerCase();
-      if (trimmedUser === 'admin' && passwordInput === 'admin123') {
+      if (trimmedUser === 'rustaamaji' && passwordInput === 'superadmin') {
         const user: CurrentUser = {
-          id: 'admin-id',
+          id: 'superadmin-local-id',
           name: 'Rustam Aji',
+          role: 'SUPERADMIN',
+          username: 'rustaamaji',
+        };
+        setCurrentUser(user);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('token', 'mock-token-superadmin');
+          localStorage.setItem('si_taruna_token', 'mock-token-superadmin');
+          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('si_taruna_user', JSON.stringify(user));
+        }
+        toast.success('Login sebagai SUPERADMIN');
+      } else if (trimmedUser === 'admin' && passwordInput === 'TukuluhJaya') {
+        const user: CurrentUser = {
+          id: 'admin-local-id',
+          name: 'Pengurus Admin',
           role: 'ADMIN',
           username: 'admin',
         };
         setCurrentUser(user);
         if (typeof window !== 'undefined') {
+          localStorage.setItem('token', 'mock-token-admin');
           localStorage.setItem('si_taruna_token', 'mock-token-admin');
+          localStorage.setItem('user', JSON.stringify(user));
           localStorage.setItem('si_taruna_user', JSON.stringify(user));
         }
-        toast.success('Login sebagai ADMIN (Sesi Lokal)');
-      } else if (trimmedUser === 'member' && passwordInput === 'member123') {
+        toast.success('Login sebagai ADMIN');
+      } else if (passwordInput === 'TukuluhJaya' && trimmedUser.length > 2) {
         const user: CurrentUser = {
-          id: 'member-id',
-          name: 'Anggota 2',
+          id: 'member-local-id',
+          name: usernameInput.trim(),
           role: 'MEMBER',
-          username: 'member',
+          username: usernameInput.trim(),
         };
         setCurrentUser(user);
         if (typeof window !== 'undefined') {
+          localStorage.setItem('token', 'mock-token-member');
           localStorage.setItem('si_taruna_token', 'mock-token-member');
+          localStorage.setItem('user', JSON.stringify(user));
           localStorage.setItem('si_taruna_user', JSON.stringify(user));
         }
-        toast.success('Login sebagai MEMBER (Sesi Lokal)');
+        toast.success(`Login sebagai MEMBER: ${user.name}`);
       } else {
         setLoginError('Kredensial tidak valid');
         toast.error('Gagal masuk');
@@ -144,7 +181,9 @@ export default function UnifiedMainPage() {
   const handleLogout = () => {
     setCurrentUser(null);
     if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
       localStorage.removeItem('si_taruna_token');
+      localStorage.removeItem('user');
       localStorage.removeItem('si_taruna_user');
     }
     toast.info('Anda telah keluar dari sistem.');
@@ -286,7 +325,7 @@ export default function UnifiedMainPage() {
           {currentUser.role === 'MEMBER' ? (
             <MemberDashboard />
           ) : (
-            <AdminDashboard />
+            <AdminDashboard userRole={currentUser.role} userName={currentUser.name} />
           )}
         </main>
 

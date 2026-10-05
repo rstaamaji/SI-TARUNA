@@ -28,20 +28,24 @@ async function main() {
     },
   });
 
-  // Admin: admin / TukuluhJaya (Wajib dikonfirmasi oleh Superadmin, default isApproved = false)
+  // Admin: admin / TukuluhJaya (Disetujui oleh Superadmin rustaamaji)
   const adminUser = await prisma.user.upsert({
     where: { username: 'admin' },
     update: {
       password: hashedPasswordTukuluhJaya,
       role: Role.ADMIN,
-      isApproved: false,
+      isApproved: true,
+      approvedBy: 'rustaamaji',
+      approvedAt: new Date(),
     },
     create: {
       username: 'admin',
       email: 'admin@taruna-setyabakti.id',
       password: hashedPasswordTukuluhJaya,
       role: Role.ADMIN,
-      isApproved: false,
+      isApproved: true,
+      approvedBy: 'rustaamaji',
+      approvedAt: new Date(),
     },
   });
 
@@ -86,7 +90,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-003',
-      name: 'Anggota 3',
+      name: 'Dewi Lestari',
       gender: Gender.FEMALE,
       phone: '081234567803',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -95,7 +99,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-004',
-      name: 'Anggota 4',
+      name: 'Eko Prasetyo',
       gender: Gender.MALE,
       phone: '081234567804',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -104,7 +108,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-005',
-      name: 'Anggota 5',
+      name: 'Siti Rahayu',
       gender: Gender.FEMALE,
       phone: '081234567805',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -113,7 +117,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-006',
-      name: 'Anggota 6',
+      name: 'Agus Setiawan',
       gender: Gender.MALE,
       phone: '081234567806',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -122,8 +126,8 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-007',
-      name: 'Anggota 7',
-      gender: Gender.MALE,
+      name: 'Tri Wahyuni',
+      gender: Gender.FEMALE,
       phone: '081234567807',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
       joinDate: new Date('2023-04-12'),
@@ -131,8 +135,8 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-008',
-      name: 'Anggota 8',
-      gender: Gender.FEMALE,
+      name: 'Bayu Saputra',
+      gender: Gender.MALE,
       phone: '081234567808',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
       joinDate: new Date('2023-04-15'),
@@ -140,8 +144,8 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-009',
-      name: 'Anggota 9',
-      gender: Gender.MALE,
+      name: 'Rina Anggraini',
+      gender: Gender.FEMALE,
       phone: '081234567809',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
       joinDate: new Date('2023-05-10'),
@@ -149,7 +153,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-010',
-      name: 'Anggota 10',
+      name: 'Dwi Nugroho',
       gender: Gender.MALE,
       phone: '081234567810',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -158,7 +162,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-011',
-      name: 'Anggota 11',
+      name: 'Nur Hidayah',
       gender: Gender.FEMALE,
       phone: '081234567811',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -167,7 +171,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-012',
-      name: 'Anggota 12',
+      name: 'Fajar Maulana',
       gender: Gender.MALE,
       phone: '081234567812',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -176,7 +180,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-013',
-      name: 'Anggota 13',
+      name: 'Sri Wahyuningsih',
       gender: Gender.FEMALE,
       phone: '081234567813',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -185,7 +189,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-014',
-      name: 'Anggota 14',
+      name: 'Hendra Gunawan',
       gender: Gender.MALE,
       phone: '081234567814',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -194,7 +198,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-015',
-      name: 'Anggota 15',
+      name: 'Indah Permatasari',
       gender: Gender.FEMALE,
       phone: '081234567815',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -203,7 +207,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-016',
-      name: 'Anggota 16',
+      name: 'Joko Susilo',
       gender: Gender.MALE,
       phone: '081234567816',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -212,7 +216,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-017',
-      name: 'Anggota 17',
+      name: 'Kurnia Sari',
       gender: Gender.FEMALE,
       phone: '081234567817',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -221,7 +225,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-018',
-      name: 'Anggota 18',
+      name: 'Luki Wibowo',
       gender: Gender.MALE,
       phone: '081234567818',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -230,7 +234,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-019',
-      name: 'Anggota 19',
+      name: 'Mega Puspita',
       gender: Gender.FEMALE,
       phone: '081234567819',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -239,7 +243,7 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-020',
-      name: 'Anggota 20',
+      name: 'Nanang Riyadi',
       gender: Gender.MALE,
       phone: '081234567820',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
@@ -248,8 +252,8 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-021',
-      name: 'Anggota 21',
-      gender: Gender.FEMALE,
+      name: 'Oki Setiawan',
+      gender: Gender.MALE,
       phone: '081234567821',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
       joinDate: new Date('2023-11-15'),
@@ -257,8 +261,8 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-022',
-      name: 'Anggota 22',
-      gender: Gender.MALE,
+      name: 'Putri Wulandari',
+      gender: Gender.FEMALE,
       phone: '081234567822',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
       joinDate: new Date('2023-12-01'),
@@ -266,8 +270,8 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-023',
-      name: 'Anggota 23',
-      gender: Gender.FEMALE,
+      name: 'Rendi Saputra',
+      gender: Gender.MALE,
       phone: '081234567823',
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
       joinDate: new Date('2024-01-10'),
@@ -275,21 +279,21 @@ async function main() {
     },
     {
       memberNumber: 'KT-SB-024',
-      name: 'Anggota 24',
-      gender: Gender.MALE,
+      name: 'Sinta Bella',
+      gender: Gender.FEMALE,
       phone: '081234567824',
       address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
       joinDate: new Date('2024-02-05'),
-      status: MemberStatus.INACTIVE, // Mahasiswa rantau
+      status: MemberStatus.ACTIVE,
     },
     {
       memberNumber: 'KT-SB-025',
-      name: 'Anggota 25',
-      gender: Gender.FEMALE,
+      name: 'Wahyu Pratama',
+      gender: Gender.MALE,
       phone: '081234567825',
       address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
       joinDate: new Date('2024-03-01'),
-      status: MemberStatus.INACTIVE, // Bekerja di luar kota
+      status: MemberStatus.ACTIVE,
     },
   ];
 
@@ -303,17 +307,43 @@ async function main() {
 
   const createdMembers: any[] = [];
   for (const m of dummyMembersData) {
+    let assignedUserId = m.userId || null;
+
+    // Otomatis buatkan akun User untuk setiap member agar bisa login dengan Nama Lengkap & TukuluhJaya
+    if (!assignedUserId) {
+      const email = `${m.name.toLowerCase().replace(/[^a-z0-9]/g, '.')}@taruna-setyabakti.id`;
+      const u = await prisma.user.upsert({
+        where: { username: m.name },
+        update: {
+          password: hashedPasswordTukuluhJaya,
+          role: Role.MEMBER,
+          isApproved: true,
+        },
+        create: {
+          username: m.name,
+          email,
+          password: hashedPasswordTukuluhJaya,
+          role: Role.MEMBER,
+          isApproved: true,
+        },
+      });
+      assignedUserId = u.id;
+    }
+
     const member = await prisma.member.upsert({
       where: { memberNumber: m.memberNumber },
       update: {
         name: m.name,
-        userId: m.userId || null,
+        userId: assignedUserId,
         phone: m.phone,
         address: m.address,
         gender: m.gender,
         status: m.status,
       },
-      create: m,
+      create: {
+        ...m,
+        userId: assignedUserId,
+      },
     });
     createdMembers.push(member);
   }

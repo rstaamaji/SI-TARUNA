@@ -206,7 +206,15 @@ const formatCompactRupiah = (value: number): string => {
   return `Rp ${value}`;
 };
 
-export const AdminDashboard: React.FC = () => {
+export interface AdminDashboardProps {
+  userRole?: 'SUPERADMIN' | 'ADMIN';
+  userName?: string;
+}
+
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({
+  userRole = 'ADMIN',
+  userName = 'Pengurus',
+}) => {
   const toast = useToast();
   const [data, setData] = useState<AdminDashboardData>(FALLBACK_ADMIN_DASHBOARD);
   const [isLoading, setIsLoading] = useState(true);
@@ -217,13 +225,17 @@ export const AdminDashboard: React.FC = () => {
     else setIsLoading(true);
 
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
+      const token =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('token') || localStorage.getItem('si_taruna_token')
+          : null;
       const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      const apiBase = process.env.NEXT_PUBLIC_API_URL
-        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
-        : 'http://localhost:5000/api';
+      const apiBase =
+        typeof window !== 'undefined' && window.location.hostname
+          ? `http://${window.location.hostname}:5000/api`
+          : process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') || 'http://localhost:5000/api';
 
       const res = await fetch(`${apiBase}/admin/dashboard`, { headers });
       const json = await res.json();
@@ -264,16 +276,26 @@ export const AdminDashboard: React.FC = () => {
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
               Overview Organisasi
             </span>
-            <Badge variant="accent" size="sm">
-              <ShieldCheck className="w-3 h-3 mr-1 inline" />
-              ADMINISTRATOR
-            </Badge>
+            {userRole === 'SUPERADMIN' ? (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                👑 SUPERADMIN
+              </span>
+            ) : (
+              <Badge variant="accent" size="sm">
+                <ShieldCheck className="w-3 h-3 mr-1 inline" />
+                ADMINISTRATOR
+              </Badge>
+            )}
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
-            Dashboard Pengurus Setya Bakti
+            {userRole === 'SUPERADMIN'
+              ? `Dashboard Superadmin: ${userName}`
+              : `Dashboard Pengurus: ${userName}`}
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
-            Monitoring keuangan, partisipasi pemuda, jimpitan, dan kegiatan Dusun Tuk Uluh.
+            {userRole === 'SUPERADMIN'
+              ? 'Hak Akses Penuh: Monitoring seluruh data, kontrol anggaran, dan kelola otorisasi pengurus.'
+              : 'Monitoring keuangan, partisipasi pemuda, jimpitan, dan kegiatan Dusun Tuk Uluh.'}
             {isLoading && (
               <span className="ml-2 text-xs text-taruna-yellow-600 dark:text-taruna-yellow-400 font-semibold animate-pulse">
                 (Memuat data...)

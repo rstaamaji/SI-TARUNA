@@ -30,11 +30,8 @@ app.use(
       // Izinkan request tanpa origin (seperti curl, mobile app, postman, server-to-server)
       if (!origin) return callback(null, true);
 
-      // Mode development: Izinkan localhost dan 127.0.0.1
-      if (
-        config.isDevelopment &&
-        (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1'))
-      ) {
+      // Mode development: Izinkan semua origin (localhost, 127.0.0.1, LAN IP)
+      if (config.isDevelopment) {
         return callback(null, true);
       }
 
