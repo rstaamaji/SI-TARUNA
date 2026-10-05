@@ -28,7 +28,7 @@ router.use('/auth', authRoutes);
 
 // 3. General Dashboard: /api/dashboard (Role-based smart dispatcher)
 router.get('/dashboard', authenticate, (req: Request, res: Response, next: NextFunction) => {
-  if (req.user?.role === 'ADMIN') {
+  if (req.user?.role === 'ADMIN' || req.user?.role === 'SUPERADMIN') {
     return AdminDashboardController.getOverview(req, res, next);
   }
   return MemberDashboardController.getDashboard(req, res, next);

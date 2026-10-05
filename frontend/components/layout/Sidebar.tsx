@@ -40,6 +40,7 @@ export interface NavItem {
   icon: any;
   badge?: string | null;
   adminOnly?: boolean;
+  superAdminOnly?: boolean;
 }
 
 export const navigationItems: NavItem[] = [
@@ -127,8 +128,8 @@ export const navigationItems: NavItem[] = [
     name: 'Kelola Pengurus',
     href: '/dashboard/pengurus',
     icon: ShieldCheck,
-    badge: 'Admin',
-    adminOnly: true, // Khusus ADMIN, disembunyikan dari MEMBER
+    badge: 'Superadmin',
+    superAdminOnly: true, // Khusus SUPERADMIN, disembunyikan dari ADMIN & MEMBER
   },
   {
     name: 'Pengaturan',
@@ -159,8 +160,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
 
-  // Filter menu: sembunyikan menu adminOnly jika bukan ADMIN atau SUPERADMIN
+  // Filter menu: sembunyikan menu superAdminOnly/adminOnly jika role tidak berhak
   const visibleItems = navigationItems.filter((item) => {
+    if (item.superAdminOnly && userRole !== 'SUPERADMIN') {
+      return false;
+    }
     if (item.adminOnly && userRole !== 'ADMIN' && userRole !== 'SUPERADMIN') {
       return false;
     }
@@ -181,12 +185,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar Container */}
       <aside
         className={cn(
-          'fixed top-0 bottom-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-taruna-border dark:border-slate-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static',
+          'fixed top-0 bottom-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-taruna-border dark:border-slate-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:shrink-0 overflow-hidden',
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         )}
       >
         {/* Sidebar Header with Logo */}
-        <div className="h-20 px-6 flex items-center justify-between border-b border-taruna-border dark:border-slate-800 bg-gradient-to-b from-taruna-yellow-50/40 dark:from-slate-900 to-white dark:to-slate-900">
+        <div className="h-20 shrink-0 px-6 flex items-center justify-between border-b border-taruna-border dark:border-slate-800 bg-gradient-to-b from-taruna-yellow-50/40 dark:from-slate-900 to-white dark:to-slate-900">
           <Logo size={42} href="/" />
           <button
             onClick={onClose}
@@ -198,20 +202,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Navigation List */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-1">
           <div className="flex items-center justify-between px-3 pb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500">
               Menu Utama
             </span>
             <span
               className={cn(
-                'text-[10px] font-bold px-1.5 py-0.5 rounded uppercase',
-                userRole === 'ADMIN'
+                'text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide',
+                userRole === 'SUPERADMIN'
+                  ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
+                  : userRole === 'ADMIN'
                   ? 'bg-taruna-red-100 dark:bg-taruna-red-950/60 text-taruna-red-700 dark:text-red-400'
                   : 'bg-taruna-yellow-100 dark:bg-taruna-yellow-950/60 text-taruna-yellow-800 dark:text-taruna-yellow-300'
               )}
             >
-              {userRole}
+              {userRole === 'SUPERADMIN' ? '👑 SUPERADMIN' : userRole}
             </span>
           </div>
 
@@ -259,7 +265,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <span
                       className={cn(
                         'text-[10px] font-bold px-2 py-0.5 rounded-full',
-                        item.adminOnly
+                        item.superAdminOnly
+                          ? 'bg-amber-500 text-white'
+                          : item.adminOnly
                           ? 'bg-taruna-red-600 text-white'
                           : item.name === 'Pengumuman'
                           ? 'bg-taruna-red-100 dark:bg-taruna-red-950/60 text-taruna-red-700 dark:text-red-400'
@@ -279,7 +287,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Sidebar Footer Organization Badge */}
-        <div className="p-3.5 border-t border-taruna-border dark:border-slate-800 bg-taruna-surface/80 dark:bg-slate-800/40 m-3 rounded-2xl">
+        <div className="shrink-0 mt-auto p-3.5 border-t border-taruna-border dark:border-slate-800 bg-taruna-surface/80 dark:bg-slate-800/40 m-3 rounded-2xl">
           <div className="flex items-center gap-3">
             <Logo size={36} showText={false} />
             <div className="flex-1 min-w-0">

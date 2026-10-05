@@ -318,6 +318,44 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
+          1.5. KONTROL KHUSUS SUPERADMIN (HANYA DITAMPILKAN KEPADA SUPERADMIN)
+      ───────────────────────────────────────────────────────────────────────────── */}
+      {userRole === 'SUPERADMIN' && (
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border-2 border-amber-300 dark:border-amber-700/80 p-6 shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div className="space-y-1.5 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-amber-500 text-white shadow-xs">
+                👑 KONTROL OTORITAS TERTINGGI SUPERADMIN
+              </div>
+              <h2 className="text-xl font-black text-amber-950 dark:text-amber-100 tracking-tight">
+                Pusat Otorisasi Pengurus &amp; Kendali Sistem
+              </h2>
+              <p className="text-xs sm:text-sm text-amber-900/80 dark:text-amber-200/80 leading-relaxed">
+                Anda memiliki hak eksklusif untuk menyetujui, mengangkat, dan mencabut akses pengurus/admin. Pengguna dengan kredensial admin tidak akan dapat login ke dashboard sebelum mendapatkan konfirmasi langsung dari Anda.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <Link
+                href="/dashboard/pengurus"
+                className="px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                Kelola Otorisasi Pengurus
+              </Link>
+              <Link
+                href="/admin/settings"
+                className="px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700 font-bold text-xs sm:text-sm shadow-xs transition flex items-center gap-2"
+              >
+                <Sparkles className="w-4 h-4 text-amber-500" />
+                Konfigurasi Sistem
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
           2. METRIC STATISTIC CARDS (6 INDIKATOR KUNCI ORGANISASI)
       ───────────────────────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

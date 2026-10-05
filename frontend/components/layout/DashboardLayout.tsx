@@ -47,7 +47,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors print:bg-white print:text-black print:min-h-0">
       {/* Sidebar Navigation with RBAC */}
-      <div className="print:hidden">
+      <div className="print:hidden lg:sticky lg:top-0 lg:h-screen lg:shrink-0">
         <Sidebar
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}

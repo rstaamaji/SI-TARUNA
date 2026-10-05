@@ -54,4 +54,133 @@ router.get('/management-data', (req: Request, res: Response) => {
   );
 });
 
+/**
+ * Superadmin Exclusive Endpoints: Kelola Pengurus Karang Taruna
+ */
+import { requireSuperAdmin } from '../middleware/auth.middleware';
+import prisma from '../utils/prisma';
+
+// GET /api/admin/pengurus (Daftar semua pengguna & status pengurus)
+router.get('/pengurus', requireSuperAdmin, async (_req: Request, res: Response) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        isApproved: true,
+        approvedAt: true,
+        approvedBy: true,
+        createdAt: true,
+        member: {
+          select: {
+            id: true,
+            name: true,
+            memberNumber: true,
+            phone: true,
+            address: true,
+            status: true,
+          },
+        },
+      },
+      orderBy: [
+        { role: 'asc' },
+        { createdAt: 'desc' },
+      ],
+    });
+    sendSuccess(res, 'Daftar pengguna dan status pengurus berhasil diambil', users, 200);
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: 'Gagal mengambil data pengurus', error: err.message });
+  }
+});
+
+// PATCH /api/admin/pengurus/:id/approve (Konfirmasi / Revoke akses pengurus)
+router.patch('/pengurus/:id/approve', requireSuperAdmin, async (req: Request, res: Response) => {
+  try {
+    const id = String(req.params.id);
+    const { isApproved } = req.body;
+    const targetUser = await prisma.user.findUnique({ where: { id } });
+    if (!targetUser) {
+      return res.status(404).json({ success: false, message: 'Pengguna tidak ditemukan' });
+    }
+    if (targetUser.role === 'SUPERADMIN') {
+      return res.status(400).json({ success: false, message: 'Status Superadmin tidak dapat diubah' });
+    }
+
+    const newStatus = typeof isApproved === 'boolean' ? isApproved : !targetUser.isApproved;
+    const updated = await prisma.user.update({
+      where: { id },
+      data: {
+        isApproved: newStatus,
+        approvedBy: req.user?.username || 'rustaamaji',
+        approvedAt: new Date(),
+      },
+      select: {
+        id: true,
+        username: true,
+        role: true,
+        isApproved: true,
+        approvedBy: true,
+        approvedAt: true,
+      },
+    });
+
+    sendSuccess(
+      res,
+      `Status akun pengurus ${updated.username} berhasil ${newStatus ? 'dikonfirmasi & diaktifkan' : 'dinonaktifkan / dicabut'}`,
+      updated,
+      200
+    );
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: 'Gagal memperbarui status pengurus', error: err.message });
+  }
+});
+
+// PATCH /api/admin/pengurus/:id/role (Promote to ADMIN / Demote to MEMBER)
+router.patch('/pengurus/:id/role', requireSuperAdmin, async (req: Request, res: Response) => {
+  try {
+    const id = String(req.params.id);
+    const { role } = req.body;
+    if (role !== 'ADMIN' && role !== 'MEMBER') {
+      return res.status(400).json({ success: false, message: 'Role harus ADMIN atau MEMBER' });
+    }
+
+    const targetUser = await prisma.user.findUnique({ where: { id } });
+    if (!targetUser) {
+      return res.status(404).json({ success: false, message: 'Pengguna tidak ditemukan' });
+    }
+    if (targetUser.role === 'SUPERADMIN') {
+      return res.status(400).json({ success: false, message: 'Akun Superadmin tidak dapat diubah rolenya' });
+    }
+
+    const updated = await prisma.user.update({
+      where: { id },
+      data: {
+        role,
+        isApproved: role === 'ADMIN' ? true : targetUser.isApproved,
+        approvedBy: req.user?.username || 'rustaamaji',
+        approvedAt: new Date(),
+      },
+      select: {
+        id: true,
+        username: true,
+        role: true,
+        isApproved: true,
+        approvedBy: true,
+        approvedAt: true,
+      },
+    });
+
+    sendSuccess(
+      res,
+      `Role akun ${updated.username} berhasil diubah menjadi ${role === 'ADMIN' ? 'Pengurus (ADMIN)' : 'Anggota (MEMBER)'}`,
+      updated,
+      200
+    );
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: 'Gagal mengubah role pengurus', error: err.message });
+  }
+});
+
 export default router;
