@@ -328,8 +328,6 @@ export default function UnifiedMainPage() {
             <AdminDashboard userRole={currentUser.role} userName={currentUser.name} />
           )}
         </main>
-
-        <Footer />
       </div>
     </div>
   );

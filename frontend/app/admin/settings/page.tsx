@@ -30,7 +30,6 @@ import { useToast } from '@/components/ui/Toast';
 import { Logo } from '@/components/ui/Logo';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
 import { useOrganization } from '@/context/OrganizationContext';
 import organizationService, { OrganizationConfig, SecurityStatus } from '@/services/organization';
 
@@ -720,7 +719,6 @@ export default function AdminSettingsPage() {
       </Modal>
           </div>
         </main>
-        <Footer />
       </div>
     </div>
   );

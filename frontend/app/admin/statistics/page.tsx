@@ -32,7 +32,6 @@ import {
 } from 'recharts';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
 import {
   Card,
   CardHeader,
@@ -694,7 +693,6 @@ export default function MemberStatisticsPage() {
             </>
           )}
         </main>
-        <Footer />
       </div>
     </div>
   );

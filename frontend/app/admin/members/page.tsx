@@ -38,7 +38,6 @@ import { useToast } from '@/components/ui/Toast';
 import { ThemeToggle } from '@/components/theme/ThemeProvider';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
 
 export interface MemberItem {
   id: string;
@@ -856,7 +855,6 @@ export default function AdminMembersPage() {
             </CardContent>
           </Card>
         </main>
-        <Footer />
       </div>
 
       {/* ───────────────────────────────────────────────────────────────────────────── */}
