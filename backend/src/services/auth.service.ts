@@ -2,16 +2,30 @@ import prisma from '../utils/prisma';
 import { PasswordUtil } from '../utils/password';
 import { JwtUtil } from '../utils/jwt';
 import { AppError } from '../utils/appError';
+import { Prisma } from '@prisma/client';
 
 export class AuthService {
   public static async login(username: string, plainPassword: string) {
     const trimmedInput = username.trim();
-    const user = await prisma.user.findFirst({
+
+    // Cek alias antara "Rustam Aji" dan "rustaamaji"
+    const isRustamAlias =
+      trimmedInput.toLowerCase() === 'rustam aji' ||
+      trimmedInput.toLowerCase() === 'rustaamaji' ||
+      trimmedInput.toLowerCase() === 'rustamaji';
+
+    const candidates = await prisma.user.findMany({
       where: {
         OR: [
-          { username: { equals: trimmedInput, mode: 'insensitive' } },
-          { email: { equals: trimmedInput, mode: 'insensitive' } },
-          { member: { name: { equals: trimmedInput, mode: 'insensitive' } } },
+          { username: { equals: trimmedInput, mode: Prisma.QueryMode.insensitive } },
+          { email: { equals: trimmedInput, mode: Prisma.QueryMode.insensitive } },
+          { member: { name: { equals: trimmedInput, mode: Prisma.QueryMode.insensitive } } },
+          ...(isRustamAlias
+            ? [
+                { username: { equals: 'Rustam Aji', mode: Prisma.QueryMode.insensitive } },
+                { username: { equals: 'rustaamaji', mode: Prisma.QueryMode.insensitive } },
+              ]
+            : []),
         ],
       },
       include: {
@@ -28,12 +42,21 @@ export class AuthService {
       },
     });
 
-    if (!user) {
+    if (!candidates || candidates.length === 0) {
       throw new AppError('Kredensial tidak valid: Username atau password salah.', 401);
     }
 
-    const isMatch = await PasswordUtil.compare(plainPassword, user.password);
-    if (!isMatch) {
+    // Cari kandidat yang password-nya cocok
+    let user: (typeof candidates)[number] | null = null;
+    for (const candidate of candidates) {
+      const isMatch = await PasswordUtil.compare(plainPassword, candidate.password);
+      if (isMatch) {
+        user = candidate;
+        break;
+      }
+    }
+
+    if (!user) {
       throw new AppError('Kredensial tidak valid: Username atau password salah.', 401);
     }
 
@@ -43,6 +66,22 @@ export class AuthService {
         'Akun admin ini belum dikonfirmasi atau dinonaktifkan oleh Superadmin. Akses masuk ditolak.',
         403
       );
+    }
+
+    // Jika Superadmin belum memiliki data member terhubung langsung, tautkan profil Rustam Aji
+    let memberData = user.member;
+    if (!memberData && (user.role === 'SUPERADMIN' || user.username === 'rustaamaji')) {
+      memberData = await prisma.member.findFirst({
+        where: { name: { equals: 'Rustam Aji', mode: 'insensitive' } },
+        select: {
+          id: true,
+          memberNumber: true,
+          name: true,
+          phone: true,
+          address: true,
+          status: true,
+        },
+      });
     }
 
     const token = JwtUtil.sign({
@@ -59,7 +98,7 @@ export class AuthService {
         email: user.email,
         role: user.role,
         isApproved: user.isApproved,
-        member: user.member,
+        member: memberData,
       },
     };
   }

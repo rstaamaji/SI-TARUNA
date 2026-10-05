@@ -49,7 +49,24 @@ async function main() {
     },
   });
 
-  // Member: Nama Lengkap sebagai username / TukuluhJaya
+  // Member Rustam Aji: Nama Lengkap sebagai username / TukuluhJaya
+  const rustamAjiMemberUser = await prisma.user.upsert({
+    where: { username: 'Rustam Aji' },
+    update: {
+      password: hashedPasswordTukuluhJaya,
+      role: Role.MEMBER,
+      isApproved: true,
+    },
+    create: {
+      username: 'Rustam Aji',
+      email: 'rustam.aji@taruna-setyabakti.id',
+      password: hashedPasswordTukuluhJaya,
+      role: Role.MEMBER,
+      isApproved: true,
+    },
+  });
+
+  // Member Bambang Pamungkas: Nama Lengkap sebagai username / TukuluhJaya
   const memberUser = await prisma.user.upsert({
     where: { username: 'Bambang Pamungkas' },
     update: {
@@ -76,7 +93,7 @@ async function main() {
       address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
       joinDate: new Date('2023-01-10'),
       status: MemberStatus.ACTIVE,
-      userId: superadminUser.id,
+      userId: rustamAjiMemberUser.id,
     },
     {
       memberNumber: 'KT-SB-002',
