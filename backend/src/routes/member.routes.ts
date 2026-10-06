@@ -32,7 +32,6 @@ router.get('/view-data', authenticate, requireMember, (req: Request, res: Respon
         'VIEW_MEETING_MINUTES',
         'VIEW_EVENTS',
         'VIEW_ARISAN',
-        'VIEW_JIMPITAN',
       ],
       timestamp: new Date().toISOString(),
     },

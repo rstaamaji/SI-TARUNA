@@ -18,7 +18,6 @@ export interface AdminDashboardData {
       totalMembers: number;
       attendanceRate: number;
     };
-    currentMonthJimpitan: number;
   };
   charts: {
     incomeVsExpense: {
@@ -126,28 +125,7 @@ export class AdminDashboardService {
       }
     });
 
-    // 3. Jimpitan Bulan Berjalan
-    const jimpitanRecords = await prisma.jimpitanRecord.findMany({
-      where: {
-        year: targetYear,
-        month: targetMonth + 1,
-      },
-    });
-    let currentMonthJimpitan = jimpitanRecords.reduce(
-      (acc, r) => acc + Number(r.amount),
-      0
-    );
-    // If no jimpitan records yet for target month, take the latest available jimpitan
-    if (currentMonthJimpitan === 0) {
-      const allJimpitans = await prisma.jimpitanRecord.findMany();
-      currentMonthJimpitan = allJimpitans.reduce(
-        (acc, r) => acc + Number(r.amount),
-        0
-      );
-      if (currentMonthJimpitan === 0) currentMonthJimpitan = 920000;
-    }
-
-    // 4. Jumlah Anggota Hadir pada Kegiatan Terakhir
+    // 3. Jumlah Anggota Hadir pada Kegiatan Terakhir
     const eventsWithAttendance = await prisma.event.findMany({
       include: {
         attendances: true,
@@ -423,7 +401,6 @@ export class AdminDashboardService {
         currentMonthIncome,
         currentMonthExpense,
         lastEventAttendance,
-        currentMonthJimpitan,
       },
       charts: {
         incomeVsExpense: incomeVsExpenseChart,

@@ -11,7 +11,6 @@ import cashWithdrawalRoutes from './cashWithdrawal.routes';
 import attendanceRoutes from './attendance.routes';
 import meetingMinuteRoutes from './meetingMinute.routes';
 import arisanRoutes from './arisan.routes';
-import jimpitanRoutes from './jimpitan.routes';
 import notificationRoutes from './notification.routes';
 import settingRoutes from './setting.routes';
 import { authenticate } from '../middleware/auth.middleware';
@@ -91,11 +90,7 @@ router.use('/minute', meetingMinuteRoutes);
 router.use('/arisan', arisanRoutes);
 router.use('/arisans', arisanRoutes);
 
-// 14. Jimpitan Management (Module 21): /api/jimpitan, /api/jimpitans
-router.use('/jimpitan', jimpitanRoutes);
-router.use('/jimpitans', jimpitanRoutes);
-
-// 15. Notification System (Module 22): /api/notifications, /api/notifikasi
+// 14. Notification System (Module 22): /api/notifications, /api/notifikasi
 router.use('/notifications', notificationRoutes);
 router.use('/notifikasi', notificationRoutes);
 
