@@ -1,0 +1,19 @@
+{
+  "name": "SI-TARUNA Dusun Tuk Uluh",
+  "short_name": "SI-TARUNA",
+  "description": "Sistem Informasi Karang Taruna Setya Bakti Dusun Tuk Uluh, Sringin, Jumantono",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3a8a",
+  "icons": [
+    {
+      "src": "/assets/logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

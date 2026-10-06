@@ -14,7 +14,6 @@ import {
   FileText,
   CalendarDays,
   Gift,
-  Bell,
   UserCircle,
   X,
   ChevronRight,
@@ -145,12 +144,6 @@ export const navigationItems: NavItem[] = [
     icon: Settings,
     badge: 'Admin',
     adminOnly: true, // Khusus ADMIN
-  },
-  {
-    name: 'Notifikasi',
-    href: '/dashboard/notifikasi',
-    icon: Bell,
-    badge: null,
   },
   {
     name: 'Profil',

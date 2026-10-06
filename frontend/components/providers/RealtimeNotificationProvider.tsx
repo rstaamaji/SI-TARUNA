@@ -1,8 +1,16 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, createContext, useContext, useState, useCallback } from 'react';
 import { connectSocket } from '@/lib/socket';
 import { useToast } from '@/components/ui/Toast';
+import {
+  registerServiceWorker,
+  showDeviceNotification,
+  getNotificationPermission,
+  requestNotificationPermission,
+  testDeviceNotification,
+  NotificationPermissionStatus,
+} from '@/lib/pushNotification';
 
 export interface RealtimeNotificationEvent {
   id?: string;
@@ -13,22 +21,79 @@ export interface RealtimeNotificationEvent {
   createdAt?: string;
 }
 
+interface NotificationContextValue {
+  permission: NotificationPermissionStatus;
+  requestPermission: () => Promise<boolean>;
+  sendTestNotification: () => Promise<boolean>;
+}
+
+const NotificationContext = createContext<NotificationContextValue>({
+  permission: 'default',
+  requestPermission: async () => false,
+  sendTestNotification: async () => false,
+});
+
+export const useDeviceNotification = () => useContext(NotificationContext);
+
 export const RealtimeNotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const toast = useToast();
+  const [permission, setPermission] = useState<NotificationPermissionStatus>('default');
+
+  // 1. Daftarkan Service Worker & cek permission saat komponen pertama kali dimuat
+  useEffect(() => {
+    registerServiceWorker();
+    if (typeof window !== 'undefined') {
+      setPermission(getNotificationPermission());
+    }
+  }, []);
+
+  const handleRequestPermission = useCallback(async () => {
+    const granted = await requestNotificationPermission();
+    setPermission(getNotificationPermission());
+    if (granted) {
+      toast.success(
+        'Notifikasi layar berhasil diaktifkan! Anda akan menerima update di HP/PC seperti WhatsApp.',
+        'Notifikasi Layar Aktif'
+      );
+    } else {
+      toast.warning(
+        'Izin notifikasi tidak diberikan atau diblokir pada browser Anda.',
+        'Izin Ditolak'
+      );
+    }
+    return granted;
+  }, [toast]);
+
+  const handleSendTestNotification = useCallback(async () => {
+    const success = await testDeviceNotification();
+    setPermission(getNotificationPermission());
+    if (success) {
+      toast.info(
+        'Notifikasi contoh telah dikirimkan ke layar perangkat Anda!',
+        'Tes Notifikasi'
+      );
+    } else {
+      toast.warning(
+        'Pastikan izin notifikasi sudah diizinkan di browser Anda.',
+        'Gagal Mengirim'
+      );
+    }
+    return success;
+  }, [toast]);
 
   useEffect(() => {
-    // 1. Hubungkan socket client
+    // 2. Hubungkan socket client
     const socket = connectSocket();
 
-    // 2. Handler saat menerima notifikasi realtime baru dari server
-    const handleNewNotification = (data: RealtimeNotificationEvent) => {
+    // 3. Handler saat menerima notifikasi realtime baru dari server
+    const handleNewNotification = async (data: RealtimeNotificationEvent) => {
       console.log('🔔 [Realtime Notification Received]:', data);
 
-      // Tampilkan toast notifikasi realtime
       const title = data.title.startsWith('🔔') ? data.title : `🔔 ${data.title}`;
 
+      // A. Tampilkan toast in-app
       if (data.type === 'ATTENTION') {
         toast.warning(data.message, title);
       } else if (data.type === 'KERJA_BAKTI') {
@@ -37,7 +102,18 @@ export const RealtimeNotificationProvider: React.FC<{ children: React.ReactNode 
         toast.info(data.message, title);
       }
 
-      // Mainkan suara lonceng notifikasi (Web Audio API sintetis yang ringan & kompatibel)
+      // B. Tampilkan Push Notification Langsung ke Layar Homescreen / Lockscreen OS Pengguna
+      try {
+        await showDeviceNotification(title, {
+          body: data.message,
+          url: data.link || '/dashboard/pengumuman',
+          tag: data.id || 'si-taruna-' + Date.now(),
+        });
+      } catch (err) {
+        console.warn('Gagal memunculkan notifikasi perangkat:', err);
+      }
+
+      // C. Mainkan suara lonceng notifikasi (Web Audio API sintetis)
       try {
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioContext) {
@@ -62,7 +138,7 @@ export const RealtimeNotificationProvider: React.FC<{ children: React.ReactNode 
         // Abaikan jika browser memblokir audio autoplay
       }
 
-      // Siarkan custom event ke window agar Navbar & Halaman Notifikasi langsung update tanpa refresh
+      // D. Siarkan custom event ke window
       if (typeof window !== 'undefined') {
         window.dispatchEvent(
           new CustomEvent('si_taruna_notification', {
@@ -79,5 +155,15 @@ export const RealtimeNotificationProvider: React.FC<{ children: React.ReactNode 
     };
   }, [toast]);
 
-  return <>{children}</>;
+  return (
+    <NotificationContext.Provider
+      value={{
+        permission,
+        requestPermission: handleRequestPermission,
+        sendTestNotification: handleSendTestNotification,
+      }}
+    >
+      {children}
+    </NotificationContext.Provider>
+  );
 };

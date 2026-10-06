@@ -22,6 +22,7 @@ import {
   FileText,
   ChevronRight,
   Flame,
+  Smartphone,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -1091,6 +1092,14 @@ export default function PengumumanPage() {
                   className="w-full px-4 py-2.5 rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-sm text-taruna-dark dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500/50"
                   required
                 />
+              </div>
+
+              {/* Device Push Notification Note */}
+              <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 flex items-start gap-2.5 text-xs text-blue-900 dark:text-blue-300">
+                <Smartphone className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                <p>
+                  <strong>Otomatis ke Layar Anggota:</strong> Pengumuman ini akan otomatis dikirimkan langsung ke layar HP &amp; komputer seluruh anggota seperti notifikasi WhatsApp.
+                </p>
               </div>
 
               {/* Action Buttons */}

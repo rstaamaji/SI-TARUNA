@@ -5,6 +5,8 @@ import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
 import { getStoredUser, UserRole } from '@/lib/auth';
 
+import { PushNotificationBanner } from '@/components/notifications/PushNotificationBanner';
+
 export interface DashboardLayoutProps {
   children: React.ReactNode;
   user?: {
@@ -63,6 +65,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </div>
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto print:p-0 print:max-w-none">
+          <div className="print:hidden">
+            <PushNotificationBanner />
+          </div>
           {children}
         </main>
       </div>

@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, Bell, Search, LogOut, User, Settings, ArrowRight, CheckCheck } from 'lucide-react';
+import { Menu, Bell, Search, LogOut, User, Settings, ArrowRight, CheckCheck, Smartphone } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { Logo } from '@/components/ui/Logo';
 import { ThemeToggle } from '@/components/theme/ThemeProvider';
+import { useDeviceNotification } from '@/components/providers/RealtimeNotificationProvider';
 import api from '@/services/api';
 
 export interface NavbarProps {
@@ -30,6 +31,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   const router = useRouter();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
+  const {
+    permission: devicePermission,
+    requestPermission: requestDevicePermission,
+    sendTestNotification: sendTestDeviceNotification,
+  } = useDeviceNotification();
 
   // Dynamic live notifications
   const [liveUnreadCount, setLiveUnreadCount] = useState<number>(notificationCount);
@@ -185,6 +191,38 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     <CheckCheck className="w-3.5 h-3.5" />
                     Tandai Dibaca
+                  </button>
+                )}
+              </div>
+
+              {/* Status Notifikasi Layar HP / PC (Homescreen Push) */}
+              <div className="mt-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <Smartphone className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                  <span className="font-semibold text-gray-700 dark:text-slate-300 shrink-0">Layar HP/PC:</span>
+                  {devicePermission === 'granted' ? (
+                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded-md truncate">
+                      Aktif
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded-md truncate">
+                      Mati
+                    </span>
+                  )}
+                </div>
+                {devicePermission === 'granted' ? (
+                  <button
+                    onClick={() => sendTestDeviceNotification()}
+                    className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline px-1 py-0.5 shrink-0"
+                  >
+                    Tes Layar
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => requestDevicePermission()}
+                    className="text-[10px] font-bold text-white bg-blue-600 hover:bg-blue-700 px-2 py-0.5 rounded-md transition shadow-xs shrink-0"
+                  >
+                    Aktifkan
                   </button>
                 )}
               </div>
