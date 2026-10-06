@@ -17,11 +17,12 @@ import { MemberDashboard } from '@/components/dashboard/MemberDashboard';
 import { AdminDashboard } from '@/components/dashboard/AdminDashboard';
 import { ThemeToggle } from '@/components/theme/ThemeProvider';
 import { Footer } from '@/components/layout/Footer';
+import { getStoredUser, UserRole } from '@/lib/auth';
 
 interface CurrentUser {
   id: string;
   name: string;
-  role: 'SUPERADMIN' | 'ADMIN' | 'MEMBER';
+  role: UserRole;
   username: string;
   token?: string;
 }
@@ -42,19 +43,17 @@ export default function UnifiedMainPage() {
   // Check existing session
   React.useEffect(() => {
     try {
-      const storedUser = localStorage.getItem('si_taruna_user');
-      const storedToken = localStorage.getItem('si_taruna_token');
-      if (storedUser) {
-        const parsed = JSON.parse(storedUser);
-        if (parsed.name && (parsed.role === 'SUPERADMIN' || parsed.role === 'ADMIN' || parsed.role === 'MEMBER')) {
-          setCurrentUser({
-            id: parsed.id || 'current-user-id',
-            name: parsed.name,
-            role: parsed.role,
-            username: parsed.username || 'user',
-            token: storedToken || undefined,
-          });
-        }
+      const storedToken =
+        localStorage.getItem('si_taruna_token') || localStorage.getItem('token');
+      const u = getStoredUser();
+      if (u) {
+        setCurrentUser({
+          id: u.id,
+          name: u.name,
+          role: u.role,
+          username: u.username || 'user',
+          token: storedToken || undefined,
+        });
       }
     } catch {
       // Ignore parse error

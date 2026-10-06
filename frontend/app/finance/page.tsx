@@ -46,6 +46,7 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 import { useToast } from '@/components/ui/Toast';
+import { getStoredUser, isUserAdmin, UserRole } from '@/lib/auth';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export interface FinanceSummary {
@@ -143,7 +144,7 @@ export default function FinanceOverviewPage() {
   const toast = useToast();
 
   // ── Auth & Session ──
-  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: 'ADMIN' | 'MEMBER' }>({
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: UserRole }>({
     id: 'user-default', name: 'Pengurus Setya Bakti', role: 'MEMBER',
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -184,23 +185,22 @@ export default function FinanceOverviewPage() {
   const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isAdmin = currentUser.role === 'ADMIN';
+  const isAdmin = isUserAdmin(currentUser.role);
 
   const getAuthToken = (): string | null => {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('si_taruna_token');
+    return localStorage.getItem('si_taruna_token') || localStorage.getItem('token');
   };
 
   // ── 1. Load User Session & URL tab ──
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('si_taruna_user');
+      const stored = getStoredUser();
       if (stored) {
-        const parsed = JSON.parse(stored);
         setCurrentUser({
-          id: parsed.id || 'user-id',
-          name: parsed.member?.name || parsed.username || 'Anggota',
-          role: parsed.role === 'ADMIN' ? 'ADMIN' : 'MEMBER',
+          id: stored.id,
+          name: stored.name,
+          role: stored.role,
         });
       }
     } catch { /* default MEMBER */ }
@@ -336,10 +336,13 @@ export default function FinanceOverviewPage() {
     try {
       const token = getAuthToken();
       const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+      const apiBase = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : 'http://localhost:5000/api';
 
       const endpoint = formType === 'INCOME'
-        ? 'http://localhost:5000/api/finance/incomes'
-        : 'http://localhost:5000/api/finance/expenses';
+        ? `${apiBase}/finance/incomes`
+        : `${apiBase}/finance/expenses`;
 
       const body = formType === 'INCOME'
         ? { amount: numAmount, source: formSource.trim() || 'Lainnya', description: formDescription.trim(), transactionDate: new Date(formDate).toISOString() }
@@ -369,10 +372,13 @@ export default function FinanceOverviewPage() {
     try {
       const token = getAuthToken();
       const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+      const apiBase = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : 'http://localhost:5000/api';
 
       const endpoint = activeTransaction.type === 'INCOME'
-        ? `http://localhost:5000/api/finance/incomes/${activeTransaction.id}`
-        : `http://localhost:5000/api/finance/expenses/${activeTransaction.id}`;
+        ? `${apiBase}/finance/incomes/${activeTransaction.id}`
+        : `${apiBase}/finance/expenses/${activeTransaction.id}`;
 
       const body = activeTransaction.type === 'INCOME'
         ? { amount: numAmount, source: formSource.trim() || 'Lainnya', description: formDescription.trim(), transactionDate: new Date(formDate).toISOString() }
@@ -398,10 +404,13 @@ export default function FinanceOverviewPage() {
     try {
       const token = getAuthToken();
       const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+      const apiBase = process.env.NEXT_PUBLIC_API_URL
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : 'http://localhost:5000/api';
 
       const endpoint = activeTransaction.type === 'INCOME'
-        ? `http://localhost:5000/api/finance/incomes/${activeTransaction.id}`
-        : `http://localhost:5000/api/finance/expenses/${activeTransaction.id}`;
+        ? `${apiBase}/finance/incomes/${activeTransaction.id}`
+        : `${apiBase}/finance/expenses/${activeTransaction.id}`;
 
       const res = await fetch(endpoint, { method: 'DELETE', headers });
       const json = await res.json();
@@ -457,8 +466,14 @@ export default function FinanceOverviewPage() {
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                   Transparansi Keuangan Organisasi
                 </span>
-                <Badge variant={isAdmin ? 'accent' : 'primary'} size="sm">
-                  {isAdmin ? <><ShieldCheck className="w-3 h-3 mr-1 inline" />ADMINISTRATOR</> : <><User className="w-3 h-3 mr-1 inline" />MEMBER</>}
+                <Badge variant={currentUser.role === 'SUPERADMIN' ? 'warning' : isAdmin ? 'accent' : 'primary'} size="sm">
+                  {currentUser.role === 'SUPERADMIN' ? (
+                    <><ShieldCheck className="w-3 h-3 mr-1 inline" />SUPERADMIN</>
+                  ) : isAdmin ? (
+                    <><ShieldCheck className="w-3 h-3 mr-1 inline" />ADMINISTRATOR</>
+                  ) : (
+                    <><User className="w-3 h-3 mr-1 inline" />MEMBER</>
+                  )}
                 </Badge>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">

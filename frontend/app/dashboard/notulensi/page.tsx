@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { useToast } from '@/components/ui/Toast';
+import { getStoredUser, isUserAdmin, UserRole } from '@/lib/auth';
 
 interface MeetingMinuteItem {
   id: string;
@@ -53,7 +54,7 @@ export default function NotulensiListPage() {
   const toast = useToast();
 
   // Layout & Auth State
-  const [userRole, setUserRole] = useState<'ADMIN' | 'MEMBER'>('MEMBER');
+  const [userRole, setUserRole] = useState<UserRole>('MEMBER');
 
   // Data State
   const [minutes, setMinutes] = useState<MeetingMinuteItem[]>([]);
@@ -83,19 +84,16 @@ export default function NotulensiListPage() {
   // Read Auth
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('si_taruna_user');
-      if (stored) {
-        const u = JSON.parse(stored);
-        if (u.role === 'ADMIN' || u.role === 'MEMBER') {
-          setUserRole(u.role);
-        }
+      const u = getStoredUser();
+      if (u) {
+        setUserRole(u.role);
       }
     } catch {
       // fallback
     }
   }, []);
 
-  const isAdmin = userRole === 'ADMIN';
+  const isAdmin = isUserAdmin(userRole);
 
   // Helper day auto-derivation
   const deriveDayIndo = (dateStr: string) => {

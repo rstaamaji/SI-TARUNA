@@ -372,8 +372,12 @@ export default function MemberProfilePage() {
               <UserCircle className="w-3.5 h-3.5 mr-1 inline" />
               Profil Pribadi
             </Badge>
-            <Badge variant={profile.user.role === 'ADMIN' ? 'accent' : 'neutral'} size="sm">
-              {profile.user.role === 'ADMIN' ? (
+            <Badge variant={profile.user.role === 'SUPERADMIN' ? 'warning' : profile.user.role === 'ADMIN' ? 'accent' : 'neutral'} size="sm">
+              {profile.user.role === 'SUPERADMIN' ? (
+                <>
+                  <ShieldCheck className="w-3 h-3 mr-1 inline" /> Superadmin / Pembina
+                </>
+              ) : profile.user.role === 'ADMIN' ? (
                 <>
                   <ShieldCheck className="w-3 h-3 mr-1 inline" /> Pengurus / Administrator
                 </>

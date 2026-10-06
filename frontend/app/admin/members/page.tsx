@@ -38,6 +38,7 @@ import { useToast } from '@/components/ui/Toast';
 import { ThemeToggle } from '@/components/theme/ThemeProvider';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
+import { getStoredUser, UserRole } from '@/lib/auth';
 
 export interface MemberItem {
   id: string;
@@ -199,6 +200,21 @@ export default function AdminMembersPage() {
 
   // UI state
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ name: string; role: UserRole }>({
+    name: 'Pengurus Taruna',
+    role: 'ADMIN',
+  });
+
+  useEffect(() => {
+    try {
+      const u = getStoredUser();
+      if (u) {
+        setCurrentUser({ name: u.name, role: u.role });
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -507,7 +523,7 @@ export default function AdminMembersPage() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         notificationCount={3}
-        userRole="ADMIN"
+        userRole={currentUser.role}
       />
 
       {/* Main Content Area */}
@@ -516,8 +532,8 @@ export default function AdminMembersPage() {
         <Navbar
           onMenuToggle={() => setSidebarOpen(true)}
           user={{
-            name: 'Rustam Aji',
-            role: 'ADMIN',
+            name: currentUser.name,
+            role: currentUser.role,
           }}
           notificationCount={3}
         />

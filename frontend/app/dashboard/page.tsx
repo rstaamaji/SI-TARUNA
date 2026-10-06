@@ -4,25 +4,19 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { MemberDashboard } from '@/components/dashboard/MemberDashboard';
 import { AdminDashboard } from '@/components/dashboard/AdminDashboard';
+import { getStoredUser, UserRole } from '@/lib/auth';
 
 export default function DashboardPage() {
-  const [userRole, setUserRole] = useState<'SUPERADMIN' | 'ADMIN' | 'MEMBER'>('MEMBER');
+  const [userRole, setUserRole] = useState<UserRole>('MEMBER');
   const [userName, setUserName] = useState<string>('Pengurus');
   const [viewMode, setViewMode] = useState<'AUTO' | 'MEMBER' | 'ADMIN'>('AUTO');
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('si_taruna_user') || localStorage.getItem('user');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed.role === 'SUPERADMIN' || parsed.role === 'ADMIN' || parsed.role === 'MEMBER') {
-          setUserRole(parsed.role);
-        }
-        if (parsed.name) {
-          setUserName(parsed.name);
-        } else if (parsed.username) {
-          setUserName(parsed.username);
-        }
+      const u = getStoredUser();
+      if (u) {
+        setUserRole(u.role);
+        setUserName(u.name);
       }
     } catch (e) {
       console.debug('Failed to read stored user session:', e);

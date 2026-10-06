@@ -27,6 +27,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { useToast } from '@/components/ui/Toast';
+import { getStoredUser, isUserAdmin, UserRole } from '@/lib/auth';
 import api from '@/services/api';
 
 // ─── Interfaces ────────────────────────────────────────────────────────────────
@@ -136,7 +137,7 @@ export default function NotifikasiPage() {
   const router = useRouter();
 
   // Role
-  const [userRole, setUserRole] = useState<'ADMIN' | 'MEMBER'>('MEMBER');
+  const [userRole, setUserRole] = useState<UserRole>('MEMBER');
 
   // Notifications State
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -160,18 +161,13 @@ export default function NotifikasiPage() {
 
   // Read User from localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          const parsed = JSON.parse(storedUser);
-          if (parsed.role === 'ADMIN') {
-            setUserRole('ADMIN');
-          }
-        }
-      } catch (err) {
-        console.error('Error reading user role:', err);
+    try {
+      const u = getStoredUser();
+      if (u) {
+        setUserRole(u.role);
       }
+    } catch (err) {
+      console.error('Error reading user role:', err);
     }
   }, []);
 
@@ -446,9 +442,9 @@ export default function NotifikasiPage() {
             <Badge variant="info" className="font-semibold text-xs uppercase tracking-wider">
               Modul 22 • Notification System
             </Badge>
-            {userRole === 'ADMIN' && (
-              <Badge variant="primary" className="text-xs flex items-center gap-1 font-semibold">
-                <ShieldCheck className="w-3.5 h-3.5" /> Akses Admin
+            {isUserAdmin(userRole) && (
+              <Badge variant={userRole === 'SUPERADMIN' ? 'warning' : 'primary'} className="text-xs flex items-center gap-1 font-semibold">
+                <ShieldCheck className="w-3.5 h-3.5" /> {userRole === 'SUPERADMIN' ? 'Akses Superadmin' : 'Akses Admin'}
               </Badge>
             )}
           </div>
@@ -486,7 +482,7 @@ export default function NotifikasiPage() {
             <span>Tandai Semua Dibaca</span>
           </Button>
 
-          {userRole === 'ADMIN' && (
+          {isUserAdmin(userRole) && (
             <>
               <Button
                 variant="outline"
