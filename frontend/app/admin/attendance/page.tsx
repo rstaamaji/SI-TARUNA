@@ -36,6 +36,7 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 import { useToast } from '@/components/ui/Toast';
+import { getStoredUser, isUserAdmin, UserRole } from '@/lib/auth';
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
 interface EventItem {
@@ -112,13 +113,13 @@ export default function AdminAttendancePage() {
   const toast = useToast();
 
   // Auth & Session
-  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: 'ADMIN' | 'MEMBER' }>({
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: UserRole }>({
     id: 'user-default',
     name: 'Pengurus Setya Bakti',
     role: 'ADMIN',
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isAdmin = currentUser.role === 'ADMIN';
+  const isAdmin = isUserAdmin(currentUser.role);
 
   // Navigation Tabs: SHEET vs RECORDS (Pencarian & Rekap Server API)
   const [activeTab, setActiveTab] = useState<'SHEET' | 'RECORDS'>('SHEET');
@@ -167,13 +168,12 @@ export default function AdminAttendancePage() {
   // Load Session
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('si_taruna_user');
-      if (stored) {
-        const parsed = JSON.parse(stored);
+      const u = getStoredUser();
+      if (u) {
         setCurrentUser({
-          id: parsed.id || 'user-id',
-          name: parsed.member?.name || parsed.username || 'Pengurus',
-          role: parsed.role === 'ADMIN' ? 'ADMIN' : 'MEMBER',
+          id: u.id,
+          name: u.name,
+          role: u.role,
         });
       }
     } catch {

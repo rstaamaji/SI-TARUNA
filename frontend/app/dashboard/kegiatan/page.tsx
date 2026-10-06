@@ -23,6 +23,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { useToast } from '@/components/ui/Toast';
+import { getStoredUser, isUserAdmin, UserRole } from '@/lib/auth';
 
 export interface EventScheduleItem {
   id: string;
@@ -123,7 +124,7 @@ export default function KegiatanPage() {
   const toast = useToast();
 
   // Role & User
-  const [userRole, setUserRole] = useState<'ADMIN' | 'MEMBER'>('MEMBER');
+  const [userRole, setUserRole] = useState<UserRole>('MEMBER');
 
   // Events Data
   const [events, setEvents] = useState<EventScheduleItem[]>([]);
@@ -174,19 +175,16 @@ export default function KegiatanPage() {
   // Read Auth
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('si_taruna_user');
-      if (stored) {
-        const u = JSON.parse(stored);
-        if (u.role === 'ADMIN' || u.role === 'MEMBER') {
-          setUserRole(u.role);
-        }
+      const u = getStoredUser();
+      if (u) {
+        setUserRole(u.role);
       }
     } catch {
       // fallback
     }
   }, []);
 
-  const isAdmin = userRole === 'ADMIN';
+  const isAdmin = isUserAdmin(userRole);
 
   // Helper date auto derivation
   const handleDateChange = (dateVal: string) => {

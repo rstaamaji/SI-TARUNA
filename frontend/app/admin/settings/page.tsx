@@ -32,6 +32,7 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
 import { useOrganization } from '@/context/OrganizationContext';
 import organizationService, { OrganizationConfig, SecurityStatus } from '@/services/organization';
+import { getStoredUser, isUserAdmin, UserRole } from '@/lib/auth';
 
 export default function AdminSettingsPage() {
   const router = useRouter();
@@ -40,6 +41,7 @@ export default function AdminSettingsPage() {
 
   // Authentication check
   const [isAuthorized, setIsAuthorized] = useState<boolean>(true);
+  const [currentUserRole, setCurrentUserRole] = useState<UserRole>('ADMIN');
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   // Form State
@@ -86,17 +88,13 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     // 1. Check user role in localStorage
-    const savedUserStr = localStorage.getItem('user');
-    if (savedUserStr) {
-      try {
-        const parsed = JSON.parse(savedUserStr);
-        if (parsed.role !== 'ADMIN') {
-          setIsAuthorized(false);
-          setIsLoading(false);
-          return;
-        }
-      } catch {
-        // Continue
+    const u = getStoredUser();
+    if (u) {
+      setCurrentUserRole(u.role);
+      if (!isUserAdmin(u.role)) {
+        setIsAuthorized(false);
+        setIsLoading(false);
+        return;
       }
     }
 
@@ -219,7 +217,7 @@ export default function AdminSettingsPage() {
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        userRole="ADMIN"
+        userRole={currentUserRole}
       />
       <div className="flex-1 flex flex-col min-w-0">
         <Navbar onMenuToggle={() => setSidebarOpen(true)} />

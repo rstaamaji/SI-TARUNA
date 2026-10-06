@@ -42,6 +42,7 @@ import {
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { getStoredUser, UserRole } from '@/lib/auth';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -117,7 +118,7 @@ const ChartTooltip = ({ active, payload, label }: any) => {
 
 export default function MemberStatisticsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userRole, setUserRole] = useState<'ADMIN' | 'MEMBER'>('ADMIN');
+  const [userRole, setUserRole] = useState<UserRole>('ADMIN');
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -132,14 +133,13 @@ export default function MemberStatisticsPage() {
 
   // ─── Auth ───────────────────────────────────────────────────────────────────
   useEffect(() => {
-    const stored = localStorage.getItem('si_taruna_user');
-    if (stored) {
-      try {
-        const u = JSON.parse(stored);
+    try {
+      const u = getStoredUser();
+      if (u) {
         setUserRole(u.role);
-      } catch (_e: unknown) {
-        void _e; // ignore malformed stored user
       }
+    } catch (_e: unknown) {
+      void _e; // ignore malformed stored user
     }
   }, []);
 
