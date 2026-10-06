@@ -11,7 +11,6 @@ import {
   RefreshCw,
   Crown,
   CheckCircle2,
-  XCircle,
   ArrowLeft,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
@@ -98,45 +97,6 @@ export default function PengurusManagementPage() {
     }
   }, [currentUserRole, fetchUsers]);
 
-  // Handle Approve / Revoke toggle
-  const handleToggleApprove = async (user: PengurusUser) => {
-    if (user.role === 'SUPERADMIN') return;
-    setActionLoading(user.id);
-    try {
-      const token =
-        typeof window !== 'undefined'
-          ? localStorage.getItem('token') || localStorage.getItem('si_taruna_token')
-          : null;
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const apiBase =
-        typeof window !== 'undefined' && window.location.hostname
-          ? `http://${window.location.hostname}:5000/api`
-          : process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '') || 'http://localhost:5000/api';
-
-      const res = await fetch(`${apiBase}/admin/pengurus/${user.id}/approve`, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({ isApproved: !user.isApproved }),
-      });
-      const json = await res.json();
-
-      if (res.ok && json.success) {
-        toast.success(json.message);
-        fetchUsers();
-      } else {
-        toast.error(json.message || 'Gagal mengubah status konfirmasi.');
-      }
-    } catch {
-      toast.error('Terjadi kesalahan jaringan.');
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
   // Handle Change Role (Promote to ADMIN or Demote to MEMBER)
   const handleChangeRole = async (user: PengurusUser, targetRole: 'ADMIN' | 'MEMBER') => {
     if (user.role === 'SUPERADMIN') return;
@@ -187,8 +147,8 @@ export default function PengurusManagementPage() {
   });
 
   const totalSuperAdmin = users.filter((u) => u.role === 'SUPERADMIN').length;
-  const totalAdminActive = users.filter((u) => u.role === 'ADMIN' && u.isApproved).length;
-  const totalAdminPending = users.filter((u) => u.role === 'ADMIN' && !u.isApproved).length;
+  const totalAdminActive = users.filter((u) => u.role === 'ADMIN').length;
+  const totalMembers = users.filter((u) => u.role === 'MEMBER').length;
 
   // Access denied state for non-SUPERADMIN
   if (currentUserRole && currentUserRole !== 'SUPERADMIN') {
@@ -275,34 +235,34 @@ export default function PengurusManagementPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-t-4 border-t-emerald-500">
+        <Card className="border-t-4 border-t-blue-500">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">
-                Admin Aktif (Disetujui)
+                Pengurus Aktif (ADMIN)
               </p>
-              <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
+              <p className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">
                 {totalAdminActive} Pengurus
               </p>
             </div>
-            <div className="p-3 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300">
-              <UserCheck className="w-6 h-6" />
+            <div className="p-3 rounded-2xl bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300">
+              <ShieldCheck className="w-6 h-6" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-t-4 border-t-red-500">
+        <Card className="border-t-4 border-t-emerald-500">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">
-                Menunggu Konfirmasi / Dicabut
+                Anggota Biasa (MEMBER)
               </p>
-              <p className="text-2xl font-black text-red-600 dark:text-red-400 mt-1">
-                {totalAdminPending} Pengurus
+              <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
+                {totalMembers} Anggota
               </p>
             </div>
-            <div className="p-3 rounded-2xl bg-red-100 dark:bg-red-950/80 text-red-700 dark:text-red-400">
-              <UserX className="w-6 h-6" />
+            <div className="p-3 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300">
+              <UserCheck className="w-6 h-6" />
             </div>
           </CardContent>
         </Card>
@@ -431,13 +391,13 @@ export default function PengurusManagementPage() {
                             <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 dark:text-amber-400">
                               <CheckCircle2 className="w-3.5 h-3.5" /> Otoritas Utama
                             </span>
-                          ) : u.isApproved ? (
-                            <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 dark:text-emerald-400">
-                              <CheckCircle2 className="w-3.5 h-3.5" /> Disetujui
+                          ) : u.role === 'ADMIN' ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-700 dark:text-blue-400">
+                              <CheckCircle2 className="w-3.5 h-3.5" /> Pengurus Aktif
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-xs font-bold text-red-600 dark:text-red-400">
-                              <XCircle className="w-3.5 h-3.5" /> Belum Dikonfirmasi
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                              <CheckCircle2 className="w-3.5 h-3.5" /> Anggota Biasa
                             </span>
                           )}
                         </td>
@@ -470,48 +430,25 @@ export default function PengurusManagementPage() {
                             </span>
                           ) : (
                             <div className="inline-flex items-center gap-2">
-                              {/* Toggle Approval Button (Only for ADMIN) */}
-                              {u.role === 'ADMIN' && (
-                                <button
-                                  disabled={isBusy}
-                                  onClick={() => handleToggleApprove(u)}
-                                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-xs inline-flex items-center gap-1 ${
-                                    u.isApproved
-                                      ? 'bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-950/40 dark:hover:bg-red-950/80 dark:text-red-300 border border-red-200 dark:border-red-800'
-                                      : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                                  }`}
-                                  title={u.isApproved ? 'Cabut izin akses admin' : 'Konfirmasi izin akses admin'}
-                                >
-                                  {u.isApproved ? (
-                                    <>
-                                      <UserX className="w-3.5 h-3.5" /> Cabut Izin
-                                    </>
-                                  ) : (
-                                    <>
-                                      <UserCheck className="w-3.5 h-3.5" /> Konfirmasi
-                                    </>
-                                  )}
-                                </button>
-                              )}
-
-                              {/* Role Switcher */}
                               {u.role === 'ADMIN' ? (
                                 <button
                                   disabled={isBusy}
                                   onClick={() => handleChangeRole(u, 'MEMBER')}
-                                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 transition"
-                                  title="Turunkan role menjadi Member biasa"
+                                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-950/40 dark:hover:bg-red-950/80 dark:text-red-300 border border-red-200 dark:border-red-800 transition inline-flex items-center gap-1.5 shadow-xs"
+                                  title="Copot jabatan Admin (kembalikan ke Member biasa)"
                                 >
-                                  Turunkan ke Member
+                                  <UserX className="w-3.5 h-3.5" />
+                                  <span>Copot Admin</span>
                                 </button>
                               ) : (
                                 <button
                                   disabled={isBusy}
                                   onClick={() => handleChangeRole(u, 'ADMIN')}
-                                  className="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-xs transition inline-flex items-center gap-1"
-                                  title="Angkat menjadi Admin/Pengurus"
+                                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-xs transition inline-flex items-center gap-1.5"
+                                  title="Angkat anggota ini menjadi Pengurus (Admin)"
                                 >
-                                  <ShieldCheck className="w-3.5 h-3.5" /> Angkat Admin
+                                  <ShieldCheck className="w-3.5 h-3.5" />
+                                  <span>Angkat Admin</span>
                                 </button>
                               )}
                             </div>
