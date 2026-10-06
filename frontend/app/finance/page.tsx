@@ -100,6 +100,7 @@ const TYPE_OPTIONS = [
 const SOURCE_OPTIONS = [
   { value: '', label: 'Semua Sumber' },
   { value: 'Iuran Anggota', label: 'Iuran Anggota' },
+  { value: 'Jimpitan', label: 'Jimpitan' },
   { value: 'Donasi', label: 'Donasi' },
   { value: 'Kegiatan', label: 'Kegiatan' },
   { value: 'Lainnya', label: 'Lainnya' },
@@ -118,9 +119,10 @@ const CATEGORY_OPTIONS = [
 // Income source presets
 const PRESET_SOURCES = [
   { value: 'Iuran Anggota', label: 'Iuran Anggota', icon: Coins, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800' },
+  { value: 'Jimpitan', label: 'Jimpitan', icon: Coins, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800' },
   { value: 'Donasi', label: 'Donasi', icon: HeartHandshake, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800' },
   { value: 'Kegiatan', label: 'Kegiatan', icon: Sparkles, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800' },
-  { value: 'Lainnya', label: 'Lainnya', icon: Layers, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800' },
+  { value: 'Lainnya', label: 'Lainnya', icon: Layers, color: 'text-gray-600 bg-gray-50 dark:bg-gray-950/40 border-gray-200 dark:border-gray-800' },
 ];
 
 // Expense category presets
@@ -604,7 +606,7 @@ export default function FinanceOverviewPage() {
 
           {/* ── INCOME BREAKDOWN CARDS (only in INCOME tab) ── */}
           {activeTab === 'INCOME' && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {PRESET_SOURCES.map(s => {
                 const total = incomeStats.bySource[s.value] || 0;
                 const isSelected = selectedSource.toLowerCase() === s.value.toLowerCase();
