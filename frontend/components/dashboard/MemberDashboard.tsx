@@ -6,7 +6,6 @@ import {
   Users,
   Wallet,
   CalendarCheck2,
-  Coins,
   Gift,
   Bell,
   AlertTriangle,
@@ -56,7 +55,6 @@ export interface MemberDashboardData {
     activeMembers: number;
     inactiveMembers: number;
     totalCashBalance: number;
-    totalJimpitanMonth: number;
   };
   attentionItems: AttentionItem[];
   announcements: {
@@ -113,22 +111,6 @@ export interface MemberDashboardData {
       notes: string | null;
     }[];
   };
-  jimpitanSummary: {
-    month: number;
-    year: number;
-    periodName: string;
-    totalCollected: number;
-    targetAmount: number;
-    groupsCount: number;
-    groups: {
-      id: string;
-      groupId: string;
-      groupNumber: number;
-      groupName: string;
-      amount: number;
-      notes: string | null;
-    }[];
-  };
   notifications: {
     id: string;
     title: string;
@@ -170,7 +152,6 @@ const FALLBACK_DASHBOARD: MemberDashboardData = {
     activeMembers: 23,
     inactiveMembers: 2,
     totalCashBalance: 6420000,
-    totalJimpitanMonth: 1820000,
   },
   attentionItems: [
     {
@@ -325,72 +306,6 @@ const FALLBACK_DASHBOARD: MemberDashboardData = {
         eventDate: '2026-08-17T08:00:00.000Z',
         status: 'PRESENT',
         notes: 'Panitia Lomba',
-      },
-    ],
-  },
-  jimpitanSummary: {
-    month: 10,
-    year: 2026,
-    periodName: 'Oktober 2026',
-    totalCollected: 910000,
-    targetAmount: 1000000,
-    groupsCount: 7,
-    groups: [
-      {
-        id: 'j-1',
-        groupId: 'g-1',
-        groupNumber: 1,
-        groupName: 'Kelompok 1 (RT 01 Tuk Uluh Barat)',
-        amount: 130000,
-        notes: 'Pencatatan berjalan',
-      },
-      {
-        id: 'j-2',
-        groupId: 'g-2',
-        groupNumber: 2,
-        groupName: 'Kelompok 2 (RT 01 Tuk Uluh Timur)',
-        amount: 135000,
-        notes: 'Pencatatan berjalan',
-      },
-      {
-        id: 'j-3',
-        groupId: 'g-3',
-        groupNumber: 3,
-        groupName: 'Kelompok 3 (RT 02 Tuk Uluh Utara)',
-        amount: 140000,
-        notes: 'Pencatatan berjalan',
-      },
-      {
-        id: 'j-4',
-        groupId: 'g-4',
-        groupNumber: 4,
-        groupName: 'Kelompok 4 (RT 02 Tuk Uluh Selatan)',
-        amount: 125000,
-        notes: 'Pencatatan berjalan',
-      },
-      {
-        id: 'j-5',
-        groupId: 'g-5',
-        groupNumber: 5,
-        groupName: 'Kelompok 5 (RT 03 Tuk Uluh Krajan)',
-        amount: 130000,
-        notes: 'Pencatatan berjalan',
-      },
-      {
-        id: 'j-6',
-        groupId: 'g-6',
-        groupNumber: 6,
-        groupName: 'Kelompok 6 (RT 03 Tuk Uluh Wetan)',
-        amount: 120000,
-        notes: 'Pencatatan berjalan',
-      },
-      {
-        id: 'j-7',
-        groupId: 'g-7',
-        groupNumber: 7,
-        groupName: 'Kelompok 7 (Tuk Uluh Perbatasan)',
-        amount: 130000,
-        notes: 'Pencatatan berjalan',
       },
     ],
   },
@@ -728,7 +643,7 @@ export const MemberDashboard: React.FC = () => {
       {/* ─────────────────────────────────────────────────────────────────────────────
           3. STATISTIK UTAMA RINGKAS (SEDERHANA DAN MUDAH DIPAHAMI)
       ───────────────────────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
         {/* Card 1: Total Anggota */}
         <Card hoverable>
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
@@ -787,26 +702,6 @@ export const MemberDashboard: React.FC = () => {
             <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-1 inline-flex items-center gap-1">
               <Check className="w-3.5 h-3.5" />
               {data.personalAttendance.totalAttended} dari {data.personalAttendance.totalEvents} Kegiatan Diikuti
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Card 4: Rekap Jimpitan Bulan Ini */}
-        <Card hoverable>
-          <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-              Jimpitan {data.jimpitanSummary.periodName}
-            </span>
-            <div className="p-2.5 rounded-2xl bg-amber-50 dark:bg-slate-800 ring-2 ring-black/5 dark:ring-white/10 text-amber-600 dark:text-amber-400">
-              <Coins className="w-5 h-5" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
-              {formatRupiah(data.jimpitanSummary.totalCollected)}
-            </div>
-            <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 mt-1">
-              Dari 7 Kelompok RT Warga Tuk Uluh
             </p>
           </CardContent>
         </Card>
@@ -1223,69 +1118,9 @@ export const MemberDashboard: React.FC = () => {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          6. DUA KOLOM: REKAP JIMPITAN TERBARU & NOTIFICATION CENTER
+          6. NOTIFICATION CENTER
       ───────────────────────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Card: Rekap Jimpitan Terbaru */}
-        <Card>
-          <CardHeader className="flex-row items-center justify-between pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-amber-50 dark:bg-slate-800 text-amber-600 dark:text-amber-400">
-                <Coins className="w-5 h-5" />
-              </div>
-              <div>
-                <CardTitle>Rekap Jimpitan Terbaru</CardTitle>
-                <CardDescription>
-                  Pencatatan jimpitan koin beras warga Dusun Tuk Uluh ({data.jimpitanSummary.periodName})
-                </CardDescription>
-              </div>
-            </div>
-            <Badge variant="primary" size="sm">
-              7 Kelompok RT
-            </Badge>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-taruna-yellow-50 dark:from-slate-800/80 dark:to-slate-800/40 border border-amber-200/80 dark:border-slate-700 flex items-center justify-between">
-              <div>
-                <span className="text-xs text-gray-500 dark:text-slate-400 block font-medium">
-                  Total Terkumpul Bulan Ini
-                </span>
-                <span className="text-2xl font-black text-amber-700 dark:text-amber-400">
-                  {formatRupiah(data.jimpitanSummary.totalCollected)}
-                </span>
-              </div>
-              <div className="text-right">
-                <span className="text-xs text-gray-500 dark:text-slate-400 block">Target Bulanan</span>
-                <span className="text-sm font-bold text-gray-700 dark:text-slate-300">
-                  {formatRupiah(data.jimpitanSummary.targetAmount)}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider block">
-                Rincian Per Kelompok RT
-              </span>
-              <div className="divide-y divide-taruna-border/60 dark:divide-slate-800 border border-taruna-border/60 dark:border-slate-800 rounded-2xl overflow-hidden max-h-56 overflow-y-auto">
-                {data.jimpitanSummary.groups.map((grp) => (
-                  <div
-                    key={grp.id}
-                    className="p-3 bg-white dark:bg-slate-900 flex items-center justify-between text-xs hover:bg-gray-50 dark:hover:bg-slate-800/40 transition"
-                  >
-                    <div>
-                      <p className="font-bold text-taruna-dark dark:text-white">{grp.groupName}</p>
-                      <p className="text-[11px] text-gray-400 dark:text-slate-500">{grp.notes || 'Terekap'}</p>
-                    </div>
-                    <span className="font-bold text-sm text-taruna-yellow-800 dark:text-taruna-yellow-400">
-                      {formatRupiah(grp.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
+      <div>
         {/* Card: Notification Center */}
         <Card id="notification-center">
           <CardHeader className="flex-row items-center justify-between pb-3 flex-wrap gap-2">

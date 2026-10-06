@@ -8,7 +8,7 @@ import { NavigationProgressBar } from '@/components/layout/NavigationProgressBar
 
 export const metadata: Metadata = {
   title: 'SI-TARUNA | Sistem Informasi Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono',
-  description: 'SI-TARUNA - Sistem Informasi Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono. Transparansi keuangan kas & jimpitan, absensi kegiatan, arisan dan pengumuman warga.',
+  description: 'SI-TARUNA - Sistem Informasi Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono. Transparansi keuangan kas, absensi kegiatan, arisan dan pengumuman warga.',
 };
 
 export default function RootLayout({

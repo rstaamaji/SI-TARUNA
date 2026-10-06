@@ -220,42 +220,7 @@ export class MemberDashboardService {
       };
     }
 
-    // 8. Rekap Jimpitan Terbaru
-    const recentJimpitans = await prisma.jimpitanRecord.findMany({
-      where: { year: 2026, month: 10 },
-      include: {
-        group: true,
-      },
-      orderBy: {
-        group: {
-          groupNumber: 'asc',
-        },
-      },
-    });
-
-    const totalJimpitanThisMonth = recentJimpitans.reduce(
-      (acc, j) => acc + Number(j.amount),
-      0
-    );
-
-    const jimpitanSummary = {
-      month: 10,
-      year: 2026,
-      periodName: 'Oktober 2026',
-      totalCollected: totalJimpitanThisMonth,
-      targetAmount: 1000000,
-      groupsCount: 7,
-      groups: recentJimpitans.map((j) => ({
-        id: j.id,
-        groupId: j.groupId,
-        groupNumber: j.group.groupNumber,
-        groupName: j.group.name,
-        amount: Number(j.amount),
-        notes: j.notes,
-      })),
-    };
-
-    // 9. Notifications
+    // 8. Notifications
     const notifications = await prisma.notification.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
@@ -402,14 +367,12 @@ export class MemberDashboardService {
         activeMembers,
         inactiveMembers,
         totalCashBalance: cashBalance,
-        totalJimpitanMonth: totalJimpitanThisMonth,
       },
       attentionItems,
       announcements,
       upcomingEvents,
       arisanSummary,
       personalAttendance,
-      jimpitanSummary,
       notifications: notifications.map((n) => ({
         id: n.id,
         title: n.title,

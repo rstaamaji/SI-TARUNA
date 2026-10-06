@@ -29,7 +29,7 @@ export const Footer: React.FC = () => {
               </div>
             </div>
             <p className="text-xs text-gray-500 dark:text-slate-400 leading-relaxed max-w-md pt-1">
-              Platform tata kelola dan administrasi terpadu pemuda-pemudi Karang Taruna: transparansi kas &amp; iuran jimpitan, rekapitulasi kehadiran kegiatan, pengundian arisan warga, serta distribusi pengumuman warga secara realtime.
+              Platform tata kelola dan administrasi terpadu pemuda-pemudi Karang Taruna: transparansi kas keuangan, rekapitulasi kehadiran kegiatan, pengundian arisan warga, serta distribusi pengumuman warga secara realtime.
             </p>
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -62,10 +62,10 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  href="/dashboard/jimpitan"
+                  href="/dashboard/kegiatan"
                   className="text-gray-600 dark:text-slate-300 hover:text-taruna-yellow-600 dark:hover:text-taruna-yellow-400 transition"
                 >
-                  Pengelolaan Jimpitan (7 Kelompok)
+                  Agenda &amp; Jadwal Kegiatan
                 </Link>
               </li>
               <li>
