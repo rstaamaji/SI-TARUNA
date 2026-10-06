@@ -336,13 +336,10 @@ export default function FinanceOverviewPage() {
     try {
       const token = getAuthToken();
       const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-      const apiBase = process.env.NEXT_PUBLIC_API_URL
-        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
-        : 'http://localhost:5000/api';
 
       const endpoint = formType === 'INCOME'
-        ? `${apiBase}/finance/incomes`
-        : `${apiBase}/finance/expenses`;
+        ? 'http://localhost:5000/api/finance/incomes'
+        : 'http://localhost:5000/api/finance/expenses';
 
       const body = formType === 'INCOME'
         ? { amount: numAmount, source: formSource.trim() || 'Lainnya', description: formDescription.trim(), transactionDate: new Date(formDate).toISOString() }
@@ -372,13 +369,10 @@ export default function FinanceOverviewPage() {
     try {
       const token = getAuthToken();
       const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-      const apiBase = process.env.NEXT_PUBLIC_API_URL
-        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
-        : 'http://localhost:5000/api';
 
       const endpoint = activeTransaction.type === 'INCOME'
-        ? `${apiBase}/finance/incomes/${activeTransaction.id}`
-        : `${apiBase}/finance/expenses/${activeTransaction.id}`;
+        ? `http://localhost:5000/api/finance/incomes/${activeTransaction.id}`
+        : `http://localhost:5000/api/finance/expenses/${activeTransaction.id}`;
 
       const body = activeTransaction.type === 'INCOME'
         ? { amount: numAmount, source: formSource.trim() || 'Lainnya', description: formDescription.trim(), transactionDate: new Date(formDate).toISOString() }
@@ -404,13 +398,10 @@ export default function FinanceOverviewPage() {
     try {
       const token = getAuthToken();
       const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-      const apiBase = process.env.NEXT_PUBLIC_API_URL
-        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
-        : 'http://localhost:5000/api';
 
       const endpoint = activeTransaction.type === 'INCOME'
-        ? `${apiBase}/finance/incomes/${activeTransaction.id}`
-        : `${apiBase}/finance/expenses/${activeTransaction.id}`;
+        ? `http://localhost:5000/api/finance/incomes/${activeTransaction.id}`
+        : `http://localhost:5000/api/finance/expenses/${activeTransaction.id}`;
 
       const res = await fetch(endpoint, { method: 'DELETE', headers });
       const json = await res.json();

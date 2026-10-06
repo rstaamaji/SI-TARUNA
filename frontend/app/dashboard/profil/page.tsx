@@ -37,6 +37,7 @@ import {
   TableCell,
 } from '@/components/ui/Table';
 import { useToast } from '@/components/ui/Toast';
+import { UserRole } from '@/lib/auth';
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
 
@@ -45,7 +46,7 @@ interface MemberProfileData {
     id: string;
     username: string;
     email: string;
-    role: 'ADMIN' | 'MEMBER';
+    role: UserRole;
     createdAt: string;
   };
   member: {
