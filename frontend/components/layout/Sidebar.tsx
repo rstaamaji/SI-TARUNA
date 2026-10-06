@@ -14,7 +14,6 @@ import {
   FileText,
   CalendarDays,
   Gift,
-  Coins,
   Bell,
   UserCircle,
   X,
@@ -131,12 +130,6 @@ export const navigationItems: NavItem[] = [
     name: 'Arisan',
     href: '/dashboard/arisan',
     icon: Gift,
-    badge: null,
-  },
-  {
-    name: 'Jimpitan',
-    href: '/dashboard/jimpitan',
-    icon: Coins,
     badge: null,
   },
   {
