@@ -26,6 +26,7 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { getStoredUser, isUserAdmin, UserRole } from '@/lib/auth';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -94,11 +95,11 @@ export default function CashWithdrawalPage() {
   const toast = useToast();
 
   // Auth
-  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: 'ADMIN' | 'MEMBER' }>({
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: UserRole }>({
     id: '', name: 'Anggota', role: 'MEMBER',
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isAdmin = currentUser.role === 'ADMIN';
+  const isAdmin = isUserAdmin(currentUser.role);
 
   // Data
   const [withdrawals, setWithdrawals] = useState<CashWithdrawalItem[]>([]);
@@ -129,7 +130,9 @@ export default function CashWithdrawalPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getToken = (): string | null =>
-    typeof window !== 'undefined' ? localStorage.getItem('si_taruna_token') : null;
+    typeof window !== 'undefined'
+      ? localStorage.getItem('si_taruna_token') || localStorage.getItem('token')
+      : null;
 
   const authHeaders = () => {
     const token = getToken();
@@ -141,13 +144,12 @@ export default function CashWithdrawalPage() {
   // ── Load user session ──
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('si_taruna_user');
+      const stored = getStoredUser();
       if (stored) {
-        const parsed = JSON.parse(stored);
         setCurrentUser({
-          id: parsed.id || '',
-          name: parsed.member?.name || parsed.username || 'Anggota',
-          role: parsed.role === 'ADMIN' ? 'ADMIN' : 'MEMBER',
+          id: stored.id,
+          name: stored.name,
+          role: stored.role,
         });
       }
     } catch { /* default MEMBER */ }
@@ -358,8 +360,14 @@ export default function CashWithdrawalPage() {
                 <span className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
                   Transparansi Keuangan
                 </span>
-                <Badge variant={isAdmin ? 'accent' : 'primary'} size="sm">
-                  {isAdmin ? <><ShieldCheck className="w-3 h-3 mr-1 inline" />ADMINISTRATOR</> : <><User className="w-3 h-3 mr-1 inline" />MEMBER</>}
+                <Badge variant={currentUser.role === 'SUPERADMIN' ? 'warning' : isAdmin ? 'accent' : 'primary'} size="sm">
+                  {currentUser.role === 'SUPERADMIN' ? (
+                    <><ShieldCheck className="w-3 h-3 mr-1 inline" />SUPERADMIN</>
+                  ) : isAdmin ? (
+                    <><ShieldCheck className="w-3 h-3 mr-1 inline" />ADMINISTRATOR</>
+                  ) : (
+                    <><User className="w-3 h-3 mr-1 inline" />MEMBER</>
+                  )}
                 </Badge>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">

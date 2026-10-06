@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/ui/Logo';
 import { useToast } from '@/components/ui/Toast';
+import { getStoredUser, isUserAdmin, UserRole } from '@/lib/auth';
 
 interface MeetingMinuteDetail {
   id: string;
@@ -50,7 +51,7 @@ export default function NotulensiDetailPage() {
   const minuteId = params?.id as string;
 
   // Layout & Auth
-  const [userRole, setUserRole] = useState<'ADMIN' | 'MEMBER'>('MEMBER');
+  const [userRole, setUserRole] = useState<UserRole>('MEMBER');
 
   // Data state
   const [minute, setMinute] = useState<MeetingMinuteDetail | null>(null);
@@ -59,19 +60,16 @@ export default function NotulensiDetailPage() {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('si_taruna_user');
-      if (stored) {
-        const u = JSON.parse(stored);
-        if (u.role === 'ADMIN' || u.role === 'MEMBER') {
-          setUserRole(u.role);
-        }
+      const u = getStoredUser();
+      if (u) {
+        setUserRole(u.role);
       }
     } catch {
       // fallback
     }
   }, []);
 
-  const isAdmin = userRole === 'ADMIN';
+  const isAdmin = isUserAdmin(userRole);
 
   // Fetch detail
   const fetchDetail = useCallback(async () => {

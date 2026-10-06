@@ -279,7 +279,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="p-3 border-b border-taruna-border dark:border-slate-800">
                 <p className="text-sm font-bold text-taruna-dark dark:text-white truncate">{user.name}</p>
                 <div className="mt-1">
-                  <Badge variant={user.role === 'ADMIN' ? 'accent' : 'primary'} size="sm">
+                  <Badge variant={user.role === 'SUPERADMIN' ? 'warning' : user.role === 'ADMIN' ? 'accent' : 'primary'} size="sm">
                     {user.role}
                   </Badge>
                 </div>

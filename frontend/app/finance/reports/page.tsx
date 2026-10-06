@@ -49,6 +49,7 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { getStoredUser, isUserAdmin, UserRole } from '@/lib/auth';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -194,13 +195,13 @@ export default function FinancialReportsPage() {
   const toast = useToast();
 
   // Auth & Session
-  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: 'ADMIN' | 'MEMBER' }>({
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: UserRole }>({
     id: 'user-default',
     name: 'Pengurus Setya Bakti',
     role: 'MEMBER',
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const isAdmin = currentUser.role === 'ADMIN';
+  const isAdmin = isUserAdmin(currentUser.role);
 
   // Filters
   const [startDate, setStartDate] = useState('');
@@ -218,19 +219,18 @@ export default function FinancialReportsPage() {
 
   const getAuthToken = (): string | null => {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('si_taruna_token');
+    return localStorage.getItem('si_taruna_token') || localStorage.getItem('token');
   };
 
   // Load User Session
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('si_taruna_user');
+      const stored = getStoredUser();
       if (stored) {
-        const parsed = JSON.parse(stored);
         setCurrentUser({
-          id: parsed.id || 'user-id',
-          name: parsed.member?.name || parsed.username || 'Anggota',
-          role: parsed.role === 'ADMIN' ? 'ADMIN' : 'MEMBER',
+          id: stored.id,
+          name: stored.name,
+          role: stored.role,
         });
       }
     } catch {
@@ -592,8 +592,13 @@ export default function FinancialReportsPage() {
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                   Transparansi &amp; Akuntabilitas Publik
                 </span>
-                <Badge variant={isAdmin ? 'accent' : 'primary'} size="sm">
-                  {isAdmin ? (
+                <Badge variant={currentUser.role === 'SUPERADMIN' ? 'warning' : isAdmin ? 'accent' : 'primary'} size="sm">
+                  {currentUser.role === 'SUPERADMIN' ? (
+                    <>
+                      <ShieldCheck className="w-3 h-3 mr-1 inline" />
+                      SUPERADMIN
+                    </>
+                  ) : isAdmin ? (
                     <>
                       <ShieldCheck className="w-3 h-3 mr-1 inline" />
                       ADMINISTRATOR

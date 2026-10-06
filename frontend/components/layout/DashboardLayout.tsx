@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
+import { getStoredUser, UserRole } from '@/lib/auth';
 
 export interface DashboardLayoutProps {
   children: React.ReactNode;
   user?: {
     name: string;
-    role: 'SUPERADMIN' | 'ADMIN' | 'MEMBER';
+    role: UserRole;
     avatarUrl?: string;
   };
 }
@@ -20,7 +21,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentUser, setCurrentUser] = React.useState<{
     name: string;
-    role: 'SUPERADMIN' | 'ADMIN' | 'MEMBER';
+    role: UserRole;
     avatarUrl?: string;
   }>(initialUser || {
     name: 'Pengurus Taruna',
@@ -29,18 +30,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   React.useEffect(() => {
     try {
-      const stored = localStorage.getItem('si_taruna_user') || localStorage.getItem('user');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed.name && (parsed.role === 'SUPERADMIN' || parsed.role === 'ADMIN' || parsed.role === 'MEMBER')) {
-          setCurrentUser({
-            name: parsed.name,
-            role: parsed.role,
-          });
-        }
+      const u = getStoredUser();
+      if (u) {
+        setCurrentUser({
+          name: u.name,
+          role: u.role,
+        });
       }
     } catch {
-      // Ignore json parse error
+      // Ignore
     }
   }, []);
 
