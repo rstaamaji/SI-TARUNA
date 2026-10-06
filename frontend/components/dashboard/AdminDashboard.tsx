@@ -6,7 +6,6 @@ import {
   Users,
   Wallet,
   CalendarCheck2,
-  Coins,
   TrendingUp,
   ArrowDownLeft,
   ArrowUpRight,
@@ -56,7 +55,6 @@ export interface AdminDashboardData {
       totalMembers: number;
       attendanceRate: number;
     };
-    currentMonthJimpitan: number;
   };
   charts: {
     incomeVsExpense: {
@@ -128,7 +126,6 @@ const FALLBACK_ADMIN_DASHBOARD: AdminDashboardData = {
       totalMembers: 25,
       attendanceRate: 92,
     },
-    currentMonthJimpitan: 2170000,
   },
   charts: {
     incomeVsExpense: [
@@ -295,7 +292,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
             {userRole === 'SUPERADMIN'
               ? 'Hak Akses Penuh: Monitoring seluruh data, kontrol anggaran, dan kelola otorisasi pengurus.'
-              : 'Monitoring keuangan, partisipasi pemuda, jimpitan, dan kegiatan Dusun Tuk Uluh.'}
+              : 'Monitoring keuangan, partisipasi pemuda, dan kegiatan Dusun Tuk Uluh.'}
             {isLoading && (
               <span className="ml-2 text-xs text-taruna-yellow-600 dark:text-taruna-yellow-400 font-semibold animate-pulse">
                 (Memuat data...)
@@ -420,7 +417,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
             <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
               <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>Iuran kas, donasi, jimpitan &amp; kas desa</span>
+              <span>Iuran kas, donasi, &amp; kas desa</span>
             </div>
           </CardContent>
         </Card>
@@ -467,26 +464,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <p className="text-xs text-gray-500 dark:text-slate-400 mt-2 truncate">
               {metrics.lastEventAttendance.eventTitle}
             </p>
-          </CardContent>
-        </Card>
-
-        {/* Card 6: Total Jimpitan Bulan Berjalan */}
-        <Card hoverable className="border-t-4 border-t-amber-500">
-          <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
-              Total Jimpitan Bulan Ini
-            </span>
-            <div className="p-2.5 rounded-2xl bg-amber-50 dark:bg-slate-800 text-amber-600 dark:text-amber-400 ring-2 ring-black/5 dark:ring-white/5">
-              <Coins className="w-5 h-5" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
-              {formatRupiah(metrics.currentMonthJimpitan)}
-            </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-amber-700 dark:text-amber-400">
-              <span>Terkumpul dari 7 Kelompok Ronda Dusun</span>
-            </div>
           </CardContent>
         </Card>
       </div>
