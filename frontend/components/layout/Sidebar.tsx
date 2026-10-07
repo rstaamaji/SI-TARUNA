@@ -198,16 +198,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar Container */}
       <aside
         className={cn(
-          'fixed top-0 bottom-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-taruna-border dark:border-slate-800 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:shrink-0 overflow-hidden',
+          'fixed top-0 bottom-0 left-0 z-40 w-72 bg-[#04202C] text-[#C9D1C8] border-r border-[#304040] flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:shrink-0 overflow-hidden shadow-xl',
           isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         )}
       >
         {/* Sidebar Header with Logo */}
-        <div className="h-20 shrink-0 px-6 flex items-center justify-between border-b border-taruna-border dark:border-slate-800 bg-gradient-to-b from-taruna-yellow-50/40 dark:from-slate-900 to-white dark:to-slate-900">
+        <div className="h-20 shrink-0 px-6 flex items-center justify-between border-b border-[#304040] bg-[#04202C]">
+          {/* Logo Karang Taruna asli tidak dirubah */}
           <Logo size={42} href="/" />
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-gray-400 hover:text-taruna-dark dark:hover:text-white hover:bg-taruna-surface dark:hover:bg-slate-800 lg:hidden transition"
+            className="p-2 rounded-xl text-[#C9D1C8] hover:text-white hover:bg-[#304040] lg:hidden transition"
             aria-label="Tutup Menu"
           >
             <X className="w-5 h-5" />
@@ -217,17 +218,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Navigation List */}
         <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-1">
           <div className="flex items-center justify-between px-3 pb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#C9D1C8]/60">
               Menu Utama
             </span>
             <span
               className={cn(
                 'text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide',
                 userRole === 'SUPERADMIN'
-                  ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
+                  ? 'bg-[#304040] text-amber-300 border border-amber-400/40'
                   : userRole === 'ADMIN'
-                  ? 'bg-taruna-red-100 dark:bg-taruna-red-950/60 text-taruna-red-700 dark:text-red-400'
-                  : 'bg-taruna-yellow-100 dark:bg-taruna-yellow-950/60 text-taruna-yellow-800 dark:text-taruna-yellow-300'
+                  ? 'bg-[#304040] text-[#C9D1C8] border border-[#5B7065]'
+                  : 'bg-[#304040] text-[#C9D1C8] border border-[#5B7065]'
               )}
             >
               {userRole === 'SUPERADMIN' ? '👑 SUPERADMIN' : userRole}
@@ -263,8 +264,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     className={cn(
                       'group flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 cursor-pointer select-none',
                       isActive
-                        ? 'bg-taruna-yellow-50 dark:bg-taruna-yellow-500/15 text-taruna-yellow-800 dark:text-taruna-yellow-400 font-semibold shadow-xs border border-taruna-yellow-200/80 dark:border-taruna-yellow-500/30'
-                        : 'text-gray-600 dark:text-slate-300 hover:bg-taruna-surface dark:hover:bg-slate-800 hover:text-taruna-dark dark:hover:text-white'
+                        ? 'bg-[#5B7065] text-white font-semibold shadow-xs border border-[#5B7065]'
+                        : 'text-[#C9D1C8]/80 hover:bg-[#304040] hover:text-white'
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -272,8 +273,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         className={cn(
                           'p-1.5 rounded-lg transition-colors',
                           isActive
-                            ? 'bg-taruna-yellow-500 text-white shadow-xs'
-                            : 'text-gray-400 dark:text-slate-500 group-hover:text-taruna-yellow-600 dark:group-hover:text-taruna-yellow-400 group-hover:bg-taruna-yellow-50 dark:group-hover:bg-slate-800'
+                            ? 'bg-[#04202C] text-white shadow-xs'
+                            : 'text-[#C9D1C8]/60 group-hover:text-white group-hover:bg-[#304040]'
                         )}
                       >
                         <Icon className="w-4 h-4" />
@@ -289,24 +290,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             item.superAdminOnly
                               ? 'bg-amber-500 text-white'
                               : item.adminOnly
-                              ? 'bg-taruna-red-600 text-white'
-                              : 'bg-taruna-yellow-100 dark:bg-taruna-yellow-950/60 text-taruna-yellow-800 dark:text-taruna-yellow-300'
+                              ? 'bg-red-600 text-white'
+                              : 'bg-[#304040] text-[#C9D1C8]'
                           )}
                         >
                           {badgeValue}
                         </span>
                       )}
                       {isSubExpanded ? (
-                        <ChevronDown className="w-4 h-4 text-taruna-yellow-600 dark:text-taruna-yellow-400 transition-transform duration-200" />
+                        <ChevronDown className="w-4 h-4 text-white transition-transform duration-200" />
                       ) : (
-                        <ChevronRight className="w-4 h-4 text-gray-400 dark:text-slate-500 group-hover:text-taruna-dark dark:group-hover:text-white transition-transform duration-200" />
+                        <ChevronRight className="w-4 h-4 text-[#C9D1C8]/60 group-hover:text-white transition-transform duration-200" />
                       )}
                     </div>
                   </div>
 
                   {/* Sub-item / Sub-bab Accordion List */}
                   {isSubExpanded && (
-                    <div className="pl-4 pr-1 py-1 space-y-1 ml-4 border-l-2 border-taruna-yellow-300/80 dark:border-slate-800 transition-all duration-200">
+                    <div className="pl-4 pr-1 py-1 space-y-1 ml-4 border-l-2 border-[#5B7065] transition-all duration-200">
                       {item.subItems!.map((sub) => {
                         const isCurrentSubActive = pathname === sub.href;
                         const SubIcon = sub.icon;
@@ -322,8 +323,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             className={cn(
                               'group flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-200',
                               isCurrentSubActive
-                                ? 'bg-taruna-yellow-500 text-white shadow-xs font-bold'
-                                : 'text-gray-600 dark:text-slate-400 hover:text-taruna-dark dark:hover:text-white hover:bg-taruna-surface dark:hover:bg-slate-800'
+                                ? 'bg-[#5B7065] text-white shadow-xs font-bold'
+                                : 'text-[#C9D1C8]/70 hover:text-white hover:bg-[#304040]'
                             )}
                           >
                             <div className="flex items-center gap-2.5">
@@ -333,7 +334,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     'w-3.5 h-3.5 transition-colors',
                                     isCurrentSubActive
                                       ? 'text-white'
-                                      : 'text-gray-400 dark:text-slate-500 group-hover:text-taruna-yellow-600 dark:group-hover:text-taruna-yellow-400'
+                                      : 'text-[#C9D1C8]/60 group-hover:text-white'
                                   )}
                                 />
                               )}
@@ -362,8 +363,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className={cn(
                   'group flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200',
                   isActive
-                    ? 'bg-taruna-yellow-50 dark:bg-taruna-yellow-500/15 text-taruna-yellow-800 dark:text-taruna-yellow-400 font-semibold shadow-xs border border-taruna-yellow-200/80 dark:border-taruna-yellow-500/30'
-                    : 'text-gray-600 dark:text-slate-300 hover:bg-taruna-surface dark:hover:bg-slate-800 hover:text-taruna-dark dark:hover:text-white'
+                    ? 'bg-[#5B7065] text-white font-semibold shadow-xs border border-[#5B7065]'
+                    : 'text-[#C9D1C8]/80 hover:bg-[#304040] hover:text-white'
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -371,8 +372,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     className={cn(
                       'p-1.5 rounded-lg transition-colors',
                       isActive
-                        ? 'bg-taruna-yellow-500 text-white shadow-xs'
-                        : 'text-gray-400 dark:text-slate-500 group-hover:text-taruna-yellow-600 dark:group-hover:text-taruna-yellow-400 group-hover:bg-taruna-yellow-50 dark:group-hover:bg-slate-800'
+                        ? 'bg-[#04202C] text-white shadow-xs'
+                        : 'text-[#C9D1C8]/60 group-hover:text-white group-hover:bg-[#304040]'
                     )}
                   >
                     <Icon className="w-4 h-4" />
@@ -388,10 +389,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         item.superAdminOnly
                           ? 'bg-amber-500 text-white'
                           : item.adminOnly
-                          ? 'bg-taruna-red-600 text-white'
-                          : item.name === 'Pengumuman'
-                          ? 'bg-taruna-red-100 dark:bg-taruna-red-950/60 text-taruna-red-700 dark:text-red-400'
-                          : 'bg-taruna-yellow-100 dark:bg-taruna-yellow-950/60 text-taruna-yellow-800 dark:text-taruna-yellow-300'
+                          ? 'bg-red-600 text-white'
+                          : 'bg-[#304040] text-[#C9D1C8]'
                       )}
                     >
                       {badgeValue}
@@ -404,15 +403,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Sidebar Footer Organization Badge */}
-        <div className="shrink-0 mt-auto p-3.5 border-t border-taruna-border dark:border-slate-800 bg-taruna-surface/80 dark:bg-slate-800/40 m-3 rounded-2xl">
+        <div className="shrink-0 mt-auto p-3.5 border-t border-[#304040] bg-[#304040]/30 m-3 rounded-2xl">
           <div className="flex items-center gap-3">
+            {/* Logo Karang Taruna asli tidak dirubah */}
             <Logo size={36} showText={false} />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-taruna-dark dark:text-white truncate">
+              <p className="text-xs font-bold text-white truncate">
                 SI-TARUNA
               </p>
-              <p className="text-[11px] font-medium text-taruna-red-600 dark:text-red-400 truncate">
-                Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono
+              <p className="text-[11px] font-medium text-[#C9D1C8] truncate">
+                Karang Taruna Dusun Tuk Uluh
               </p>
             </div>
           </div>

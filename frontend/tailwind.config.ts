@@ -53,6 +53,12 @@ const config: Config = {
           surface: '#f9fafb',
           border: '#e5e7eb',
         },
+        palette: {
+          forest: '#04202C',
+          evergreen: '#304040',
+          pine: '#5B7065',
+          fog: '#C9D1C8',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
