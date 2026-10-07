@@ -60,19 +60,36 @@ export class AuthService {
       throw new AppError('Kredensial tidak valid: Username atau password salah.', 401);
     }
 
-    // Pengecekan konfirmasi Superadmin untuk role ADMIN
+    // Pengecekan status role:
+    // Jika mantan admin dicopot atau status admin dinonaktifkan oleh Superadmin,
+    // akun TIDAK DIBLOKIR, melainkan otomatis dapat login sebagai role MEMBER biasa (tanpa fitur CRUD admin).
+    let effectiveRole = user.role;
+    let effectiveApproved = user.isApproved;
+
     if (user.role === 'ADMIN' && !user.isApproved) {
-      throw new AppError(
-        'Akun admin ini belum dikonfirmasi atau dinonaktifkan oleh Superadmin. Akses masuk ditolak.',
-        403
-      );
+      effectiveRole = 'MEMBER';
+      effectiveApproved = true;
+      // Sinkronkan ke database agar status role kembali konsisten sebagai MEMBER
+      try {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { role: 'MEMBER', isApproved: true },
+        });
+      } catch (syncErr) {
+        console.warn('Gagal sinkronisasi role mantan admin ke MEMBER:', syncErr);
+      }
     }
 
-    // Jika Superadmin belum memiliki data member terhubung langsung, tautkan profil Rustam Aji
+    // Jika profil member belum tertaut langsung, cari berdasarkan nama atau username
     let memberData = user.member;
-    if (!memberData && (user.role === 'SUPERADMIN' || user.username === 'rustaamaji')) {
+    if (!memberData) {
+      const searchName =
+        user.role === 'SUPERADMIN' || user.username.toLowerCase() === 'rustaamaji'
+          ? 'Rustam Aji'
+          : user.username;
+
       memberData = await prisma.member.findFirst({
-        where: { name: { equals: 'Rustam Aji', mode: 'insensitive' } },
+        where: { name: { equals: searchName, mode: 'insensitive' } },
         select: {
           id: true,
           memberNumber: true,
@@ -87,7 +104,7 @@ export class AuthService {
     const token = JwtUtil.sign({
       id: user.id,
       username: user.username,
-      role: user.role,
+      role: effectiveRole,
     });
 
     return {
@@ -96,8 +113,8 @@ export class AuthService {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role,
-        isApproved: user.isApproved,
+        role: effectiveRole,
+        isApproved: effectiveApproved,
         member: memberData,
       },
     };

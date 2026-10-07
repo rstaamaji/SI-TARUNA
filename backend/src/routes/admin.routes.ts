@@ -109,10 +109,14 @@ router.patch('/pengurus/:id/approve', requireSuperAdmin, async (req: Request, re
     }
 
     const newStatus = typeof isApproved === 'boolean' ? isApproved : !targetUser.isApproved;
+    // Jika dicabut (newStatus = false), ubah role menjadi MEMBER agar tetap dapat login sebagai anggota biasa
+    const targetRole = newStatus ? 'ADMIN' : 'MEMBER';
+
     const updated = await prisma.user.update({
       where: { id },
       data: {
-        isApproved: newStatus,
+        role: targetRole,
+        isApproved: true,
         approvedBy: req.user?.username || 'rustaamaji',
         approvedAt: new Date(),
       },
@@ -128,7 +132,9 @@ router.patch('/pengurus/:id/approve', requireSuperAdmin, async (req: Request, re
 
     sendSuccess(
       res,
-      `Status akun pengurus ${updated.username} berhasil ${newStatus ? 'dikonfirmasi & diaktifkan' : 'dinonaktifkan / dicabut'}`,
+      newStatus
+        ? `Akun pengurus ${updated.username} berhasil dikonfirmasi dan diaktifkan sebagai Pengurus (ADMIN)`
+        : `Jabatan pengurus ${updated.username} berhasil dicopot dan kembali menjadi Anggota biasa (MEMBER)`,
       updated,
       200
     );
@@ -158,7 +164,7 @@ router.patch('/pengurus/:id/role', requireSuperAdmin, async (req: Request, res: 
       where: { id },
       data: {
         role,
-        isApproved: role === 'ADMIN' ? true : targetUser.isApproved,
+        isApproved: true,
         approvedBy: req.user?.username || 'rustaamaji',
         approvedAt: new Date(),
       },

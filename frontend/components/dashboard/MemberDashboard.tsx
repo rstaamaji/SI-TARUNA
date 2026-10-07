@@ -7,7 +7,6 @@ import {
   Wallet,
   CalendarCheck2,
   Gift,
-  Bell,
   AlertTriangle,
   Clock,
   MapPin,
@@ -358,7 +357,6 @@ export const MemberDashboard: React.FC = () => {
   const [rsvpState, setRsvpState] = useState<Record<string, boolean>>({
     'ev-1': true,
   });
-  const [notifFilter, setNotifFilter] = useState<'ALL' | 'UNREAD'>('ALL');
 
   // Dynamic API base and token retrieval
   const getApiBase = () => {
@@ -416,54 +414,6 @@ export const MemberDashboard: React.FC = () => {
     fetchDashboard();
   }, [fetchDashboard]);
 
-  // Handle Mark single notification read
-  const handleMarkNotificationRead = async (notifId: string) => {
-    try {
-      const token = getAuthToken();
-      if (token) {
-        const apiBase = getApiBase();
-        await fetch(`${apiBase}/member/dashboard/notifications/${notifId}/read`, {
-          method: 'PATCH',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      }
-    } catch {
-      // Local fallback
-    }
-
-    setData((prev) => ({
-      ...prev,
-      notifications: prev.notifications.map((n) =>
-        n.id === notifId ? { ...n, isRead: true } : n
-      ),
-      unreadNotificationsCount: Math.max(0, prev.unreadNotificationsCount - 1),
-    }));
-    toast.success('Notifikasi ditandai telah dibaca.');
-  };
-
-  // Handle Mark all notifications read
-  const handleMarkAllRead = async () => {
-    try {
-      const token = getAuthToken();
-      if (token) {
-        const apiBase = getApiBase();
-        await fetch(`${apiBase}/member/dashboard/notifications/read-all`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      }
-    } catch {
-      // Local fallback
-    }
-
-    setData((prev) => ({
-      ...prev,
-      notifications: prev.notifications.map((n) => ({ ...n, isRead: true })),
-      unreadNotificationsCount: 0,
-    }));
-    toast.success('Seluruh notifikasi telah ditandai dibaca.');
-  };
-
   // Handle RSVP confirmation
   const handleRsvp = (eventId: string, eventTitle: string) => {
     setRsvpState((prev) => {
@@ -486,11 +436,6 @@ export const MemberDashboard: React.FC = () => {
       minimumFractionDigits: 0,
     }).format(val);
   };
-
-  const filteredNotifications = data.notifications.filter((n) => {
-    if (notifFilter === 'UNREAD') return !n.isRead;
-    return true;
-  });
 
   return (
     <div className="space-y-8 pb-16">
@@ -541,17 +486,6 @@ export const MemberDashboard: React.FC = () => {
               onClick={fetchDashboard}
             >
               Segarkan
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<Bell className="w-4 h-4 text-taruna-yellow-600 dark:text-taruna-yellow-400" />}
-              onClick={() => {
-                const el = document.getElementById('notification-center');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Notifikasi ({data.unreadNotificationsCount})
             </Button>
             <Button
               variant="primary"
@@ -1118,119 +1052,7 @@ export const MemberDashboard: React.FC = () => {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          6. NOTIFICATION CENTER
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <div>
-        {/* Card: Notification Center */}
-        <Card id="notification-center">
-          <CardHeader className="flex-row items-center justify-between pb-3 flex-wrap gap-2">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-taruna-yellow-50 dark:bg-slate-800 text-taruna-yellow-700 dark:text-taruna-yellow-400">
-                <Bell className="w-5 h-5" />
-              </div>
-              <div>
-                <CardTitle>Notification Center</CardTitle>
-                <CardDescription>Pusat info dan pemberitahuan personal anggota</CardDescription>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="flex items-center rounded-xl bg-taruna-surface dark:bg-slate-800 p-0.5 border border-taruna-border dark:border-slate-700 text-xs">
-                <button
-                  onClick={() => setNotifFilter('ALL')}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition ${
-                    notifFilter === 'ALL'
-                      ? 'bg-white dark:bg-slate-900 text-taruna-dark dark:text-white shadow-xs'
-                      : 'text-gray-500 dark:text-slate-400'
-                  }`}
-                >
-                  Semua
-                </button>
-                <button
-                  onClick={() => setNotifFilter('UNREAD')}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition ${
-                    notifFilter === 'UNREAD'
-                      ? 'bg-white dark:bg-slate-900 text-taruna-dark dark:text-white shadow-xs'
-                      : 'text-gray-500 dark:text-slate-400'
-                  }`}
-                >
-                  Belum Dibaca ({data.unreadNotificationsCount})
-                </button>
-              </div>
-
-              {data.unreadNotificationsCount > 0 && (
-                <button
-                  onClick={handleMarkAllRead}
-                  className="text-xs text-taruna-red-600 dark:text-red-400 hover:underline font-semibold"
-                >
-                  Tandai Semua
-                </button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {filteredNotifications.length === 0 ? (
-              <div className="text-center py-8 text-gray-400 dark:text-slate-500 text-xs">
-                Tidak ada pemberitahuan saat ini.
-              </div>
-            ) : (
-              filteredNotifications.map((notif) => (
-                <div
-                  key={notif.id}
-                  className={`p-3.5 rounded-2xl border transition flex items-start justify-between gap-3 ${
-                    notif.isRead
-                      ? 'bg-white dark:bg-slate-900 border-taruna-border/60 dark:border-slate-800'
-                      : 'bg-taruna-yellow-50/60 dark:bg-slate-800/80 border-taruna-yellow-200 dark:border-taruna-yellow-500/40 shadow-xs'
-                  }`}
-                >
-                  <div className="flex items-start gap-2.5">
-                    <span
-                      className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                        notif.isRead ? 'bg-gray-300 dark:bg-slate-700' : 'bg-taruna-red-500 animate-ping'
-                      }`}
-                    />
-                    <div>
-                      <h4
-                        className={`text-xs font-bold leading-snug ${
-                          notif.isRead
-                            ? 'text-gray-700 dark:text-slate-300'
-                            : 'text-taruna-dark dark:text-white'
-                        }`}
-                      >
-                        {notif.title}
-                      </h4>
-                      <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 leading-relaxed">
-                        {notif.message}
-                      </p>
-                      <span className="text-[10px] text-gray-400 dark:text-slate-500 mt-1 block">
-                        {new Date(notif.createdAt).toLocaleDateString('id-ID', {
-                          day: 'numeric',
-                          month: 'short',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}{' '}
-                        WIB
-                      </span>
-                    </div>
-                  </div>
-
-                  {!notif.isRead && (
-                    <button
-                      onClick={() => handleMarkNotificationRead(notif.id)}
-                      className="text-[11px] font-semibold text-taruna-yellow-700 dark:text-taruna-yellow-400 hover:underline shrink-0"
-                    >
-                      Tandai Dibaca
-                    </button>
-                  )}
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          7. DOKUMENTASI & NOTULENSI RAPAT TERBARU
+          6. DOKUMENTASI & NOTULENSI RAPAT TERBARU
       ───────────────────────────────────────────────────────────────────────────── */}
       {data.latestMeetingMinute && (
         <Card>

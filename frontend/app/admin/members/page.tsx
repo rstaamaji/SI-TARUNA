@@ -535,7 +535,6 @@ export default function AdminMembersPage() {
             name: currentUser.name,
             role: currentUser.role,
           }}
-          notificationCount={3}
         />
 
         {/* Breadcrumb / Top Bar */}

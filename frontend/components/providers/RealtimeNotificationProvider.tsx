@@ -2,7 +2,6 @@
 
 import React, { useEffect, createContext, useContext, useState, useCallback } from 'react';
 import { connectSocket } from '@/lib/socket';
-import { useToast } from '@/components/ui/Toast';
 import {
   registerServiceWorker,
   showDeviceNotification,
@@ -38,82 +37,64 @@ export const useDeviceNotification = () => useContext(NotificationContext);
 export const RealtimeNotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const toast = useToast();
   const [permission, setPermission] = useState<NotificationPermissionStatus>('default');
 
   // 1. Daftarkan Service Worker & cek permission saat komponen pertama kali dimuat
   useEffect(() => {
     registerServiceWorker();
     if (typeof window !== 'undefined') {
-      setPermission(getNotificationPermission());
+      const currentPerm = getNotificationPermission();
+      setPermission(currentPerm);
+
+      // Minta izin native notifikasi perangkat pada interaksi pertama jika belum pernah diminta
+      if (currentPerm === 'default') {
+        const handleFirstInteraction = () => {
+          requestNotificationPermission().then(() => {
+            setPermission(getNotificationPermission());
+          });
+          window.removeEventListener('click', handleFirstInteraction);
+        };
+        window.addEventListener('click', handleFirstInteraction, { once: true });
+      }
     }
   }, []);
 
   const handleRequestPermission = useCallback(async () => {
     const granted = await requestNotificationPermission();
     setPermission(getNotificationPermission());
-    if (granted) {
-      toast.success(
-        'Notifikasi layar berhasil diaktifkan! Anda akan menerima update di HP/PC seperti WhatsApp.',
-        'Notifikasi Layar Aktif'
-      );
-    } else {
-      toast.warning(
-        'Izin notifikasi tidak diberikan atau diblokir pada browser Anda.',
-        'Izin Ditolak'
-      );
-    }
     return granted;
-  }, [toast]);
+  }, []);
 
   const handleSendTestNotification = useCallback(async () => {
     const success = await testDeviceNotification();
     setPermission(getNotificationPermission());
-    if (success) {
-      toast.info(
-        'Notifikasi contoh telah dikirimkan ke layar perangkat Anda!',
-        'Tes Notifikasi'
-      );
-    } else {
-      toast.warning(
-        'Pastikan izin notifikasi sudah diizinkan di browser Anda.',
-        'Gagal Mengirim'
-      );
-    }
     return success;
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
     // 2. Hubungkan socket client
     const socket = connectSocket();
 
     // 3. Handler saat menerima notifikasi realtime baru dari server
+    // Notifikasi HANYA berupa notifikasi mengambang di homescreen HP/Laptop/Device (OS native notification),
+    // tanpa menampilkan kartu/toast/inbox di dalam layar aplikasi.
     const handleNewNotification = async (data: RealtimeNotificationEvent) => {
-      console.log('🔔 [Realtime Notification Received]:', data);
+      console.log('🔔 [Device Notification Emitted]:', data);
 
       const title = data.title.startsWith('🔔') ? data.title : `🔔 ${data.title}`;
 
-      // A. Tampilkan toast in-app
-      if (data.type === 'ATTENTION') {
-        toast.warning(data.message, title);
-      } else if (data.type === 'KERJA_BAKTI') {
-        toast.success(data.message, title);
-      } else {
-        toast.info(data.message, title);
-      }
-
-      // B. Tampilkan Push Notification Langsung ke Layar Homescreen / Lockscreen OS Pengguna
+      // A. Munculkan Floating Native Notification di Homescreen / Lockscreen OS Perangkat
       try {
         await showDeviceNotification(title, {
           body: data.message,
-          url: data.link || '/dashboard/pengumuman',
+          url: data.link || '/dashboard',
           tag: data.id || 'si-taruna-' + Date.now(),
         });
       } catch (err) {
         console.warn('Gagal memunculkan notifikasi perangkat:', err);
       }
 
-      // C. Mainkan suara lonceng notifikasi (Web Audio API sintetis)
+      // B. Mainkan suara lonceng notifikasi perangkat (Web Audio API sintetis)
       try {
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioContext) {
@@ -137,15 +118,6 @@ export const RealtimeNotificationProvider: React.FC<{ children: React.ReactNode 
       } catch {
         // Abaikan jika browser memblokir audio autoplay
       }
-
-      // D. Siarkan custom event ke window
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(
-          new CustomEvent('si_taruna_notification', {
-            detail: data,
-          })
-        );
-      }
     };
 
     socket.on('notification:new', handleNewNotification);
@@ -153,7 +125,7 @@ export const RealtimeNotificationProvider: React.FC<{ children: React.ReactNode 
     return () => {
       socket.off('notification:new', handleNewNotification);
     };
-  }, [toast]);
+  }, []);
 
   return (
     <NotificationContext.Provider
