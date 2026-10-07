@@ -627,10 +627,10 @@ export default function ArisanPage() {
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-black text-taruna-dark dark:text-white tracking-tight">
+              <h2 className="text-lg sm:text-xl font-black text-[#163E4F] tracking-tight">
                 Arisan Terdekat
               </h2>
-              <p className="text-xs text-gray-500 dark:text-slate-400">
+              <p className="text-xs text-[#163E4F]/80 font-medium">
                 Informasi jadwal dan tuan rumah arisan putaran terdekat yang akan segera dilaksanakan.
               </p>
             </div>

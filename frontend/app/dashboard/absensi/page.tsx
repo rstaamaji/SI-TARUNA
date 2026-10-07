@@ -198,32 +198,32 @@ export default function MemberAttendancePage() {
   return (
     <div className="space-y-6">
       {/* ── HEADER ── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#466060] text-white p-5 sm:p-6 rounded-3xl border border-[#163E4F] shadow-sm">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#4ADE80] animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#4ADE80]">
                   Presensi &amp; Rekapitulasi Keaktifan
                 </span>
-                <Badge variant={isAdmin ? 'accent' : 'primary'} size="sm">
+                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578]">
                   {isAdmin ? (
                     <>
-                      <ShieldCheck className="w-3 h-3 mr-1 inline" />
+                      <ShieldCheck className="w-3 h-3 mr-1 inline text-[#38BDF8]" />
                       ADMINISTRATOR
                     </>
                   ) : (
                     <>
-                      <User className="w-3 h-3 mr-1 inline" />
+                      <User className="w-3 h-3 mr-1 inline text-[#4ADE80]" />
                       MEMBER
                     </>
                   )}
-                </Badge>
+                </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight flex items-center gap-2.5">
-                <CalendarCheck2 className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2.5">
+                <CalendarCheck2 className="w-7 h-7 text-[#4ADE80]" />
                 Riwayat Absensi Saya
               </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1 font-medium">
                 Catatan kehadiran Anda pada setiap rapat dan kegiatan Karang Taruna Setya Bakti.
               </p>
             </div>
@@ -235,6 +235,7 @@ export default function MemberAttendancePage() {
                 leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
                 onClick={() => fetchMyAttendance(true)}
                 disabled={isRefreshing}
+                className="!bg-[#163E4F] !text-white !border-[#466060] hover:!bg-[#466060]"
               >
                 Segarkan
               </Button>
@@ -244,8 +245,8 @@ export default function MemberAttendancePage() {
                   <Button
                     variant="primary"
                     size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                    leftIcon={<CalendarCheck2 className="w-4 h-4" />}
+                    className="!bg-[#163E4F] hover:!bg-[#466060] !text-white !border-[#466060]"
+                    leftIcon={<CalendarCheck2 className="w-4 h-4 text-[#4ADE80]" />}
                   >
                     Kelola Absensi Kegiatan
                   </Button>
@@ -256,19 +257,19 @@ export default function MemberAttendancePage() {
 
           {/* ── ADMIN NOTICE BANNER ── */}
           {isAdmin && (
-            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="p-4 rounded-2xl bg-[#466060] text-white border border-[#163E4F] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-2.5">
-                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                <ShieldCheck className="w-5 h-5 text-[#38BDF8] shrink-0" />
                 <div>
-                  <span className="font-bold text-emerald-900 dark:text-emerald-300">
+                  <span className="font-bold text-white text-sm">
                     Mode Administrator Aktif
                   </span>
-                  <p className="text-emerald-700 dark:text-emerald-400 mt-0.5">
+                  <p className="text-[#D6DDD5] font-medium mt-0.5">
                     Anda dapat mencatat dan memperbarui absensi seluruh anggota di lembar kelola presensi.
                   </p>
                 </div>
               </div>
-              <Link href="/admin/attendance" className="font-bold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1 shrink-0">
+              <Link href="/admin/attendance" className="font-bold text-[#38BDF8] hover:text-white flex items-center gap-1 shrink-0 transition">
                 Buka Kelola Absensi
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
@@ -277,101 +278,102 @@ export default function MemberAttendancePage() {
 
           {/* ── MEMBER PROFILE & ACTIVE STATS ── */}
           {attendanceData?.member && (
-            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="p-5 rounded-2xl bg-[#163E4F] text-white border border-[#466060] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white font-black text-lg flex items-center justify-center shadow-md">
+                <div className="w-12 h-12 rounded-2xl bg-[#466060] text-white font-black text-lg flex items-center justify-center border border-[#6A8578] shadow-inner">
                   {attendanceData.member.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-black text-taruna-dark dark:text-white">
+                    <h2 className="text-lg font-black text-white">
                       {attendanceData.member.name}
                     </h2>
-                    <Badge variant="success" size="sm">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#466060] text-[#4ADE80] border border-[#6A8578]">
                       {attendanceData.member.status}
-                    </Badge>
+                    </span>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 font-mono mt-0.5">
+                  <p className="text-xs text-[#D6DDD5] font-mono mt-0.5 font-medium">
                     Nomor Anggota: {attendanceData.member.memberNumber}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 border-t md:border-t-0 pt-3 md:pt-0">
-                <Award className="w-8 h-8 text-amber-500" />
+              <div className="flex items-center gap-3 border-t border-[#466060] md:border-t-0 pt-3 md:pt-0">
+                <Award className="w-8 h-8 text-[#FDE047]" />
                 <div>
-                  <div className="text-xs text-gray-400 font-bold uppercase">Tingkat Keaktifan</div>
-                  <div className="text-xl font-black text-emerald-600 dark:text-emerald-400">
+                  <div className="text-xs text-[#D6DDD5] font-bold uppercase tracking-wider">Tingkat Keaktifan</div>
+                  <div className="text-xl font-black text-[#4ADE80]">
                     {attendanceData.stats.attendanceRate}% Kehadiran
                   </div>
                 </div>
               </div>
             </div>
           )}
-
           {/* ── 4 STAT CARDS ── */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {/* Total Kegiatan */}
-            <Card hoverable className="border-t-4 border-t-purple-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border border-[#466060] border-t-4 border-t-purple-400 shadow-sm">
               <CardHeader className="pb-1">
-                <span className="text-xs font-bold text-gray-500 uppercase">Total Agenda</span>
+                <span className="text-xs font-bold text-white uppercase tracking-wider">Total Agenda</span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-black text-purple-600 dark:text-purple-400">
+                <div className="text-2xl font-black text-white">
                   {attendanceData?.stats.totalEvents || 0}
                 </div>
-                <div className="text-[11px] text-gray-400 mt-1">Kegiatan terekap</div>
+                <p className="text-xs text-[#D6DDD5] font-semibold mt-1">Kegiatan terekap</p>
               </CardContent>
             </Card>
 
             {/* Hadir */}
-            <Card hoverable className="border-t-4 border-t-emerald-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border border-[#466060] border-t-4 border-t-emerald-400 shadow-sm">
               <CardHeader className="pb-1">
-                <span className="text-xs font-bold text-gray-500 uppercase">Hadir</span>
+                <span className="text-xs font-bold text-white uppercase tracking-wider">Hadir</span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                <div className="text-2xl font-black text-[#4ADE80]">
                   {attendanceData?.stats.presentCount || 0}
                 </div>
-                <div className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" /> Mengikuti kegiatan
+                <div className="text-xs font-semibold text-[#D6DDD5] mt-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#4ADE80]" /> Mengikuti kegiatan
                 </div>
               </CardContent>
             </Card>
 
             {/* Izin */}
-            <Card hoverable className="border-t-4 border-t-amber-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border border-[#466060] border-t-4 border-t-amber-400 shadow-sm">
               <CardHeader className="pb-1">
-                <span className="text-xs font-bold text-gray-500 uppercase">Izin</span>
+                <span className="text-xs font-bold text-white uppercase tracking-wider">Izin</span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-black text-amber-600 dark:text-amber-400">
+                <div className="text-2xl font-black text-[#FDE047]">
                   {attendanceData?.stats.excusedCount || 0}
                 </div>
-                <div className="text-[11px] text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
-                  <Clock className="w-3 h-3" /> Dengan pemberitahuan
+                <div className="text-xs font-semibold text-[#D6DDD5] mt-1 flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-[#FDE047]" /> Dengan pemberitahuan
                 </div>
               </CardContent>
             </Card>
 
             {/* Tidak Hadir */}
-            <Card hoverable className="border-t-4 border-t-red-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border border-[#466060] border-t-4 border-t-red-400 shadow-sm">
               <CardHeader className="pb-1">
-                <span className="text-xs font-bold text-gray-500 uppercase">Tidak Hadir</span>
+                <span className="text-xs font-bold text-white uppercase tracking-wider">Tidak Hadir</span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-black text-red-600 dark:text-red-400">
+                <div className="text-2xl font-black text-[#F87171]">
                   {attendanceData?.stats.absentCount || 0}
                 </div>
-                <div className="text-[11px] text-red-600 dark:text-red-400 mt-1 flex items-center gap-1">
-                  <XCircle className="w-3 h-3" /> Tanpa keterangan
+                <div className="text-xs font-semibold text-[#D6DDD5] mt-1 flex items-center gap-1">
+                  <XCircle className="w-3.5 h-3.5 text-[#F87171]" /> Tanpa keterangan
                 </div>
               </CardContent>
             </Card>
           </div>
 
+
+
           {/* ── FILTER & SEARCH ── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-taruna-border dark:border-slate-800 shadow-xs flex-wrap">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#466060] text-white p-4 rounded-2xl border border-[#163E4F] shadow-sm flex-wrap">
             <div className="w-full sm:w-72">
               <Input
                 placeholder="Cari kegiatan atau lokasi..."
@@ -416,7 +418,7 @@ export default function MemberAttendancePage() {
           </div>
 
           {/* ── HISTORY TABLE ── */}
-          <Card>
+          <Card className="!bg-[#6A8578] text-white border-[#466060] shadow-sm">
             <CardHeader className="flex-row items-center justify-between flex-wrap gap-2 pb-2">
               <div>
                 <CardTitle className="text-lg">Catatan Kehadiran</CardTitle>
@@ -431,8 +433,8 @@ export default function MemberAttendancePage() {
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
+                  <TableHeader className="bg-[#466060]">
+                    <TableRow className="border-b border-[#163E4F]">
                       <TableHead className="w-12 text-center">No</TableHead>
                       <TableHead className="w-32">Tanggal</TableHead>
                       <TableHead>Nama Kegiatan &amp; Lokasi</TableHead>

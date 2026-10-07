@@ -945,17 +945,17 @@ export default function FinancialReportsPage() {
                   ) : activeChartTab === 'bar' ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={report.chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#D6DDD5" opacity={0.25} />
+                        <CartesianGrid strokeDasharray="4 4" stroke="#163E4F" strokeWidth={1.5} opacity={0.8} />
                         <XAxis
                           dataKey="period"
-                          tick={{ fontSize: 11, fill: '#D6DDD5' }}
-                          stroke="#D6DDD5"
-                          strokeOpacity={0.4}
+                          axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                          tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
+                          tick={{ fontSize: 11, fill: '#ffffff', fontWeight: 600 }}
                         />
                         <YAxis
-                          tick={{ fontSize: 10, fill: '#D6DDD5' }}
-                          stroke="#D6DDD5"
-                          strokeOpacity={0.4}
+                          axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                          tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
+                          tick={{ fontSize: 10, fill: '#ffffff', fontWeight: 600 }}
                           tickFormatter={(val) => `Rp${(val / 1000).toLocaleString('id-ID')}k`}
                         />
                         <Tooltip content={<CustomChartTooltip />} />
@@ -990,17 +990,17 @@ export default function FinancialReportsPage() {
                             <stop offset="95%" stopColor="#F87171" stopOpacity={0.0} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#D6DDD5" opacity={0.25} />
+                        <CartesianGrid strokeDasharray="4 4" stroke="#163E4F" strokeWidth={1.5} opacity={0.8} />
                         <XAxis
                           dataKey="period"
-                          tick={{ fontSize: 11, fill: '#D6DDD5' }}
-                          stroke="#D6DDD5"
-                          strokeOpacity={0.4}
+                          axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                          tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
+                          tick={{ fontSize: 11, fill: '#ffffff', fontWeight: 600 }}
                         />
                         <YAxis
-                          tick={{ fontSize: 10, fill: '#D6DDD5' }}
-                          stroke="#D6DDD5"
-                          strokeOpacity={0.4}
+                          axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                          tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
+                          tick={{ fontSize: 10, fill: '#ffffff', fontWeight: 600 }}
                           tickFormatter={(val) => `Rp${(val / 1000).toLocaleString('id-ID')}k`}
                         />
                         <Tooltip content={<CustomChartTooltip />} />
@@ -1013,7 +1013,8 @@ export default function FinancialReportsPage() {
                           dataKey="pemasukan"
                           name="Pemasukan"
                           stroke="#4ADE80"
-                          strokeWidth={2}
+                          strokeWidth={3.5}
+                          dot={{ r: 4, stroke: "#163E4F", strokeWidth: 2, fill: "#4ADE80" }}
                           fillOpacity={1}
                           fill="url(#colorInc)"
                         />
@@ -1022,7 +1023,8 @@ export default function FinancialReportsPage() {
                           dataKey="pengeluaran"
                           name="Pengeluaran"
                           stroke="#F87171"
-                          strokeWidth={2}
+                          strokeWidth={3.5}
+                          dot={{ r: 4, stroke: "#163E4F", strokeWidth: 2, fill: "#F87171" }}
                           fillOpacity={1}
                           fill="url(#colorExp)"
                         />
@@ -1031,8 +1033,8 @@ export default function FinancialReportsPage() {
                           dataKey="saldo"
                           name="Net Saldo"
                           stroke="#38BDF8"
-                          strokeWidth={2}
-                          dot={{ r: 3, fill: '#38BDF8' }}
+                          strokeWidth={3.5}
+                          dot={{ r: 4, stroke: "#163E4F", strokeWidth: 2, fill: '#38BDF8' }}
                         />
                       </AreaChart>
                     </ResponsiveContainer>

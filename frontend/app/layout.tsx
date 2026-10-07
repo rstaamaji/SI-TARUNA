@@ -22,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" suppressHydrationWarning>
-      <body className="min-h-screen bg-white text-taruna-dark antialiased transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
+    <html lang="id" className="dark" suppressHydrationWarning>
+      <body className="min-h-screen bg-slate-950 text-slate-100 antialiased selection:bg-[#466060] selection:text-white">
         <NavigationProgressBar />
         <ThemeProvider>
           <ToastProvider>

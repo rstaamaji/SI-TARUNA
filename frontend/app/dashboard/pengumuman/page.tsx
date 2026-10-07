@@ -520,13 +520,13 @@ export default function PengumumanPage() {
                   <Flame className="w-5 h-5 animate-pulse text-taruna-red-600 dark:text-red-400" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-taruna-dark dark:text-white tracking-tight flex items-center gap-2">
+                  <h2 className="text-xl font-black text-[#163E4F] tracking-tight flex items-center gap-2">
                     ATTENTION / PERHATIAN PENTING
                     <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-taruna-red-600 text-white uppercase tracking-wider">
                       Wajib Diketahui
                     </span>
                   </h2>
-                  <p className="text-xs text-gray-500 dark:text-slate-400">
+                  <p className="text-xs font-bold text-[#163E4F]/80">
                     Instruksi, rapat prioritas, dan agenda mendesak yang memerlukan kehadiran atau tanggapan anggota.
                   </p>
                 </div>
@@ -558,7 +558,7 @@ export default function PengumumanPage() {
                   return (
                     <div
                       key={item.id}
-                      className="relative p-6 rounded-3xl bg-gradient-to-br from-white via-white to-red-50/40 dark:from-slate-900 dark:via-slate-900 dark:to-red-950/20 border-2 border-red-300/80 dark:border-red-900/60 shadow-md hover:shadow-lg hover:border-red-400 dark:hover:border-red-700 transition-all flex flex-col justify-between gap-5 group"
+                      className="relative p-6 rounded-3xl bg-[#466060] text-white border-2 border-red-400 shadow-md hover:shadow-lg transition-all flex flex-col justify-between gap-5 group"
                     >
                       {/* Priority Ribbon */}
                       <div className="flex items-center justify-between gap-2">
@@ -585,10 +585,10 @@ export default function PengumumanPage() {
 
                       {/* Content */}
                       <div className="space-y-2">
-                        <h3 className="text-base font-black text-taruna-dark dark:text-white leading-snug group-hover:text-taruna-red-600 dark:group-hover:text-red-400 transition-colors">
+                        <h3 className="text-base font-black text-white leading-snug group-hover:text-[#FDE047] transition-colors">
                           {item.title}
                         </h3>
-                        <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed line-clamp-3">
+                        <p className="text-xs text-[#D6DDD5] leading-relaxed line-clamp-3">
                           {item.content}
                         </p>
                       </div>
@@ -596,7 +596,7 @@ export default function PengumumanPage() {
                       {/* Metadata & Actions */}
                       <div className="space-y-3 pt-3 border-t border-red-100 dark:border-slate-800">
                         {item.eventDate && (
-                          <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200/60 dark:border-red-900/40 text-xs text-red-800 dark:text-red-300 flex items-start gap-2">
+                          <div className="p-2.5 rounded-xl bg-[#163E4F] border border-[#6A8578] text-xs text-[#D6DDD5] flex items-start gap-2">
                             <CalendarDays className="w-4 h-4 shrink-0 mt-0.5 text-taruna-red-600" />
                             <div>
                               <span className="block font-bold">Jadwal Pelaksanaan:</span>
@@ -605,11 +605,11 @@ export default function PengumumanPage() {
                           </div>
                         )}
 
-                        <div className="flex items-center justify-between text-[11px] text-gray-400 dark:text-slate-500">
+                        <div className="flex items-center justify-between text-[11px] text-[#D6DDD5]">
                           <span>
                             Publikasi: {formatDateIndo(item.announcementDate) || '-'}
                           </span>
-                          <span className="font-semibold text-taruna-dark dark:text-slate-300 truncate max-w-[130px]">
+                          <span className="font-semibold text-white truncate max-w-[130px]">
                             Oleh: {item.createdBy?.member?.name || item.createdBy?.username || 'Admin'}
                           </span>
                         </div>
@@ -617,7 +617,7 @@ export default function PengumumanPage() {
                         <div className="flex items-center justify-between pt-1">
                           <button
                             onClick={() => setDetailItem(item)}
-                            className="text-xs font-bold text-taruna-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition"
+                            className="text-xs font-bold text-[#FDE047] hover:text-white inline-flex items-center gap-1 group-hover:translate-x-0.5 transition"
                           >
                             <span>Baca Selengkapnya</span>
                             <ChevronRight className="w-3.5 h-3.5" />

@@ -473,10 +473,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <div className="space-y-6">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <h2 className="text-xl font-black text-taruna-dark dark:text-white tracking-tight">
+            <h2 className="text-xl font-black text-[#163E4F] tracking-tight">
               Analisis Keuangan &amp; Partisipasi Pemuda
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400">
+            <p className="text-xs sm:text-sm font-bold text-[#163E4F]/80">
               Visualisasi data 3 pilar utama: Arus Kas, Pertumbuhan Saldo, dan Partisipasi Kehadiran.
             </p>
           </div>
@@ -506,18 +506,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     data={charts.incomeVsExpense}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#D6DDD5" strokeOpacity={0.25} />
+                    <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#163E4F" strokeWidth={1.5} strokeOpacity={0.8} />
                     <XAxis
                       dataKey="month"
-                      tickLine={false}
-                      axisLine={false}
-                      className="text-xs fill-[#D6DDD5]"
+                      axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                      tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
+                      tick={{ fill: '#ffffff', fontSize: 11, fontWeight: 600 }}
                     />
                     <YAxis
-                      tickLine={false}
-                      axisLine={false}
+                      axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                      tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
                       tickFormatter={formatCompactRupiah}
-                      className="text-xs fill-[#D6DDD5]"
+                      tick={{ fill: '#ffffff', fontSize: 11, fontWeight: 600 }}
                     />
                     <Tooltip
                       contentStyle={{
@@ -533,7 +533,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <Legend
                       wrapperStyle={{ paddingTop: '12px', fontSize: '12px' }}
                       formatter={(value) => (
-                        <span className="font-semibold text-[#D6DDD5] capitalize">
+                        <span className="font-semibold text-white font-bold capitalize">
                           {value}
                         </span>
                       )}
@@ -586,18 +586,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         <stop offset="95%" stopColor="#163E4F" stopOpacity={0.05} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#D6DDD5" strokeOpacity={0.25} />
+                    <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#163E4F" strokeWidth={1.5} strokeOpacity={0.8} />
                     <XAxis
                       dataKey="month"
-                      tickLine={false}
-                      axisLine={false}
-                      className="text-xs fill-[#D6DDD5]"
+                      axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                      tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
+                      tick={{ fill: '#ffffff', fontSize: 11, fontWeight: 600 }}
                     />
                     <YAxis
-                      tickLine={false}
-                      axisLine={false}
+                      axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                      tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
                       tickFormatter={formatCompactRupiah}
-                      className="text-xs fill-[#D6DDD5]"
+                      tick={{ fill: '#ffffff', fontSize: 11, fontWeight: 600 }}
                     />
                     <Tooltip
                       contentStyle={{
@@ -615,7 +615,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       dataKey="saldo"
                       name="Saldo Akhir"
                       stroke="#38BDF8"
-                      strokeWidth={3}
+                      strokeWidth={3.5}
+                      dot={{ r: 4, stroke: "#163E4F", strokeWidth: 2, fill: "#38BDF8" }}
                       fillOpacity={1}
                       fill="url(#colorSaldo)"
                     />
@@ -651,17 +652,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   data={charts.attendanceStats}
                   margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#D6DDD5" strokeOpacity={0.25} />
+                  <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#163E4F" strokeWidth={1.5} strokeOpacity={0.8} />
                   <XAxis
                     dataKey="shortTitle"
-                    tickLine={false}
-                    axisLine={false}
-                    className="text-xs fill-[#D6DDD5]"
+                    axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                    tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
+                    tick={{ fill: '#ffffff', fontSize: 11, fontWeight: 600 }}
                   />
                   <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    className="text-xs fill-[#D6DDD5]"
+                    axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                    tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
+                    tick={{ fill: '#ffffff', fontSize: 11, fontWeight: 600 }}
                     unit=" org"
                   />
                   <Tooltip
@@ -682,7 +683,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <Legend
                     wrapperStyle={{ paddingTop: '12px', fontSize: '12px' }}
                     formatter={(value) => (
-                      <span className="font-semibold text-[#D6DDD5] capitalize">
+                      <span className="font-semibold text-white font-bold capitalize">
                         {value === 'hadir' ? 'Hadir' : value === 'izin' ? 'Izin Resmi' : 'Alpa'}
                       </span>
                     )}

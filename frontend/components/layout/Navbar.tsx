@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { Menu, Search, LogOut, User, Settings } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
 import { Logo } from '@/components/ui/Logo';
-import { ThemeToggle } from '@/components/theme/ThemeProvider';
 
 export interface NavbarProps {
   onMenuToggle: () => void;
@@ -55,11 +54,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Right: Theme Toggle & User profile (Tanpa modul/tampilan notifikasi internal) */}
+      {/* Right: User profile (Tanpa modul notifikasi dan tanpa toggle theme) */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Theme Toggle Button (Light / Dark) */}
-        <ThemeToggle />
-
         {/* User Profile */}
         <div className="relative">
           <button

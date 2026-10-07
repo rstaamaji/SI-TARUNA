@@ -310,7 +310,7 @@ export default function NotulensiListPage() {
       {/* ─────────────────────────────────────────────────────────────────────────────
           1. PAGE HEADER
       ───────────────────────────────────────────────────────────────────────────── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#466060] text-white p-6 rounded-3xl border border-[#163E4F] shadow-sm">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
@@ -332,11 +332,11 @@ export default function NotulensiListPage() {
                 </Badge>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight flex items-center gap-2.5">
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2.5">
                 <FileText className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                 Notulensi Rapat
               </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-[#D6DDD5] font-medium mt-1">
                 Catatan resmi, keputusan pleno, kesimpulan, dan tindak lanjut rapat Karang Taruna Setya Bakti.
               </p>
             </div>
@@ -369,49 +369,49 @@ export default function NotulensiListPage() {
               2. SUMMARY CARDS
           ───────────────────────────────────────────────────────────────────────────── */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 shadow-xs flex items-center gap-4">
+            <div className="p-5 rounded-3xl !bg-[#6A8578] text-white border border-[#466060] shadow-sm flex items-center gap-4">
               <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                 <BookOpen className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider block">
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider block">
                   Total Notulensi
                 </span>
-                <span className="text-2xl font-black text-taruna-dark dark:text-white">
+                <span className="text-2xl font-black text-white">
                   {minutes.length} Dokumen
                 </span>
               </div>
             </div>
 
-            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 shadow-xs flex items-center gap-4">
+            <div className="p-5 rounded-3xl !bg-[#6A8578] text-white border border-[#466060] shadow-sm flex items-center gap-4">
               <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
                 <Calendar className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider block">
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider block">
                   Rapat Terakhir
                 </span>
-                <span className="text-sm font-black text-taruna-dark dark:text-white line-clamp-1">
+                <span className="text-sm font-black text-white line-clamp-1">
                   {minutes.length > 0 ? formatDateIndo(minutes[0].meetingDate) : 'Belum Ada'}
                 </span>
-                <span className="text-[11px] text-gray-500 dark:text-slate-400 truncate block">
+                <span className="text-[11px] text-[#D6DDD5] truncate block">
                   {minutes.length > 0 ? minutes[0].location : '-'}
                 </span>
               </div>
             </div>
 
-            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 shadow-xs flex items-center gap-4">
+            <div className="p-5 rounded-3xl !bg-[#6A8578] text-white border border-[#466060] shadow-sm flex items-center gap-4">
               <div className="p-3.5 rounded-2xl bg-taruna-yellow-50 dark:bg-taruna-yellow-950/60 text-taruna-yellow-700 dark:text-taruna-yellow-400">
                 <ClipboardList className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wider block">
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider block">
                   Akses Anggota
                 </span>
                 <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                   <CheckCircle2 className="w-4 h-4" /> Transparan &amp; Terbuka
                 </span>
-                <span className="text-[11px] text-gray-500 dark:text-slate-400 block">
+                <span className="text-[11px] text-[#D6DDD5] block">
                   Seluruh anggota dapat membaca
                 </span>
               </div>
@@ -423,10 +423,10 @@ export default function NotulensiListPage() {
           ───────────────────────────────────────────────────────────────────────────── */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-taruna-border dark:border-slate-800 pb-4">
             <div>
-              <h2 className="text-xl font-black text-taruna-dark dark:text-white tracking-tight">
+              <h2 className="text-xl font-black text-[#163E4F] tracking-tight">
                 Arsip Catatan Rapat
               </h2>
-              <p className="text-xs text-gray-500 dark:text-slate-400">
+              <p className="text-xs font-bold text-[#163E4F]/80">
                 Daftar kronologis notulensi rapat pleno, koordinasi, dan pertemuan rutin anggota.
               </p>
             </div>
@@ -438,7 +438,7 @@ export default function NotulensiListPage() {
                 placeholder="Cari judul, pimpinan, notulis, tempat..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50"
+                className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white placeholder:text-[#D6DDD5] focus:outline-none focus:ring-2 focus:ring-[#38BDF8]"
               />
               {searchQuery && (
                 <button
