@@ -517,7 +517,7 @@ export default function AdminMembersPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex bg-[#D6DDD5] text-[#163E4F] transition-colors">
       {/* Sidebar Navigation */}
       <Sidebar
         isOpen={sidebarOpen}
@@ -538,21 +538,21 @@ export default function AdminMembersPage() {
         />
 
         {/* Breadcrumb / Top Bar */}
-        <div className="bg-white dark:bg-slate-900 border-b border-taruna-border dark:border-slate-800 px-4 sm:px-8 py-3 flex items-center justify-between transition-colors">
+        <div className="bg-[#466060] text-white border-b border-[#163E4F] px-4 sm:px-8 py-3 flex items-center justify-between transition-colors">
           <div className="flex items-center gap-2 text-xs sm:text-sm">
             <Link
               href="/"
-              className="text-gray-500 dark:text-slate-400 hover:text-taruna-dark dark:hover:text-white transition flex items-center gap-1 font-medium"
+              className="text-[#D6DDD5] hover:text-white transition flex items-center gap-1 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
               Kembali ke Portal
             </Link>
-            <span className="text-gray-300 dark:text-slate-700">/</span>
-            <span className="font-bold text-taruna-dark dark:text-white">Kelola Anggota</span>
+            <span className="text-white/40">/</span>
+            <span className="font-bold text-white">Kelola Anggota</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <Badge variant="accent" size="sm">
+            <Badge variant="primary" size="sm" className="bg-[#163E4F] text-[#D6DDD5] border-[#466060]">
               Hak Akses: ADMIN
             </Badge>
             <ThemeToggle />
@@ -562,24 +562,24 @@ export default function AdminMembersPage() {
         {/* Main Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           {/* Header Banner */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#466060] text-white p-6 rounded-3xl border border-[#163E4F] shadow-sm">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-taruna-yellow-500 text-white flex items-center justify-center shadow-lg shadow-taruna-yellow-500/20 shrink-0">
+              <div className="w-14 h-14 rounded-2xl bg-[#163E4F] text-[#4ADE80] border border-[#466060] flex items-center justify-center shadow-sm shrink-0">
                 <Users className="w-7 h-7" />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-bold uppercase tracking-wider text-taruna-yellow-700 dark:text-taruna-yellow-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#D6DDD5]">
                     Modul 07 • Database Pemuda
                   </span>
-                  <Badge variant="primary" size="sm">
+                  <Badge variant="primary" size="sm" className="bg-[#163E4F] text-[#D6DDD5] border-[#466060]">
                     {serverTotal} Anggota Terdata
                   </Badge>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                   Manajemen Anggota Karang Taruna
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-0.5">
+                <p className="text-xs sm:text-sm text-[#D6DDD5] mt-0.5">
                   Dusun Tuk Uluh, Desa Sringin, Kecamatan Jumantono
                 </p>
               </div>
@@ -589,6 +589,7 @@ export default function AdminMembersPage() {
               <Button
                 variant="secondary"
                 size="sm"
+                className="bg-[#163E4F] hover:bg-[#163E4F]/80 text-white border border-[#466060]"
                 leftIcon={<RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />}
                 onClick={() => fetchMembers()}
               >
@@ -597,6 +598,7 @@ export default function AdminMembersPage() {
               <Button
                 variant="primary"
                 size="sm"
+                className="bg-[#163E4F] hover:bg-[#163E4F]/90 text-white border border-[#466060]"
                 leftIcon={<UserPlus className="w-4 h-4" />}
                 onClick={handleOpenAddModal}
               >
@@ -606,12 +608,12 @@ export default function AdminMembersPage() {
           </div>
 
           {/* Filter & Search Bar */}
-          <Card>
+          <Card className="!bg-[#6A8578] text-white border-[#466060]">
             <CardContent className="p-4 sm:p-5">
               <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
                 {/* Search Box */}
                 <div className="relative flex-1">
-                  <Search className="w-4 h-4 text-gray-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Search className="w-4 h-4 text-[#D6DDD5] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="text"
                     placeholder="Cari berdasarkan nama, nomor anggota, nomor HP, atau alamat..."
@@ -620,12 +622,12 @@ export default function AdminMembersPage() {
                       setSearchQuery(e.target.value);
                       setCurrentPage(1);
                     }}
-                    className="w-full text-xs sm:text-sm pl-10 pr-4 py-2.5 rounded-xl bg-taruna-surface dark:bg-slate-800/80 border border-taruna-border dark:border-slate-700 text-taruna-dark dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:border-taruna-yellow-500 focus:ring-2 focus:ring-taruna-yellow-500/20 outline-none transition"
+                    className="w-full text-xs sm:text-sm pl-10 pr-4 py-2.5 rounded-xl bg-[#163E4F] border border-[#466060] text-white placeholder:text-[#D6DDD5]/60 focus:border-white outline-none transition"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-taruna-dark dark:hover:text-white"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#D6DDD5] hover:text-white"
                     >
                       Reset
                     </button>
@@ -634,7 +636,7 @@ export default function AdminMembersPage() {
 
                 {/* Filter Status & Gender */}
                 <div className="flex items-center gap-2.5 flex-wrap">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-slate-400">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-[#D6DDD5]">
                     <Filter className="w-3.5 h-3.5" />
                     Status:
                   </div>
@@ -644,7 +646,7 @@ export default function AdminMembersPage() {
                       setStatusFilter(e.target.value as any);
                       setCurrentPage(1);
                     }}
-                    className="text-xs sm:text-sm py-2 px-3 rounded-xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-700 text-taruna-dark dark:text-slate-100 focus:border-taruna-yellow-500 outline-none transition"
+                    className="text-xs sm:text-sm py-2 px-3 rounded-xl bg-[#163E4F] border border-[#466060] text-white outline-none transition"
                   >
                     <option value="ALL">Semua Status</option>
                     <option value="ACTIVE">Aktif (ACTIVE)</option>
@@ -657,7 +659,7 @@ export default function AdminMembersPage() {
                       setGenderFilter(e.target.value as any);
                       setCurrentPage(1);
                     }}
-                    className="text-xs sm:text-sm py-2 px-3 rounded-xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-700 text-taruna-dark dark:text-slate-100 focus:border-taruna-yellow-500 outline-none transition"
+                    className="text-xs sm:text-sm py-2 px-3 rounded-xl bg-[#163E4F] border border-[#466060] text-white outline-none transition"
                   >
                     <option value="ALL">Semua Gender</option>
                     <option value="MALE">Laki-laki (L)</option>
@@ -669,23 +671,23 @@ export default function AdminMembersPage() {
           </Card>
 
           {/* Members Table */}
-          <Card>
-            <CardHeader className="flex-row items-center justify-between pb-3 flex-wrap gap-2">
+          <Card className="!bg-[#6A8578] text-white border-[#466060] shadow-sm">
+            <CardHeader className="flex-row items-center justify-between pb-3 flex-wrap gap-2 border-b border-[#466060]/40">
               <div>
-                <CardTitle>Daftar Anggota Karang Taruna Setya Bakti</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-white">Daftar Anggota Karang Taruna Setya Bakti</CardTitle>
+                <CardDescription className="text-[#D6DDD5]">
                   Menampilkan data pemuda terdaftar di Dusun Tuk Uluh, Desa Sringin.
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500 dark:text-slate-400">Tampilkan:</span>
+                <span className="text-xs text-[#D6DDD5]">Tampilkan:</span>
                 <select
                   value={itemsPerPage}
                   onChange={(e) => {
                     setItemsPerPage(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="text-xs py-1 px-2 rounded-lg bg-taruna-surface dark:bg-slate-800 border border-taruna-border dark:border-slate-700 text-taruna-dark dark:text-slate-200 outline-none"
+                  className="text-xs py-1.5 px-2.5 rounded-lg bg-[#163E4F] border border-[#466060] text-white outline-none font-medium"
                 >
                   <option value={5}>5 baris</option>
                   <option value={10}>10 baris</option>
@@ -697,34 +699,34 @@ export default function AdminMembersPage() {
 
             <CardContent className="pt-0">
               {isLoading ? (
-                <div className="py-16 text-center text-gray-400 dark:text-slate-500 flex flex-col items-center justify-center gap-2">
-                  <RefreshCw className="w-6 h-6 animate-spin text-taruna-yellow-500" />
+                <div className="py-16 text-center text-[#D6DDD5] flex flex-col items-center justify-center gap-2">
+                  <RefreshCw className="w-6 h-6 animate-spin text-[#38BDF8]" />
                   <span className="text-xs font-semibold">Memuat data anggota...</span>
                 </div>
               ) : members.length === 0 ? (
-                <div className="py-16 text-center text-gray-400 dark:text-slate-500 flex flex-col items-center justify-center gap-2">
-                  <Users className="w-8 h-8 text-gray-300 dark:text-slate-700" />
-                  <p className="text-sm font-bold text-taruna-dark dark:text-white">Tidak ada data anggota ditemukan</p>
-                  <p className="text-xs">Coba sesuaikan kata kunci pencarian atau filter status Anda.</p>
+                <div className="py-16 text-center text-[#D6DDD5] flex flex-col items-center justify-center gap-2">
+                  <Users className="w-8 h-8 text-[#D6DDD5]/60" />
+                  <p className="text-sm font-bold text-white">Tidak ada data anggota ditemukan</p>
+                  <p className="text-xs text-[#D6DDD5]">Coba sesuaikan kata kunci pencarian atau filter status Anda.</p>
                 </div>
               ) : (
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-32">Nomor Anggota</TableHead>
-                      <TableHead>Nama Anggota</TableHead>
-                      <TableHead className="w-28 text-center">Jenis Kelamin</TableHead>
-                      <TableHead className="w-36">Nomor HP</TableHead>
-                      <TableHead className="hidden md:table-cell">Alamat</TableHead>
-                      <TableHead className="w-28 text-center">Status</TableHead>
-                      <TableHead className="w-28 text-right">Aksi</TableHead>
+                  <TableHeader className="bg-[#466060]">
+                    <TableRow className="border-b border-[#163E4F]">
+                      <TableHead className="w-32 text-white font-semibold">Nomor Anggota</TableHead>
+                      <TableHead className="text-white font-semibold">Nama Anggota</TableHead>
+                      <TableHead className="w-28 text-center text-white font-semibold">Jenis Kelamin</TableHead>
+                      <TableHead className="w-36 text-white font-semibold">Nomor HP</TableHead>
+                      <TableHead className="hidden md:table-cell text-white font-semibold">Alamat</TableHead>
+                      <TableHead className="w-28 text-center text-white font-semibold">Status</TableHead>
+                      <TableHead className="w-28 text-right text-white font-semibold">Aksi</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {members.map((member) => (
-                      <TableRow key={member.id}>
+                      <TableRow key={member.id} className="hover:bg-[#466060]/30 border-b border-[#466060]/40 transition">
                         {/* Nomor Anggota */}
-                        <TableCell className="font-mono font-bold text-xs text-taruna-yellow-700 dark:text-taruna-yellow-400">
+                        <TableCell className="font-mono font-bold text-xs text-[#38BDF8]">
                           {member.memberNumber}
                         </TableCell>
 
@@ -733,13 +735,13 @@ export default function AdminMembersPage() {
                           <div className="flex items-center gap-3">
                             <Avatar name={member.name} size="sm" />
                             <div>
-                              <p className="font-bold text-sm text-taruna-dark dark:text-white leading-tight">
+                              <p className="font-bold text-sm text-white leading-tight">
                                 {member.name}
                               </p>
                               {member.user && (
-                                <span className="inline-flex items-center gap-1 text-[11px] text-taruna-red-600 dark:text-red-400 font-semibold">
-                                  <ShieldCheck className="w-3 h-3" />
-                                  Akun Sistem: @{member.user.username} ({member.user.role})
+                                <span className="inline-flex items-center gap-1 text-[11px] text-[#FDE047] font-semibold">
+                                  <ShieldCheck className="w-3 h-3 text-[#38BDF8]" />
+                                  Akun: @{member.user.username} ({member.user.role})
                                 </span>
                               )}
                             </div>
@@ -749,10 +751,10 @@ export default function AdminMembersPage() {
                         {/* Jenis Kelamin */}
                         <TableCell className="text-center">
                           <span
-                            className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                            className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold border ${
                               member.gender === 'MALE'
-                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300'
-                                : 'bg-pink-100 text-pink-800 dark:bg-pink-950/60 dark:text-pink-300'
+                                ? 'bg-[#163E4F] text-[#38BDF8] border-[#466060]'
+                                : 'bg-[#466060] text-pink-200 border-[#163E4F]'
                             }`}
                           >
                             {member.gender === 'MALE' ? 'L (Laki-laki)' : 'P (Perempuan)'}
@@ -760,19 +762,19 @@ export default function AdminMembersPage() {
                         </TableCell>
 
                         {/* Nomor HP */}
-                        <TableCell className="text-xs font-mono text-gray-600 dark:text-slate-300">
+                        <TableCell className="text-xs font-mono text-[#D6DDD5]">
                           {member.phone ? (
                             <span className="flex items-center gap-1">
-                              <Phone className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                              <Phone className="w-3 h-3 text-[#4ADE80]" />
                               {member.phone}
                             </span>
                           ) : (
-                            <span className="text-gray-400 italic">-</span>
+                            <span className="text-[#D6DDD5]/60 italic">-</span>
                           )}
                         </TableCell>
 
                         {/* Alamat */}
-                        <TableCell className="hidden md:table-cell text-xs text-gray-600 dark:text-slate-300 max-w-xs truncate">
+                        <TableCell className="hidden md:table-cell text-xs text-[#D6DDD5] max-w-xs truncate">
                           {member.address}
                         </TableCell>
 
@@ -795,27 +797,27 @@ export default function AdminMembersPage() {
 
                         {/* Aksi */}
                         <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
+                          <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => handleOpenDetailModal(member)}
                               title="Lihat Detail Anggota"
-                              className="p-1.5 rounded-lg text-gray-500 hover:text-taruna-yellow-600 hover:bg-taruna-yellow-50 dark:hover:bg-slate-800 transition"
+                              className="p-1.5 rounded-lg bg-[#163E4F] text-white hover:bg-[#466060] border border-[#466060] transition"
                             >
-                              <Eye className="w-4 h-4" />
+                              <Eye className="w-4 h-4 text-[#38BDF8]" />
                             </button>
                             <button
                               onClick={() => handleOpenEditModal(member)}
                               title="Ubah Data Anggota"
-                              className="p-1.5 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition"
+                              className="p-1.5 rounded-lg bg-[#163E4F] text-white hover:bg-[#466060] border border-[#466060] transition"
                             >
-                              <Edit2 className="w-4 h-4" />
+                              <Edit2 className="w-4 h-4 text-[#FDE047]" />
                             </button>
                             <button
                               onClick={() => handleOpenDeleteDialog(member)}
                               title="Hapus / Nonaktifkan Anggota"
-                              className="p-1.5 rounded-lg text-gray-500 hover:text-taruna-red-600 hover:bg-red-50 dark:hover:bg-slate-800 transition"
+                              className="p-1.5 rounded-lg bg-[#163E4F] text-white hover:bg-[#F87171]/20 border border-[#466060] transition"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-4 h-4 text-[#F87171]" />
                             </button>
                           </div>
                         </TableCell>
@@ -826,18 +828,18 @@ export default function AdminMembersPage() {
               )}
 
               {/* Pagination Bar */}
-              <div className="mt-4 pt-4 border-t border-taruna-border dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500 dark:text-slate-400">
+              <div className="mt-4 pt-4 border-t border-[#466060] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#D6DDD5]">
                 <div>
                   Menampilkan{' '}
-                  <strong className="text-taruna-dark dark:text-white">
+                  <strong className="text-white font-bold">
                     {serverTotal === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}
                   </strong>{' '}
                   -{' '}
-                  <strong className="text-taruna-dark dark:text-white">
+                  <strong className="text-white font-bold">
                     {Math.min(currentPage * itemsPerPage, serverTotal)}
                   </strong>{' '}
                   dari{' '}
-                  <strong className="text-taruna-dark dark:text-white">{serverTotal}</strong>{' '}
+                  <strong className="text-white font-bold">{serverTotal}</strong>{' '}
                   anggota
                 </div>
 
@@ -848,11 +850,12 @@ export default function AdminMembersPage() {
                     disabled={currentPage <= 1}
                     onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                     leftIcon={<ChevronLeft className="w-4 h-4" />}
+                    className="!bg-[#163E4F] !text-white !border-[#466060] hover:!bg-[#466060] disabled:!opacity-40"
                   >
                     Sebelumnya
                   </Button>
 
-                  <span className="px-3 py-1 font-semibold text-taruna-dark dark:text-white">
+                  <span className="px-3 py-1 font-semibold text-white">
                     Halaman {currentPage} / {totalPages}
                   </span>
 
@@ -862,6 +865,7 @@ export default function AdminMembersPage() {
                     disabled={currentPage >= totalPages}
                     onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                     rightIcon={<ChevronRight className="w-4 h-4" />}
+                    className="!bg-[#163E4F] !text-white !border-[#466060] hover:!bg-[#466060] disabled:!opacity-40"
                   >
                     Selanjutnya
                   </Button>

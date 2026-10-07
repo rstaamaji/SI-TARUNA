@@ -437,7 +437,7 @@ export default function AdminAttendancePage() {
   }, [events, selectedEventId, attendanceSheet]);
 
   return (
-    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex bg-[#D6DDD5] text-[#163E4F] transition-colors">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={currentUser.role} />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -446,11 +446,11 @@ export default function AdminAttendancePage() {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
 
           {/* ── HEADER ── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#466060] text-white p-5 sm:p-6 rounded-3xl border border-[#163E4F] shadow-sm">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#4ADE80] animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#D6DDD5]">
                   Manajemen Absensi &amp; Keaktifan
                 </span>
                 <Badge variant={isAdmin ? 'accent' : 'primary'} size="sm">
@@ -467,11 +467,11 @@ export default function AdminAttendancePage() {
                   )}
                 </Badge>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight flex items-center gap-2.5">
-                <CalendarCheck2 className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2.5">
+                <CalendarCheck2 className="w-7 h-7 text-[#4ADE80]" />
                 Kelola Absensi Anggota
               </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1">
                 Pilih kegiatan, tentukan status kehadiran anggota (Hadir, Izin, Tidak Hadir), dan simpan absensi secara kolektif.
               </p>
             </div>
@@ -480,6 +480,7 @@ export default function AdminAttendancePage() {
               <Button
                 variant="outline"
                 size="sm"
+                className="bg-white/10 hover:bg-white/20 text-white border-white/20"
                 leftIcon={<RefreshCw className={`w-4 h-4 ${isLoadingEvents ? 'animate-spin' : ''}`} />}
                 onClick={() => fetchEvents(false)}
                 disabled={isLoadingEvents}
@@ -489,7 +490,7 @@ export default function AdminAttendancePage() {
               <Button
                 variant="primary"
                 size="sm"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-[#163E4F] hover:bg-[#163E4F]/90 text-white border border-[#466060]"
                 leftIcon={<Plus className="w-4 h-4" />}
                 onClick={() => setIsCreateEventModalOpen(true)}
               >
@@ -499,13 +500,13 @@ export default function AdminAttendancePage() {
           </div>
 
           {/* ── TAB NAVIGATION ── */}
-          <div className="flex items-center gap-2 border-b border-taruna-border dark:border-slate-800 pb-2 flex-wrap">
+          <div className="flex items-center gap-2 border-b border-[#466060]/40 pb-2 flex-wrap">
             <button
               onClick={() => setActiveTab('SHEET')}
               className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition flex items-center gap-2 ${
                 activeTab === 'SHEET'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border border-taruna-border dark:border-slate-800 hover:bg-gray-50'
+                  ? 'bg-[#163E4F] text-white shadow-sm border border-[#466060]'
+                  : 'bg-[#466060] text-[#D6DDD5] hover:text-white border border-[#163E4F]'
               }`}
             >
               <CalendarCheck2 className="w-4 h-4" />
@@ -515,8 +516,8 @@ export default function AdminAttendancePage() {
               onClick={() => setActiveTab('RECORDS')}
               className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition flex items-center gap-2 ${
                 activeTab === 'RECORDS'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border border-taruna-border dark:border-slate-800 hover:bg-gray-50'
+                  ? 'bg-[#163E4F] text-white shadow-sm border border-[#466060]'
+                  : 'bg-[#466060] text-[#D6DDD5] hover:text-white border border-[#163E4F]'
               }`}
             >
               <Search className="w-4 h-4" />
@@ -528,15 +529,15 @@ export default function AdminAttendancePage() {
           {activeTab === 'SHEET' && (
             <div className="space-y-6">
               {/* ── EVENT SELECTOR CARD ── */}
-              <Card>
+              <Card className="!bg-[#6A8578] text-white border-[#466060] shadow-sm">
                 <CardHeader className="pb-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <CalendarDays className="w-4 h-4 text-emerald-600" />
+                  <CardTitle className="text-base flex items-center gap-2 text-white">
+                    <CalendarDays className="w-4 h-4 text-[#4ADE80]" />
                     Pilih Kegiatan / Pertemuan
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-[#D6DDD5]">
                     Pilih salah satu agenda Karang Taruna untuk mulai mengisi lembar presensi.
                   </CardDescription>
                 </div>
@@ -560,20 +561,20 @@ export default function AdminAttendancePage() {
 
             {/* Event detail banner if event selected */}
             {selectedEvent && (
-              <CardContent className="pt-0 border-t border-taruna-border dark:border-slate-800 mt-2">
+              <CardContent className="pt-0 border-t border-[#466060] mt-2">
                 <div className="pt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-lg font-black text-taruna-dark dark:text-white">
+                      <span className="text-lg font-black text-white">
                         {selectedEvent.title}
                       </span>
-                      <Badge variant="primary" size="sm">
+                      <Badge variant="primary" size="sm" className="bg-[#163E4F] text-[#D6DDD5] border-[#466060]">
                         {selectedEvent.type || 'KEGIATAN'}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-400 flex-wrap">
+                    <div className="flex items-center gap-4 text-xs text-[#D6DDD5] flex-wrap">
                       <span className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-emerald-500" />
+                        <Calendar className="w-3.5 h-3.5 text-[#4ADE80]" />
                         {new Date(selectedEvent.eventDate).toLocaleDateString('id-ID', {
                           weekday: 'long',
                           day: 'numeric',
@@ -582,7 +583,7 @@ export default function AdminAttendancePage() {
                         })}
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-red-500" />
+                        <MapPin className="w-3.5 h-3.5 text-[#F87171]" />
                         {selectedEvent.location}
                       </span>
                     </div>
@@ -590,21 +591,21 @@ export default function AdminAttendancePage() {
 
                   {/* Summary badges */}
                   <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                    <div className="p-2 rounded-xl bg-gray-50 dark:bg-slate-800 border border-taruna-border dark:border-slate-700">
-                      <div className="text-[10px] text-gray-400 uppercase font-bold">Total</div>
-                      <div className="text-base font-black text-taruna-dark dark:text-white">{liveStats.total}</div>
+                    <div className="p-2 rounded-xl bg-[#466060] border border-[#163E4F] text-white">
+                      <div className="text-[10px] text-[#D6DDD5] uppercase font-bold">Total</div>
+                      <div className="text-base font-black text-white">{liveStats.total}</div>
                     </div>
-                    <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
-                      <div className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-bold">Hadir</div>
-                      <div className="text-base font-black text-emerald-700 dark:text-emerald-300">{liveStats.present}</div>
+                    <div className="p-2 rounded-xl bg-[#466060] border border-[#163E4F] text-[#4ADE80]">
+                      <div className="text-[10px] text-[#D6DDD5] uppercase font-bold">Hadir</div>
+                      <div className="text-base font-black text-[#4ADE80]">{liveStats.present}</div>
                     </div>
-                    <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
-                      <div className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-bold">Izin</div>
-                      <div className="text-base font-black text-amber-700 dark:text-amber-300">{liveStats.excused}</div>
+                    <div className="p-2 rounded-xl bg-[#466060] border border-[#163E4F] text-[#FDE047]">
+                      <div className="text-[10px] text-[#D6DDD5] uppercase font-bold">Izin</div>
+                      <div className="text-base font-black text-[#FDE047]">{liveStats.excused}</div>
                     </div>
-                    <div className="p-2 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800">
-                      <div className="text-[10px] text-red-600 dark:text-red-400 uppercase font-bold">Absen</div>
-                      <div className="text-base font-black text-red-700 dark:text-red-300">{liveStats.absent}</div>
+                    <div className="p-2 rounded-xl bg-[#466060] border border-[#163E4F] text-[#F87171]">
+                      <div className="text-[10px] text-[#D6DDD5] uppercase font-bold">Absen</div>
+                      <div className="text-base font-black text-[#F87171]">{liveStats.absent}</div>
                     </div>
                   </div>
                 </div>
@@ -613,14 +614,15 @@ export default function AdminAttendancePage() {
           </Card>
 
           {/* ── TOOLBAR & BULK ACTIONS ── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-taruna-border dark:border-slate-800 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#466060] text-white p-4 rounded-2xl border border-[#163E4F] shadow-sm">
             <div className="flex items-center gap-2 flex-wrap">
               <div className="w-56">
                 <Input
                   placeholder="Cari nama atau nomor..."
                   value={searchMember}
                   onChange={(e) => setSearchMember(e.target.value)}
-                  leftIcon={<Search className="w-4 h-4 text-gray-400" />}
+                  leftIcon={<Search className="w-4 h-4 text-[#D6DDD5]" />}
+                  className="bg-[#163E4F] border-[#466060] text-white placeholder:text-[#D6DDD5]/60"
                 />
               </div>
 
@@ -642,7 +644,8 @@ export default function AdminAttendancePage() {
               <Button
                 variant="outline"
                 size="sm"
-                leftIcon={<CheckCheck className="w-4 h-4 text-emerald-600" />}
+                className="bg-[#163E4F] hover:bg-[#163E4F]/80 text-white border border-[#466060]"
+                leftIcon={<CheckCheck className="w-4 h-4 text-[#4ADE80]" />}
                 onClick={handleMarkAllPresent}
               >
                 Tandai Semua Hadir
@@ -650,7 +653,8 @@ export default function AdminAttendancePage() {
               <Button
                 variant="outline"
                 size="sm"
-                leftIcon={<Clock className="w-4 h-4 text-amber-600" />}
+                className="bg-[#163E4F] hover:bg-[#163E4F]/80 text-white border border-[#466060]"
+                leftIcon={<Clock className="w-4 h-4 text-[#FDE047]" />}
                 onClick={handleMarkAllExcused}
               >
                 Tandai Semua Izin
@@ -659,21 +663,21 @@ export default function AdminAttendancePage() {
           </div>
 
           {/* ── ATTENDANCE SHEET TABLE ── */}
-          <Card>
+          <Card className="!bg-[#6A8578] text-white border-[#466060] shadow-sm">
             <CardHeader className="flex-row items-center justify-between flex-wrap gap-2 pb-2">
               <div>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Users className="w-5 h-5 text-emerald-600" />
+                <CardTitle className="text-lg flex items-center gap-2 text-white">
+                  <Users className="w-5 h-5 text-[#4ADE80]" />
                   Lembar Presensi Anggota ({filteredMemberRows.length} dari {memberRows.length} Pemuda)
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-[#D6DDD5]">
                   Pilih status kehadiran untuk masing-masing pemuda Karang Taruna Tuk Uluh.
                 </CardDescription>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-gray-500">Tingkat Kehadiran:</span>
-                <span className="text-sm font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                <span className="text-xs font-semibold text-[#D6DDD5]">Tingkat Kehadiran:</span>
+                <span className="text-sm font-black text-[#4ADE80] bg-[#163E4F] px-2.5 py-1 rounded-xl border border-[#466060]">
                   {liveStats.rate}%
                 </span>
               </div>
@@ -682,19 +686,19 @@ export default function AdminAttendancePage() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12 text-center">No</TableHead>
-                      <TableHead className="w-60">Nama Anggota</TableHead>
-                      <TableHead className="w-80 text-center">Status Kehadiran</TableHead>
-                      <TableHead>Catatan / Keterangan</TableHead>
+                    <TableRow className="bg-[#466060] text-white border-b border-[#163E4F] hover:bg-[#466060]">
+                      <TableHead className="w-12 text-center text-white">No</TableHead>
+                      <TableHead className="w-60 text-white">Nama Anggota</TableHead>
+                      <TableHead className="w-80 text-center text-white">Status Kehadiran</TableHead>
+                      <TableHead className="text-white">Catatan / Keterangan</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoadingSheet ? (
                       <TableRow>
                         <TableCell colSpan={4} className="text-center py-12">
-                          <div className="flex flex-col items-center gap-2 text-gray-400">
-                            <RefreshCw className="w-6 h-6 animate-spin text-emerald-600" />
+                          <div className="flex flex-col items-center gap-2 text-[#D6DDD5]">
+                            <RefreshCw className="w-5 h-5 animate-spin text-[#4ADE80]" />
                             <span className="text-xs">Memuat lembar absensi kegiatan...</span>
                           </div>
                         </TableCell>
@@ -702,34 +706,34 @@ export default function AdminAttendancePage() {
                     ) : filteredMemberRows.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={4} className="text-center py-12">
-                          <div className="flex flex-col items-center gap-1.5 text-gray-400">
+                          <div className="flex flex-col items-center gap-1.5 text-[#D6DDD5]">
                             <Info className="w-6 h-6" />
-                            <span className="text-sm font-semibold text-gray-600 dark:text-slate-300">
+                            <span className="text-sm font-semibold text-white">
                               Tidak ada anggota yang cocok dengan filter
                             </span>
-                            <span className="text-xs">Coba bersihkan pencarian atau ubah status filter.</span>
+                            <span className="text-xs text-[#D6DDD5]">Coba bersihkan pencarian atau ubah status filter.</span>
                           </div>
                         </TableCell>
                       </TableRow>
                     ) : (
                       filteredMemberRows.map((row, idx) => (
-                        <TableRow key={row.memberId} className="hover:bg-taruna-surface/60 dark:hover:bg-slate-800/50">
+                        <TableRow key={row.memberId} className="hover:bg-[#466060]/30 border-b border-[#466060]/40 text-white">
                           {/* No */}
-                          <TableCell className="text-center text-xs text-gray-400 font-medium">
+                          <TableCell className="text-center text-xs text-[#D6DDD5] font-medium">
                             {idx + 1}
                           </TableCell>
 
                           {/* Nama Anggota */}
                           <TableCell>
                             <div className="flex items-center gap-2.5">
-                              <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center shrink-0">
+                              <div className="w-8 h-8 rounded-full bg-[#163E4F] border border-[#466060] text-[#4ADE80] font-bold text-xs flex items-center justify-center shrink-0">
                                 {row.name.charAt(0).toUpperCase()}
                               </div>
                               <div>
-                                <p className="font-bold text-sm text-taruna-dark dark:text-white leading-tight">
+                                <p className="font-bold text-sm text-white leading-tight">
                                   {row.name}
                                 </p>
-                                <span className="text-[11px] text-gray-400 font-mono">
+                                <span className="text-[11px] text-[#D6DDD5] font-mono">
                                   {row.memberNumber}
                                 </span>
                               </div>
@@ -745,8 +749,8 @@ export default function AdminAttendancePage() {
                                 onClick={() => handleStatusChange(row.memberId, 'PRESENT')}
                                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
                                   row.status === 'PRESENT'
-                                    ? 'bg-emerald-600 text-white shadow-xs ring-2 ring-emerald-500/30'
-                                    : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
+                                    ? 'bg-[#4ADE80] text-[#163E4F] shadow-sm font-black'
+                                    : 'bg-[#163E4F] text-[#D6DDD5] hover:text-white border border-[#466060]'
                                 }`}
                               >
                                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -759,8 +763,8 @@ export default function AdminAttendancePage() {
                                 onClick={() => handleStatusChange(row.memberId, 'EXCUSED')}
                                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
                                   row.status === 'EXCUSED'
-                                    ? 'bg-amber-500 text-white shadow-xs ring-2 ring-amber-500/30'
-                                    : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/30'
+                                    ? 'bg-[#FDE047] text-[#163E4F] shadow-sm font-black'
+                                    : 'bg-[#163E4F] text-[#D6DDD5] hover:text-white border border-[#466060]'
                                 }`}
                               >
                                 <Clock className="w-3.5 h-3.5" />
@@ -773,8 +777,8 @@ export default function AdminAttendancePage() {
                                 onClick={() => handleStatusChange(row.memberId, 'ABSENT')}
                                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${
                                   row.status === 'ABSENT'
-                                    ? 'bg-red-600 text-white shadow-xs ring-2 ring-red-500/30'
-                                    : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/30'
+                                    ? 'bg-[#F87171] text-white shadow-sm font-black'
+                                    : 'bg-[#163E4F] text-[#D6DDD5] hover:text-white border border-[#466060]'
                                 }`}
                               >
                                 <XCircle className="w-3.5 h-3.5" />
@@ -835,13 +839,13 @@ export default function AdminAttendancePage() {
       {activeTab === 'RECORDS' && (
         <div className="space-y-6">
           {/* Filter Card */}
-          <Card>
+          <Card className="!bg-[#6A8578] text-white border-[#466060]">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Search className="w-4 h-4 text-emerald-600" />
+              <CardTitle className="text-base flex items-center gap-2 text-white">
+                <Search className="w-4 h-4 text-[#4ADE80]" />
                 Pencarian &amp; Filter Absensi (Database API)
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-[#D6DDD5]">
                 Pencarian data absensi yang dieksekusi langsung di level backend API untuk menangani volume data besar secara efisien.
               </CardDescription>
             </CardHeader>
@@ -849,7 +853,7 @@ export default function AdminAttendancePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {/* 1. Filter Nama */}
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1">
+                  <label className="block text-[11px] font-bold text-[#D6DDD5] uppercase mb-1">
                     Nama / No Anggota
                   </label>
                   <Input
@@ -859,13 +863,14 @@ export default function AdminAttendancePage() {
                       setRecordsSearch(e.target.value);
                       setRecordsPage(1);
                     }}
-                    leftIcon={<Search className="w-4 h-4 text-gray-400" />}
+                    leftIcon={<Search className="w-4 h-4 text-[#D6DDD5]" />}
+                    className="bg-[#163E4F] border-[#466060] text-white placeholder:text-[#D6DDD5]/60"
                   />
                 </div>
 
                 {/* 2. Filter Kegiatan */}
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1">
+                  <label className="block text-[11px] font-bold text-[#D6DDD5] uppercase mb-1">
                     Kegiatan
                   </label>
                   <Select
@@ -886,7 +891,7 @@ export default function AdminAttendancePage() {
 
                 {/* 3. Filter Status */}
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1">
+                  <label className="block text-[11px] font-bold text-[#D6DDD5] uppercase mb-1">
                     Status Kehadiran
                   </label>
                   <Select
@@ -906,7 +911,7 @@ export default function AdminAttendancePage() {
 
                 {/* 4. Filter Tanggal */}
                 <div>
-                  <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1">
+                  <label className="block text-[11px] font-bold text-[#D6DDD5] uppercase mb-1">
                     Tanggal Kegiatan
                   </label>
                   <div className="flex items-center gap-1.5">
@@ -917,7 +922,7 @@ export default function AdminAttendancePage() {
                         setRecordsDate(e.target.value);
                         setRecordsPage(1);
                       }}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50"
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white focus:outline-hidden"
                     />
                     {recordsDate && (
                       <button
@@ -925,7 +930,7 @@ export default function AdminAttendancePage() {
                           setRecordsDate('');
                           setRecordsPage(1);
                         }}
-                        className="px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors whitespace-nowrap"
+                        className="px-2 py-1 text-[11px] font-bold text-[#F87171] hover:bg-white/10 rounded-lg transition-colors whitespace-nowrap"
                       >
                         Reset
                       </button>
@@ -936,7 +941,7 @@ export default function AdminAttendancePage() {
 
               {/* Reset All Filters Button */}
               {(recordsSearch || recordsEventId !== 'ALL' || recordsStatus !== 'ALL' || recordsDate) && (
-                <div className="mt-3 pt-3 border-t border-taruna-border dark:border-slate-800 flex justify-end">
+                <div className="mt-3 pt-3 border-t border-[#466060] flex justify-end">
                   <button
                     onClick={() => {
                       setRecordsSearch('');
@@ -945,7 +950,7 @@ export default function AdminAttendancePage() {
                       setRecordsDate('');
                       setRecordsPage(1);
                     }}
-                    className="text-xs font-bold text-emerald-600 hover:underline"
+                    className="text-xs font-bold text-[#D6DDD5] hover:text-white hover:underline"
                   >
                     Reset Semua Filter
                   </button>
@@ -955,11 +960,11 @@ export default function AdminAttendancePage() {
           </Card>
 
           {/* Table Result Card */}
-          <Card>
+          <Card className="!bg-[#6A8578] text-white border-[#466060] shadow-sm">
             <CardHeader className="flex-row items-center justify-between flex-wrap gap-2 pb-2">
               <div>
-                <CardTitle className="text-base">Daftar Hasil Pencarian Absensi</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-base text-white">Daftar Hasil Pencarian Absensi</CardTitle>
+                <CardDescription className="text-[#D6DDD5]">
                   Data presensi yang tersaring via query server Prisma database.
                 </CardDescription>
               </div>
@@ -967,13 +972,14 @@ export default function AdminAttendancePage() {
                 <Button
                   variant="outline"
                   size="sm"
+                  className="bg-[#163E4F] hover:bg-[#163E4F]/80 text-white border border-[#466060]"
                   onClick={fetchAttendanceRecords}
                   disabled={isLoadingRecords}
                   leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isLoadingRecords ? 'animate-spin' : ''}`} />}
                 >
                   Segarkan
                 </Button>
-                <Badge variant="primary">
+                <Badge variant="primary" className="bg-[#163E4F] text-[#D6DDD5] border-[#466060]">
                   Total {recordsTotal} Catatan
                 </Badge>
               </div>
@@ -982,13 +988,13 @@ export default function AdminAttendancePage() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12 text-center">No</TableHead>
-                      <TableHead>Nama Anggota</TableHead>
-                      <TableHead>Kegiatan &amp; Tanggal</TableHead>
-                      <TableHead>Lokasi</TableHead>
-                      <TableHead className="text-center w-36">Status</TableHead>
-                      <TableHead>Catatan</TableHead>
+                    <TableRow className="bg-[#466060] text-white border-b border-[#163E4F] hover:bg-[#466060]">
+                      <TableHead className="w-12 text-center text-white">No</TableHead>
+                      <TableHead className="text-white">Nama Anggota</TableHead>
+                      <TableHead className="text-white">Kegiatan &amp; Tanggal</TableHead>
+                      <TableHead className="text-white">Lokasi</TableHead>
+                      <TableHead className="text-center w-36 text-white">Status</TableHead>
+                      <TableHead className="text-white">Catatan</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -996,13 +1002,13 @@ export default function AdminAttendancePage() {
                       Array.from({ length: 5 }).map((_, idx) => (
                         <TableRow key={idx}>
                           <TableCell colSpan={6} className="text-center py-4">
-                            <div className="h-6 bg-gray-100 dark:bg-slate-800 rounded-md animate-pulse w-full" />
+                            <div className="h-6 bg-[#466060]/50 rounded-md animate-pulse w-full" />
                           </TableCell>
                         </TableRow>
                       ))
                     ) : recordsList.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-10 text-gray-500">
+                        <TableCell colSpan={6} className="text-center py-10 text-[#D6DDD5]">
                           Tidak ditemukan catatan absensi yang sesuai kriteria pencarian.
                         </TableCell>
                       </TableRow>
@@ -1010,46 +1016,46 @@ export default function AdminAttendancePage() {
                       recordsList.map((rec, idx) => {
                         const num = (recordsPage - 1) * recordsLimit + idx + 1;
                         return (
-                          <TableRow key={rec.id}>
-                            <TableCell className="text-center text-xs text-gray-500">{num}</TableCell>
+                          <TableRow key={rec.id} className="hover:bg-[#466060]/30 border-b border-[#466060]/40 text-white">
+                            <TableCell className="text-center text-xs text-[#D6DDD5]">{num}</TableCell>
                             <TableCell>
-                              <div className="font-bold text-sm text-taruna-dark dark:text-white">
+                              <div className="font-bold text-sm text-white">
                                 {rec.member?.name || '-'}
                               </div>
-                              <div className="text-[11px] text-gray-400 font-mono">
+                              <div className="text-[11px] text-[#D6DDD5] font-mono">
                                 {rec.member?.memberNumber || '-'}
                               </div>
                             </TableCell>
                             <TableCell>
-                              <div className="font-bold text-sm text-emerald-700 dark:text-emerald-400">
+                              <div className="font-bold text-sm text-white">
                                 {rec.event?.title || '-'}
                               </div>
-                              <div className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                                <Calendar className="w-3 h-3" />
+                              <div className="text-xs text-[#D6DDD5] flex items-center gap-1 mt-0.5">
+                                <Calendar className="w-3 h-3 text-[#4ADE80]" />
                                 {rec.event?.eventDate ? new Date(rec.event.eventDate).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
                               </div>
                             </TableCell>
-                            <TableCell className="text-xs text-gray-600 dark:text-slate-300">
+                            <TableCell className="text-xs text-[#D6DDD5]">
                               {rec.event?.location || '-'}
                             </TableCell>
                             <TableCell className="text-center">
                               {rec.status === 'PRESENT' && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-[#4ADE80] text-[#163E4F]">
                                   <CheckCircle2 className="w-3.5 h-3.5" /> HADIR
                                 </span>
                               )}
                               {rec.status === 'EXCUSED' && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-[#FDE047] text-[#163E4F]">
                                   <Clock className="w-3.5 h-3.5" /> IZIN
                                 </span>
                               )}
                               {rec.status === 'ABSENT' && (
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-[#F87171] text-white">
                                   <XCircle className="w-3.5 h-3.5" /> TIDAK HADIR
                                 </span>
                               )}
                             </TableCell>
-                            <TableCell className="text-xs text-gray-500 italic">
+                            <TableCell className="text-xs text-[#D6DDD5] italic">
                               {rec.notes || '-'}
                             </TableCell>
                           </TableRow>

@@ -32,7 +32,6 @@ import {
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -441,7 +440,7 @@ export default function FinanceOverviewPage() {
   const hasActiveFilters = !!(selectedMonth || selectedYear || (activeTab === 'ALL' && selectedType !== 'ALL') || selectedSource || selectedCategory || searchQuery);
 
   return (
-    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex bg-[#D6DDD5] text-[#163E4F] transition-colors">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={currentUser.role} />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -449,42 +448,61 @@ export default function FinanceOverviewPage() {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
 
-          {/* ── PAGE HEADER ── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
+          {/* ── PAGE HEADER (BAGIAN UTAMA #466060) ── */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#466060] text-white p-5 sm:p-6 rounded-3xl border border-[#163E4F] shadow-lg">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#D6DDD5]">
                   Transparansi Keuangan Organisasi
                 </span>
-                <Badge variant={currentUser.role === 'SUPERADMIN' ? 'warning' : isAdmin ? 'accent' : 'primary'} size="sm">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578]">
                   {currentUser.role === 'SUPERADMIN' ? (
-                    <><ShieldCheck className="w-3 h-3 mr-1 inline" />SUPERADMIN</>
+                    <><ShieldCheck className="w-3 h-3 mr-1 inline text-amber-300" />SUPERADMIN</>
                   ) : isAdmin ? (
                     <><ShieldCheck className="w-3 h-3 mr-1 inline" />ADMINISTRATOR</>
                   ) : (
                     <><User className="w-3 h-3 mr-1 inline" />MEMBER</>
                   )}
-                </Badge>
+                </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                 Kas &amp; Keuangan Organisasi
               </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1">
                 Pemasukan (iuran, donasi, kegiatan) dan pengeluaran (belanja, konsumsi, sosial) Karang Taruna Setya Bakti.
               </p>
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
-              <Button variant="outline" size="sm" leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />} onClick={() => fetchFinanceData(true)} disabled={isRefreshing}>
+              <Button
+                variant="outline"
+                size="sm"
+                leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
+                onClick={() => fetchFinanceData(true)}
+                disabled={isRefreshing}
+                className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] transition shadow-sm"
+              >
                 {isRefreshing ? 'Memuat...' : 'Segarkan'}
               </Button>
               {isAdmin && (
                 <>
-                  <Button variant="primary" size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" leftIcon={<Plus className="w-4 h-4" />} onClick={() => handleOpenCreateModal('INCOME')}>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] transition shadow-sm"
+                    leftIcon={<Plus className="w-4 h-4" />}
+                    onClick={() => handleOpenCreateModal('INCOME')}
+                  >
                     Catat Pemasukan
                   </Button>
-                  <Button variant="secondary" size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={() => handleOpenCreateModal('EXPENSE')}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] transition shadow-sm"
+                    leftIcon={<Plus className="w-4 h-4" />}
+                    onClick={() => handleOpenCreateModal('EXPENSE')}
+                  >
                     Catat Pengeluaran
                   </Button>
                 </>
@@ -494,11 +512,11 @@ export default function FinanceOverviewPage() {
 
           {/* ── SERVER OFFLINE BANNER ── */}
           {isServerError && (
-            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2.5 text-amber-900 dark:text-amber-200">
-                <AlertTriangle className="w-5 h-5 shrink-0 text-amber-600" />
+            <div className="p-4 rounded-2xl bg-[#466060] border border-[#163E4F] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-[#D6DDD5] shadow-sm">
+              <div className="flex items-center gap-2.5">
+                <AlertTriangle className="w-5 h-5 shrink-0 text-amber-300" />
                 <span>
-                  <strong>Koneksi ke Server Backend Terputus:</strong> Data kas belum dapat dimuat karena server backend (port 5000) belum aktif atau sedang memproses. Pastikan backend telah dijalankan (<code>npm run dev</code> di folder backend).
+                  <strong className="text-white">Koneksi ke Server Backend Terputus:</strong> Data kas belum dapat dimuat karena server backend (port 5000) belum aktif atau sedang memproses.
                 </span>
               </div>
               <Button
@@ -506,62 +524,62 @@ export default function FinanceOverviewPage() {
                 size="sm"
                 onClick={() => fetchFinanceData(true)}
                 disabled={isRefreshing}
-                className="border-amber-400 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-amber-900 dark:text-amber-200 shrink-0 font-bold"
+                className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] shrink-0 font-bold"
               >
                 Coba Hubungkan Kembali
               </Button>
             </div>
           )}
 
-          {/* ── SUMMARY CARDS ── */}
+          {/* ── SUMMARY CARDS (ISINYA #6A8578) ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card hoverable className="border-t-4 border-t-emerald-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">TOTAL KAS</span>
-                <div className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 ring-2 ring-black/5 dark:ring-white/5"><Wallet className="w-5 h-5" /></div>
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">TOTAL KAS</span>
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]"><Wallet className="w-5 h-5" /></div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">{formatRupiah(summary.totalKas)}</div>
-                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-gray-500 dark:text-slate-400">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /><span>Akumulasi Seluruh Kas</span>
+                <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">{formatRupiah(summary.totalKas)}</div>
+                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-[#D6DDD5]">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" /><span>Akumulasi Seluruh Kas</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card hoverable className="border-t-4 border-t-sky-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">TOTAL PEMASUKAN</span>
-                <div className="p-2.5 rounded-2xl bg-sky-50 dark:bg-slate-800 text-sky-600 dark:text-sky-400 ring-2 ring-black/5 dark:ring-white/5"><ArrowDownLeft className="w-5 h-5" /></div>
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">TOTAL PEMASUKAN</span>
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]"><ArrowDownLeft className="w-5 h-5" /></div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white">{formatRupiah(summary.totalPemasukan)}</div>
-                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-sky-600 dark:text-sky-400">
-                  <ArrowDownLeft className="w-3.5 h-3.5" /><span>Iuran, donasi &amp; lainnya</span>
+                <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">{formatRupiah(summary.totalPemasukan)}</div>
+                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-[#D6DDD5]">
+                  <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-300" /><span>Iuran, donasi &amp; lainnya</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card hoverable className="border-t-4 border-t-red-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">TOTAL PENGELUARAN</span>
-                <div className="p-2.5 rounded-2xl bg-red-50 dark:bg-slate-800 text-red-600 dark:text-red-400 ring-2 ring-black/5 dark:ring-white/5"><ArrowUpRight className="w-5 h-5" /></div>
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">TOTAL PENGELUARAN</span>
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]"><ArrowUpRight className="w-5 h-5" /></div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-red-600 dark:text-red-400">{formatRupiah(summary.totalPengeluaran)}</div>
-                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-gray-500 dark:text-slate-400">
-                  <ArrowUpRight className="w-3.5 h-3.5 text-red-500" /><span>Belanja &amp; operasional</span>
+                <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">{formatRupiah(summary.totalPengeluaran)}</div>
+                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-[#D6DDD5]">
+                  <ArrowUpRight className="w-3.5 h-3.5 text-rose-300" /><span>Belanja &amp; operasional</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card hoverable className="border-t-4 border-t-amber-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">SALDO SAAT INI</span>
-                <div className="p-2.5 rounded-2xl bg-amber-50 dark:bg-slate-800 text-amber-600 dark:text-amber-400 ring-2 ring-black/5 dark:ring-white/5"><Scale className="w-5 h-5" /></div>
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">SALDO SAAT INI</span>
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]"><Scale className="w-5 h-5" /></div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white">{formatRupiah(summary.saldoSaatIni)}</div>
-                <div className="mt-2 text-[11px] font-mono font-medium text-amber-800 dark:text-amber-300 bg-amber-50/80 dark:bg-slate-800/80 px-2 py-1 rounded-lg border border-amber-200/60 dark:border-slate-700">
+                <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">{formatRupiah(summary.saldoSaatIni)}</div>
+                <div className="mt-2 text-[11px] font-mono font-medium text-[#D6DDD5] bg-[#466060] px-2 py-1 rounded-lg border border-[#163E4F]">
                   saldo = pemasukan - pengeluaran
                 </div>
               </CardContent>
@@ -569,27 +587,27 @@ export default function FinanceOverviewPage() {
           </div>
 
           {/* ── TAB NAVIGATION ── */}
-          <div className="flex items-center justify-between border-b border-taruna-border dark:border-slate-800 pb-2 flex-wrap gap-3">
+          <div className="flex items-center justify-between border-b border-[#466060] pb-2 flex-wrap gap-3">
             <div className="flex items-center gap-1.5 flex-wrap">
               {([
-                { key: 'ALL', label: 'Semua Transaksi', icon: null, activeClass: 'bg-taruna-dark dark:bg-slate-100 text-white dark:text-slate-900' },
-                { key: 'INCOME', label: 'Pemasukan Kas', icon: ArrowDownLeft, activeClass: 'bg-emerald-600 text-white' },
-                { key: 'EXPENSE', label: 'Pengeluaran Kas', icon: ArrowUpRight, activeClass: 'bg-red-600 text-white' },
+                { key: 'ALL', label: 'Semua Transaksi', icon: null, activeClass: 'bg-[#466060] text-white border border-[#163E4F]' },
+                { key: 'INCOME', label: 'Pemasukan Kas', icon: ArrowDownLeft, activeClass: 'bg-[#466060] text-emerald-300 border border-[#163E4F]' },
+                { key: 'EXPENSE', label: 'Pengeluaran Kas', icon: ArrowUpRight, activeClass: 'bg-[#466060] text-rose-300 border border-[#163E4F]' },
               ] as const).map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key as 'ALL' | 'INCOME' | 'EXPENSE')}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === tab.key ? tab.activeClass + ' shadow-sm' : 'text-gray-500 hover:text-taruna-dark dark:text-slate-400 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800'}`}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === tab.key ? tab.activeClass + ' shadow-sm' : 'text-[#163E4F] hover:bg-[#466060]/20'}`}
                 >
                   {tab.icon && <tab.icon className="w-4 h-4" />}
                   {tab.label}
                   {tab.key === 'INCOME' && (
-                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === 'INCOME' ? 'bg-emerald-700 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'INCOME' ? 'bg-[#163E4F] text-emerald-300' : 'bg-[#466060]/30 text-[#163E4F]'}`}>
                       {incomeStats.totalCount}
                     </span>
                   )}
                   {tab.key === 'EXPENSE' && (
-                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === 'EXPENSE' ? 'bg-red-700 text-white' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'EXPENSE' ? 'bg-[#163E4F] text-rose-300' : 'bg-[#466060]/30 text-[#163E4F]'}`}>
                       {expenseStats.totalCount}
                     </span>
                   )}
@@ -601,7 +619,7 @@ export default function FinanceOverviewPage() {
               <Button
                 variant="primary"
                 size="sm"
-                className={activeTab === 'INCOME' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : activeTab === 'EXPENSE' ? 'bg-red-600 hover:bg-red-700 text-white' : ''}
+                className="bg-[#163E4F] hover:bg-[#466060] text-white border border-[#466060] shadow-sm font-bold"
                 leftIcon={<Plus className="w-4 h-4" />}
                 onClick={() => handleOpenCreateModal(activeTab === 'EXPENSE' ? 'EXPENSE' : 'INCOME')}
               >
@@ -656,45 +674,45 @@ export default function FinanceOverviewPage() {
           )}
 
           {/* ── FILTER BAR ── */}
-          <Card>
+          <Card className="!bg-[#6A8578] text-white border-[#466060] shadow-md">
             <CardContent className="p-4 sm:p-5">
               <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                 <div className={`grid gap-3 flex-1 ${activeTab === 'ALL' ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'}`}>
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Filter Bulan:</label>
-                    <Select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} options={MONTH_OPTIONS} />
+                    <label className="block text-xs font-bold text-[#D6DDD5] mb-1">Filter Bulan:</label>
+                    <Select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} options={MONTH_OPTIONS} className="bg-[#466060] text-white border-[#163E4F]" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Filter Tahun:</label>
-                    <Select value={selectedYear} onChange={e => setSelectedYear(e.target.value)} options={YEAR_OPTIONS} />
+                    <label className="block text-xs font-bold text-[#D6DDD5] mb-1">Filter Tahun:</label>
+                    <Select value={selectedYear} onChange={e => setSelectedYear(e.target.value)} options={YEAR_OPTIONS} className="bg-[#466060] text-white border-[#163E4F]" />
                   </div>
                   {activeTab === 'ALL' && (
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Jenis:</label>
-                      <Select value={selectedType} onChange={e => setSelectedType(e.target.value)} options={TYPE_OPTIONS} />
+                      <label className="block text-xs font-bold text-[#D6DDD5] mb-1">Jenis:</label>
+                      <Select value={selectedType} onChange={e => setSelectedType(e.target.value)} options={TYPE_OPTIONS} className="bg-[#466060] text-white border-[#163E4F]" />
                     </div>
                   )}
                   {activeTab === 'INCOME' && (
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Sumber Pemasukan:</label>
-                      <Select value={selectedSource} onChange={e => setSelectedSource(e.target.value)} options={SOURCE_OPTIONS} />
+                      <label className="block text-xs font-bold text-[#D6DDD5] mb-1">Sumber Pemasukan:</label>
+                      <Select value={selectedSource} onChange={e => setSelectedSource(e.target.value)} options={SOURCE_OPTIONS} className="bg-[#466060] text-white border-[#163E4F]" />
                     </div>
                   )}
                   {activeTab === 'EXPENSE' && (
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Kategori Pengeluaran:</label>
-                      <Select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} options={CATEGORY_OPTIONS} />
+                      <label className="block text-xs font-bold text-[#D6DDD5] mb-1">Kategori Pengeluaran:</label>
+                      <Select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)} options={CATEGORY_OPTIONS} className="bg-[#466060] text-white border-[#163E4F]" />
                     </div>
                   )}
                 </div>
 
                 <div className="flex items-end gap-2 flex-wrap sm:flex-nowrap">
                   <div className="w-full sm:w-60">
-                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Cari Keterangan:</label>
-                    <Input placeholder="Cari kata kunci..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} leftIcon={<Search className="w-4 h-4 text-gray-400" />} />
+                    <label className="block text-xs font-bold text-[#D6DDD5] mb-1">Cari Keterangan:</label>
+                    <Input placeholder="Cari kata kunci..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} leftIcon={<Search className="w-4 h-4 text-[#D6DDD5]/70" />} className="bg-[#466060] text-white border-[#163E4F] placeholder-[#D6DDD5]/60" />
                   </div>
                   {hasActiveFilters && (
-                    <Button variant="secondary" size="sm" onClick={resetFilters} className="whitespace-nowrap h-10" leftIcon={<X className="w-3.5 h-3.5" />}>
+                    <Button variant="secondary" size="sm" onClick={resetFilters} className="whitespace-nowrap h-10 bg-[#163E4F] hover:bg-[#466060] text-white border border-[#466060]" leftIcon={<X className="w-3.5 h-3.5" />}>
                       Reset
                     </Button>
                   )}
@@ -704,39 +722,41 @@ export default function FinanceOverviewPage() {
           </Card>
 
           {/* ── TRANSACTION TABLE ── */}
-          <Card>
-            <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
+          <Card className="!bg-[#6A8578] text-white border-[#466060] shadow-md">
+            <CardHeader className="flex-row items-center justify-between flex-wrap gap-2 pb-3">
               <div>
-                <CardTitle>
+                <CardTitle className="text-white">
                   {activeTab === 'INCOME' ? 'Buku Pemasukan Kas' : activeTab === 'EXPENSE' ? 'Buku Pengeluaran Kas' : 'Buku Kas & Riwayat Transaksi'}
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-[#D6DDD5]">
                   {activeTab === 'INCOME' ? 'Daftar penerimaan kas dari iuran, donasi, kegiatan, dan sumber lainnya.' : activeTab === 'EXPENSE' ? 'Daftar pengeluaran kas berdasarkan kategori (kegiatan, konsumsi, perlengkapan, dll).' : 'Semua transaksi kas masuk dan keluar organisasi.'}
                 </CardDescription>
               </div>
-              <Badge variant="success" dot>{transactions.length} Transaksi</Badge>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#466060] text-white border border-[#163E4F]">
+                {transactions.length} Transaksi
+              </span>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-32">Tanggal</TableHead>
-                      <TableHead className="w-28">Jenis</TableHead>
-                      <TableHead className="w-36">
+                    <TableRow className="border-b border-[#466060] bg-[#466060]/70">
+                      <TableHead className="w-32 text-[#D6DDD5]">Tanggal</TableHead>
+                      <TableHead className="w-28 text-[#D6DDD5]">Jenis</TableHead>
+                      <TableHead className="w-36 text-[#D6DDD5]">
                         {activeTab === 'EXPENSE' ? 'Kategori' : activeTab === 'INCOME' ? 'Sumber' : 'Sumber / Kategori'}
                       </TableHead>
-                      <TableHead>Keterangan</TableHead>
-                      <TableHead className="text-right w-40">Jumlah</TableHead>
-                      {isAdmin && <TableHead className="text-center w-24">Aksi</TableHead>}
+                      <TableHead className="text-[#D6DDD5]">Keterangan</TableHead>
+                      <TableHead className="text-right w-40 text-[#D6DDD5]">Jumlah</TableHead>
+                      {isAdmin && <TableHead className="text-center w-24 text-[#D6DDD5]">Aksi</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
                         <TableCell colSpan={isAdmin ? 6 : 5} className="text-center py-12">
-                          <div className="flex flex-col items-center gap-2 text-gray-400">
-                            <RefreshCw className="w-5 h-5 animate-spin text-amber-500" />
+                          <div className="flex flex-col items-center gap-2 text-[#D6DDD5]">
+                            <RefreshCw className="w-5 h-5 animate-spin text-emerald-300" />
                             <span className="text-xs">Memuat data transaksi...</span>
                           </div>
                         </TableCell>
@@ -744,44 +764,44 @@ export default function FinanceOverviewPage() {
                     ) : transactions.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={isAdmin ? 6 : 5} className="text-center py-12">
-                          <div className="flex flex-col items-center gap-1.5 text-gray-400">
+                          <div className="flex flex-col items-center gap-1.5 text-[#D6DDD5]">
                             <Info className="w-6 h-6" />
-                            <span className="text-sm font-semibold text-gray-600 dark:text-slate-300">Tidak ada transaksi ditemukan</span>
-                            <span className="text-xs">Coba ubah filter atau kata kunci pencarian.</span>
+                            <span className="text-sm font-semibold text-white">Tidak ada transaksi ditemukan</span>
+                            <span className="text-xs text-[#D6DDD5]/80">Coba ubah filter atau kata kunci pencarian.</span>
                           </div>
                         </TableCell>
                       </TableRow>
                     ) : (
                       transactions.map(t => (
-                        <TableRow key={t.id} className="hover:bg-taruna-surface/60 dark:hover:bg-slate-800/50">
+                        <TableRow key={t.id} className="hover:bg-[#466060]/40 border-b border-[#466060]/50 transition">
                           {/* Tanggal */}
-                          <TableCell className="text-xs font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">
+                          <TableCell className="text-xs font-medium text-[#D6DDD5] whitespace-nowrap">
                             <div className="flex items-center gap-1.5">
-                              <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                              <Calendar className="w-3.5 h-3.5 text-[#D6DDD5]/80 shrink-0" />
                               {new Date(t.transactionDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </div>
                           </TableCell>
 
                           {/* Jenis */}
                           <TableCell>
-                            <Badge variant={t.type === 'INCOME' ? 'success' : 'accent'} size="sm" className="font-bold uppercase tracking-wider text-[10px]">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${t.type === 'INCOME' ? 'bg-[#163E4F] text-emerald-300 border-emerald-500/40' : 'bg-[#163E4F] text-rose-300 border-rose-500/40'}`}>
                               {t.type === 'INCOME' ? 'PEMASUKAN' : 'PENGELUARAN'}
-                            </Badge>
+                            </span>
                           </TableCell>
 
                           {/* Sumber / Kategori */}
-                          <TableCell className="whitespace-nowrap">
+                          <TableCell className="whitespace-nowrap text-[#D6DDD5]">
                             {t.type === 'INCOME' ? getSourceBadge(t.source) : getCategoryBadge(t.category)}
                           </TableCell>
 
                           {/* Keterangan */}
                           <TableCell>
-                            <p className="font-semibold text-sm text-taruna-dark dark:text-white">{t.description}</p>
-                            <span className="text-[11px] text-gray-400 dark:text-slate-500">Dicatat: {t.creatorName}</span>
+                            <p className="font-semibold text-sm text-white">{t.description}</p>
+                            <span className="text-[11px] text-[#D6DDD5]/80">Dicatat: {t.creatorName}</span>
                           </TableCell>
 
                           {/* Jumlah */}
-                          <TableCell className={`text-right font-black text-sm whitespace-nowrap ${t.type === 'INCOME' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                          <TableCell className={`text-right font-black text-sm whitespace-nowrap ${t.type === 'INCOME' ? 'text-emerald-300' : 'text-rose-300'}`}>
                             {t.type === 'INCOME' ? '+' : '-'}{formatRupiah(t.amount)}
                           </TableCell>
 
@@ -789,11 +809,11 @@ export default function FinanceOverviewPage() {
                           {isAdmin && (
                             <TableCell className="text-center">
                               <div className="flex items-center justify-center gap-1.5">
-                                <button onClick={() => handleOpenEditModal(t)} className="p-1.5 rounded-lg border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-amber-50 dark:hover:bg-slate-800 transition" title="Ubah">
-                                  <Pencil className="w-3.5 h-3.5 text-amber-600" />
+                                <button onClick={() => handleOpenEditModal(t)} className="p-1.5 rounded-lg border border-[#163E4F] bg-[#466060] hover:bg-[#163E4F] text-amber-300 transition" title="Ubah">
+                                  <Pencil className="w-3.5 h-3.5" />
                                 </button>
-                                <button onClick={() => handleOpenDeleteModal(t)} className="p-1.5 rounded-lg border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-red-50 dark:hover:bg-red-950/40 transition" title="Hapus">
-                                  <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                                <button onClick={() => handleOpenDeleteModal(t)} className="p-1.5 rounded-lg border border-[#163E4F] bg-[#466060] hover:bg-[#163E4F] text-rose-300 transition" title="Hapus">
+                                  <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                               </div>
                             </TableCell>

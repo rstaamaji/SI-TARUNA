@@ -101,13 +101,13 @@ type SortDir = 'asc' | 'desc';
 const ChartTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-3 shadow-lg text-sm">
-      <p className="font-semibold text-taruna-dark dark:text-white mb-2">{label}</p>
+    <div className="bg-[#163E4F] border border-[#466060] rounded-xl p-3 shadow-lg text-sm text-white">
+      <p className="font-semibold text-white mb-2">{label}</p>
       {payload.map((p: any) => (
         <div key={p.dataKey} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: p.fill }} />
-          <span className="text-gray-600 dark:text-slate-300">{p.name}:</span>
-          <span className="font-bold text-taruna-dark dark:text-white">{p.value}</span>
+          <span className="text-[#D6DDD5]">{p.name}:</span>
+          <span className="font-bold text-white">{p.value}</span>
         </div>
       ))}
     </div>
@@ -236,18 +236,18 @@ export default function MemberStatisticsPage() {
   const pieData = useMemo(() => {
     if (!data) return [];
     return [
-      { name: 'Hadir', value: data.summary.totalPresent, color: '#10b981' },
-      { name: 'Izin', value: data.summary.totalExcused, color: '#f59e0b' },
-      { name: 'Tidak Hadir', value: data.summary.totalAbsent, color: '#ef4444' },
+      { name: 'Hadir', value: data.summary.totalPresent, color: '#4ADE80' },
+      { name: 'Izin', value: data.summary.totalExcused, color: '#FDE047' },
+      { name: 'Tidak Hadir', value: data.summary.totalAbsent, color: '#F87171' },
     ].filter((d) => d.value > 0);
   }, [data]);
 
   // ─── Sort icon helper ────────────────────────────────────────────────────────
   const SortIcon = ({ col }: { col: SortKey }) => {
-    if (sortKey !== col) return <Minus className="w-3 h-3 text-gray-300 dark:text-slate-600" />;
+    if (sortKey !== col) return <Minus className="w-3 h-3 text-[#D6DDD5]/60" />;
     return sortDir === 'asc'
-      ? <ChevronUp className="w-3 h-3 text-taruna-yellow-600" />
-      : <ChevronDown className="w-3 h-3 text-taruna-yellow-600" />;
+      ? <ChevronUp className="w-3 h-3 text-white" />
+      : <ChevronDown className="w-3 h-3 text-white" />;
   };
 
   const ThBtn = ({
@@ -260,7 +260,7 @@ export default function MemberStatisticsPage() {
     className?: string;
   }) => (
     <th
-      className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 cursor-pointer select-none hover:text-taruna-dark dark:hover:text-white transition-colors ${className}`}
+      className={`px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-white cursor-pointer select-none hover:text-[#D6DDD5] transition-colors ${className}`}
       onClick={() => handleSort(col)}
     >
       <div className="flex items-center gap-1">
@@ -272,7 +272,7 @@ export default function MemberStatisticsPage() {
 
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-taruna-surface dark:bg-slate-950 flex">
+    <div className="min-h-screen bg-[#D6DDD5] text-[#163E4F] flex">
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -285,13 +285,13 @@ export default function MemberStatisticsPage() {
 
         <main className="flex-1 px-4 md:px-6 py-6 space-y-6 max-w-7xl mx-auto w-full">
           {/* Header */}
-          <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex items-start justify-between gap-4 flex-wrap bg-[#466060] text-white p-5 rounded-2xl border border-[#163E4F] shadow-sm">
             <div>
-              <h1 className="text-2xl font-bold text-taruna-dark dark:text-white flex items-center gap-2">
-                <BarChart2 className="w-6 h-6 text-taruna-yellow-500" />
+              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+                <BarChart2 className="w-6 h-6 text-[#4ADE80]" />
                 Statistik Keaktifan Anggota
               </h1>
-              <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">
+              <p className="text-[#D6DDD5] text-sm mt-1">
                 Rekap kehadiran seluruh anggota aktif berdasarkan data absensi kegiatan.
               </p>
             </div>
@@ -300,7 +300,7 @@ export default function MemberStatisticsPage() {
               size="sm"
               onClick={fetchStats}
               disabled={loading}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 bg-[#163E4F] hover:bg-[#163E4F]/80 text-white border border-[#466060]"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               Perbarui
@@ -308,8 +308,8 @@ export default function MemberStatisticsPage() {
           </div>
 
           {/* Disclaimer */}
-          <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3 text-sm text-blue-700 dark:text-blue-300">
-            <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <div className="flex items-start gap-2 bg-[#466060]/20 border border-[#466060] rounded-xl p-3 text-sm text-[#163E4F]">
+            <Info className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#163E4F]" />
             <span>
               Statistik ini bersifat <strong>informatif</strong> sebagai bahan evaluasi partisipasi anggota.
               Ranking kehadiran bukan merupakan penilaian moral terhadap anggota.
@@ -318,7 +318,7 @@ export default function MemberStatisticsPage() {
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 text-red-700 dark:text-red-300 text-sm">
+            <div className="bg-red-500/20 border border-red-400 rounded-xl p-4 text-red-900 text-sm">
               {error}
             </div>
           )}
@@ -327,7 +327,7 @@ export default function MemberStatisticsPage() {
           {loading && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-24 bg-gray-100 dark:bg-slate-800 rounded-2xl animate-pulse" />
+                <div key={i} className="h-24 bg-[#6A8578]/50 rounded-2xl animate-pulse" />
               ))}
             </div>
           )}
@@ -341,46 +341,46 @@ export default function MemberStatisticsPage() {
                     label: 'Total Kegiatan',
                     value: data.summary.totalEvents,
                     icon: CalendarDays,
-                    color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
+                    color: 'bg-[#466060] text-white border border-[#163E4F]',
                   },
                   {
                     label: 'Total Anggota',
                     value: data.summary.totalMembers,
                     icon: Users,
-                    color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+                    color: 'bg-[#466060] text-white border border-[#163E4F]',
                   },
                   {
                     label: 'Total Hadir',
                     value: data.summary.totalPresent,
                     icon: CheckCircle2,
-                    color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400',
+                    color: 'bg-[#466060] text-[#4ADE80] border border-[#163E4F]',
                   },
                   {
                     label: 'Total Izin',
                     value: data.summary.totalExcused,
                     icon: Clock,
-                    color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400',
+                    color: 'bg-[#466060] text-[#FDE047] border border-[#163E4F]',
                   },
                   {
                     label: 'Tidak Hadir',
                     value: data.summary.totalAbsent,
                     icon: XCircle,
-                    color: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400',
+                    color: 'bg-[#466060] text-[#F87171] border border-[#163E4F]',
                   },
                   {
                     label: 'Kehadiran Rata-rata',
                     value: `${data.summary.overallRate}%`,
                     icon: TrendingUp,
-                    color: 'bg-taruna-yellow-100 dark:bg-taruna-yellow-900/30 text-taruna-yellow-700 dark:text-taruna-yellow-400',
+                    color: 'bg-[#466060] text-[#38BDF8] border border-[#163E4F]',
                   },
                 ].map(({ label, value, icon: Icon, color }) => (
-                  <Card key={label} className="rounded-2xl border border-taruna-border dark:border-slate-800">
+                  <Card key={label} className="!bg-[#6A8578] text-white rounded-2xl border border-[#466060] shadow-sm">
                     <CardContent className="p-4 flex flex-col gap-2">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${color}`}>
                         <Icon className="w-4 h-4" />
                       </div>
-                      <p className="text-xl font-bold text-taruna-dark dark:text-white">{value}</p>
-                      <p className="text-xs text-gray-500 dark:text-slate-400 leading-tight">{label}</p>
+                      <p className="text-xl font-bold text-white">{value}</p>
+                      <p className="text-xs text-[#D6DDD5] leading-tight">{label}</p>
                     </CardContent>
                   </Card>
                 ))}
@@ -389,35 +389,35 @@ export default function MemberStatisticsPage() {
               {/* ── Charts Row ────────────────────────────────────────────── */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Stacked Bar Chart */}
-                <Card className="lg:col-span-2 rounded-2xl border border-taruna-border dark:border-slate-800">
+                <Card className="lg:col-span-2 !bg-[#6A8578] text-white rounded-2xl border border-[#466060] shadow-sm">
                   <CardHeader className="px-5 pt-5 pb-2">
-                    <CardTitle className="text-base">Tren Kehadiran Bulanan</CardTitle>
-                    <CardDescription>Kehadiran, izin, dan ketidakhadiran per bulan (6 bulan terakhir)</CardDescription>
+                    <CardTitle className="text-base text-white">Tren Kehadiran Bulanan</CardTitle>
+                    <CardDescription className="text-[#D6DDD5]">Kehadiran, izin, dan ketidakhadiran per bulan (6 bulan terakhir)</CardDescription>
                   </CardHeader>
                   <CardContent className="px-5 pb-5">
                     {data.chartData.length === 0 ? (
-                      <div className="h-48 flex items-center justify-center text-gray-400 dark:text-slate-500 text-sm">
+                      <div className="h-48 flex items-center justify-center text-[#D6DDD5] text-sm">
                         Belum ada data kehadiran bulanan
                       </div>
                     ) : (
                       <ResponsiveContainer width="100%" height={220}>
                         <BarChart data={data.chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                          <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-slate-700" />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#D6DDD5" opacity={0.25} />
                           <XAxis
                             dataKey="month"
-                            tick={{ fontSize: 11, fill: 'currentColor' }}
-                            className="text-gray-500 dark:text-slate-400"
+                            tick={{ fontSize: 11, fill: '#D6DDD5' }}
                           />
-                          <YAxis tick={{ fontSize: 11, fill: 'currentColor' }} className="text-gray-500 dark:text-slate-400" />
+                          <YAxis tick={{ fontSize: 11, fill: '#D6DDD5' }} />
                           <Tooltip content={<ChartTooltip />} />
                           <Legend
                             iconType="circle"
                             iconSize={8}
                             wrapperStyle={{ fontSize: 12 }}
+                            formatter={(value) => <span className="text-[#D6DDD5] font-semibold">{value}</span>}
                           />
-                          <Bar dataKey="hadir" name="Hadir" stackId="a" fill="#10b981" radius={[0, 0, 0, 0]} />
-                          <Bar dataKey="izin" name="Izin" stackId="a" fill="#f59e0b" radius={[0, 0, 0, 0]} />
-                          <Bar dataKey="tidakHadir" name="Tidak Hadir" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="hadir" name="Hadir" stackId="a" fill="#4ADE80" radius={[0, 0, 0, 0]} />
+                          <Bar dataKey="izin" name="Izin" stackId="a" fill="#FDE047" radius={[0, 0, 0, 0]} />
+                          <Bar dataKey="tidakHadir" name="Tidak Hadir" stackId="a" fill="#F87171" radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     )}
@@ -425,14 +425,14 @@ export default function MemberStatisticsPage() {
                 </Card>
 
                 {/* Pie Chart */}
-                <Card className="rounded-2xl border border-taruna-border dark:border-slate-800">
+                <Card className="!bg-[#6A8578] text-white rounded-2xl border border-[#466060] shadow-sm">
                   <CardHeader className="px-5 pt-5 pb-2">
-                    <CardTitle className="text-base">Distribusi Status</CardTitle>
-                    <CardDescription>Proporsi kehadiran keseluruhan</CardDescription>
+                    <CardTitle className="text-base text-white">Distribusi Status</CardTitle>
+                    <CardDescription className="text-[#D6DDD5]">Proporsi kehadiran keseluruhan</CardDescription>
                   </CardHeader>
                   <CardContent className="px-5 pb-5">
                     {pieData.length === 0 ? (
-                      <div className="h-48 flex items-center justify-center text-gray-400 dark:text-slate-500 text-sm">
+                      <div className="h-48 flex items-center justify-center text-[#D6DDD5] text-sm">
                         Belum ada data absensi
                       </div>
                     ) : (
@@ -468,10 +468,10 @@ export default function MemberStatisticsPage() {
                                     className="w-2 h-2 rounded-full flex-shrink-0"
                                     style={{ backgroundColor: d.color }}
                                   />
-                                  <span className="text-gray-600 dark:text-slate-300">{d.name}</span>
+                                  <span className="text-[#D6DDD5]">{d.name}</span>
                                 </div>
-                                <span className="font-semibold text-taruna-dark dark:text-white">
-                                  {d.value} <span className="font-normal text-gray-400">({pct}%)</span>
+                                <span className="font-semibold text-white">
+                                  {d.value} <span className="font-normal text-[#D6DDD5]">({pct}%)</span>
                                 </span>
                               </div>
                             );
@@ -484,38 +484,38 @@ export default function MemberStatisticsPage() {
               </div>
 
               {/* ── Ranking Table ─────────────────────────────────────────── */}
-              <Card className="rounded-2xl border border-taruna-border dark:border-slate-800">
+              <Card className="!bg-[#6A8578] text-white rounded-2xl border border-[#466060] shadow-sm">
                 <CardHeader className="px-5 pt-5 pb-3">
                   <div className="flex items-start justify-between flex-wrap gap-3">
                     <div>
-                      <CardTitle className="text-base flex items-center gap-2">
-                        <Trophy className="w-4 h-4 text-yellow-500" />
+                      <CardTitle className="text-base flex items-center gap-2 text-white">
+                        <Trophy className="w-4 h-4 text-[#FDE047]" />
                         Ranking Kehadiran Anggota
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-[#D6DDD5]">
                         Diurutkan berdasarkan jumlah kehadiran. Klik header kolom untuk mengurutkan.
                       </CardDescription>
                     </div>
                     {/* Filters */}
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="relative">
-                        <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#D6DDD5]" />
                         <Input
                           placeholder="Cari anggota..."
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
-                          className="pl-8 h-8 text-sm w-44"
+                          className="pl-8 h-8 text-sm w-44 bg-[#163E4F] border-[#466060] text-white placeholder:text-[#D6DDD5]/60"
                         />
                       </div>
-                      <div className="flex rounded-lg border border-gray-200 dark:border-slate-700 overflow-hidden text-xs">
+                      <div className="flex rounded-lg border border-[#466060] overflow-hidden text-xs bg-[#163E4F]">
                         {(['all', 'high', 'mid', 'low'] as const).map((f) => (
                           <button
                             key={f}
                             onClick={() => setRateFilter(f)}
                             className={`px-2.5 py-1.5 transition-colors font-medium ${
                               rateFilter === f
-                                ? 'bg-taruna-yellow-500 text-white'
-                                : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800'
+                                ? 'bg-[#466060] text-white'
+                                : 'text-[#D6DDD5] hover:bg-[#466060]/50'
                             }`}
                           >
                             {f === 'all' ? 'Semua' : f === 'high' ? '≥80%' : f === 'mid' ? '60-79%' : '<60%'}
@@ -528,7 +528,7 @@ export default function MemberStatisticsPage() {
                 <CardContent className="px-0 pb-0">
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50 dark:bg-slate-800/50 border-y border-gray-100 dark:border-slate-700">
+                      <thead className="bg-[#466060] text-white border-y border-[#163E4F]">
                         <tr>
                           <ThBtn col="rank" className="w-16 pl-5">
                             #
@@ -555,10 +555,10 @@ export default function MemberStatisticsPage() {
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                      <tbody className="divide-y divide-[#466060]/40">
                         {processedRanking.length === 0 ? (
                           <tr>
-                            <td colSpan={8} className="px-5 py-10 text-center text-gray-400 dark:text-slate-500">
+                            <td colSpan={8} className="px-5 py-10 text-center text-[#D6DDD5]">
                               Tidak ada data yang sesuai
                             </td>
                           </tr>
@@ -569,7 +569,7 @@ export default function MemberStatisticsPage() {
                             return (
                               <tr
                                 key={member.memberId}
-                                className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors"
+                                className="hover:bg-[#466060]/30 transition-colors"
                               >
                                 {/* Rank */}
                                 <td className="px-4 py-3 pl-5">
@@ -577,7 +577,7 @@ export default function MemberStatisticsPage() {
                                     {originalRank <= 3 ? (
                                       <Trophy className={`w-5 h-5 ${medalColor(originalRank)}`} />
                                     ) : (
-                                      <span className="text-sm font-bold text-gray-400 dark:text-slate-500">
+                                      <span className="text-sm font-bold text-[#D6DDD5]">
                                         {originalRank}
                                       </span>
                                     )}
@@ -587,40 +587,40 @@ export default function MemberStatisticsPage() {
                                 {/* Name */}
                                 <td className="px-4 py-3">
                                   <div>
-                                    <p className="font-semibold text-taruna-dark dark:text-white">
+                                    <p className="font-semibold text-white">
                                       {member.name}
                                     </p>
-                                    <p className="text-xs text-gray-400 dark:text-slate-500">
+                                    <p className="text-xs text-[#D6DDD5]">
                                       {member.memberNumber}
                                     </p>
                                   </div>
                                 </td>
 
                                 {/* Tercatat */}
-                                <td className="px-4 py-3 text-gray-600 dark:text-slate-300 font-medium">
+                                <td className="px-4 py-3 text-[#D6DDD5] font-medium">
                                   {member.stats.totalRecorded}
-                                  <span className="text-gray-400 dark:text-slate-500 text-xs">
+                                  <span className="text-[#D6DDD5]/60 text-xs">
                                     /{member.stats.totalEvents}
                                   </span>
                                 </td>
 
                                 {/* Present */}
                                 <td className="px-4 py-3">
-                                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                                  <span className="font-bold text-[#4ADE80]">
                                     {member.stats.presentCount}
                                   </span>
                                 </td>
 
                                 {/* Excused */}
                                 <td className="px-4 py-3">
-                                  <span className="font-bold text-yellow-600 dark:text-yellow-400">
+                                  <span className="font-bold text-[#FDE047]">
                                     {member.stats.excusedCount}
                                   </span>
                                 </td>
 
                                 {/* Absent */}
                                 <td className="px-4 py-3">
-                                  <span className="font-bold text-red-600 dark:text-red-400">
+                                  <span className="font-bold text-[#F87171]">
                                     {member.stats.absentCount}
                                   </span>
                                 </td>
@@ -638,23 +638,23 @@ export default function MemberStatisticsPage() {
 
                                 {/* Progress bar */}
                                 <td className="px-4 py-3 pr-5 min-w-[120px]">
-                                  <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                                  <div className="w-full bg-[#466060] rounded-full h-2 overflow-hidden">
                                     {member.stats.totalRecorded > 0 && (
                                       <div className="flex h-2">
                                         <div
-                                          className="bg-emerald-500 h-2"
+                                          className="bg-[#4ADE80] h-2"
                                           style={{
                                             width: `${(member.stats.presentCount / member.stats.totalEvents) * 100}%`,
                                           }}
                                         />
                                         <div
-                                          className="bg-yellow-400 h-2"
+                                          className="bg-[#FDE047] h-2"
                                           style={{
                                             width: `${(member.stats.excusedCount / member.stats.totalEvents) * 100}%`,
                                           }}
                                         />
                                         <div
-                                          className="bg-red-400 h-2"
+                                          className="bg-[#F87171] h-2"
                                           style={{
                                             width: `${(member.stats.absentCount / member.stats.totalEvents) * 100}%`,
                                           }}
@@ -672,19 +672,19 @@ export default function MemberStatisticsPage() {
                   </div>
 
                   {/* Table footer */}
-                  <div className="px-5 py-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-xs text-gray-400 dark:text-slate-500">
+                  <div className="px-5 py-3 border-t border-[#466060] flex items-center justify-between text-xs text-[#D6DDD5]">
                     <span>
                       Menampilkan {processedRanking.length} dari {data.ranking.length} anggota
                     </span>
                     <div className="flex items-center gap-3">
                       <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500" /> Hadir
+                        <span className="w-2 h-2 rounded-full bg-[#4ADE80]" /> Hadir
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-yellow-400" /> Izin
+                        <span className="w-2 h-2 rounded-full bg-[#FDE047]" /> Izin
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-red-400" /> Tidak Hadir
+                        <span className="w-2 h-2 rounded-full bg-[#F87171]" /> Tidak Hadir
                       </span>
                     </div>
                   </div>

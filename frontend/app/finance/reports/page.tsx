@@ -169,8 +169,8 @@ interface CustomTooltipProps {
 const CustomChartTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white dark:bg-slate-900 p-3 rounded-2xl shadow-xl border border-taruna-border dark:border-slate-800 text-xs space-y-1.5 min-w-[180px]">
-        <p className="font-bold text-taruna-dark dark:text-white border-b border-gray-100 dark:border-slate-800 pb-1 mb-1">
+      <div className="bg-[#163E4F] border border-[#466060] p-3 rounded-2xl shadow-xl text-xs space-y-1.5 min-w-[180px] text-white">
+        <p className="font-bold text-white border-b border-[#466060] pb-1 mb-1">
           {label}
         </p>
         {payload.map((entry: any, index: number) => (
@@ -179,7 +179,7 @@ const CustomChartTooltip: React.FC<CustomTooltipProps> = ({ active, payload, lab
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
               {entry.name}:
             </span>
-            <span className="font-bold text-taruna-dark dark:text-white">
+            <span className="font-bold text-white">
               {formatRupiah(entry.value)}
             </span>
           </div>
@@ -493,7 +493,7 @@ export default function FinancialReportsPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex bg-[#D6DDD5] text-[#163E4F] transition-colors">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={currentUser.role} />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -585,11 +585,11 @@ export default function FinancialReportsPage() {
           </div>
 
           {/* ── HEADER BANNER ── */}
-          <div className="print:hidden flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
+          <div className="print:hidden flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#466060] text-white p-5 sm:p-6 rounded-3xl border border-[#163E4F] shadow-sm">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#4ADE80] animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#D6DDD5]">
                   Transparansi &amp; Akuntabilitas Publik
                 </span>
                 <Badge variant={currentUser.role === 'SUPERADMIN' ? 'warning' : isAdmin ? 'accent' : 'primary'} size="sm">
@@ -611,11 +611,11 @@ export default function FinancialReportsPage() {
                   )}
                 </Badge>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight flex items-center gap-2.5">
-                <BarChart3 className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2.5">
+                <BarChart3 className="w-7 h-7 text-[#4ADE80]" />
                 Laporan Keuangan Organisasi
               </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1">
                 Laporan pemasukan, pengeluaran, saldo periode, visualisasi grafik Recharts, dan fitur ekspor CSV / PDF.
               </p>
             </div>
@@ -625,6 +625,7 @@ export default function FinancialReportsPage() {
               <Button
                 variant="outline"
                 size="sm"
+                className="bg-white/10 hover:bg-white/20 text-white border-white/20"
                 leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
                 onClick={() => fetchReport(true)}
                 disabled={isRefreshing}
@@ -634,6 +635,7 @@ export default function FinancialReportsPage() {
               <Button
                 variant="secondary"
                 size="sm"
+                className="bg-[#163E4F] hover:bg-[#163E4F]/80 text-white border-none"
                 leftIcon={<Printer className="w-4 h-4" />}
                 onClick={handlePrint}
               >
@@ -642,7 +644,7 @@ export default function FinancialReportsPage() {
               <Button
                 variant="primary"
                 size="sm"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-[#163E4F] hover:bg-[#163E4F]/90 text-white border border-[#466060]"
                 leftIcon={<Download className="w-4 h-4" />}
                 onClick={handleExportCSV}
               >
@@ -652,36 +654,36 @@ export default function FinancialReportsPage() {
           </div>
 
           {/* ── FILTER SECTION ── */}
-          <Card className="print:hidden">
+          <Card className="print:hidden !bg-[#6A8578] text-white border-[#466060]">
             <CardHeader className="pb-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <Filter className="w-4 h-4 text-emerald-600" />
-                  <CardTitle className="text-base">Filter Periode Laporan</CardTitle>
+                  <Filter className="w-4 h-4 text-[#D6DDD5]" />
+                  <CardTitle className="text-base text-white">Filter Periode Laporan</CardTitle>
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-xs text-gray-400 mr-1 font-semibold">Pintas:</span>
+                  <span className="text-xs text-[#D6DDD5] mr-1 font-semibold">Pintas:</span>
                   <button
                     onClick={handlePresetAllTime}
-                    className="text-xs px-2.5 py-1 rounded-lg border border-taruna-border dark:border-slate-800 bg-taruna-surface dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-gray-600 dark:text-slate-300 font-medium transition"
+                    className="text-xs px-2.5 py-1 rounded-lg border border-[#466060] bg-[#163E4F] hover:bg-[#466060] text-[#D6DDD5] hover:text-white font-medium transition"
                   >
                     Semua Waktu
                   </button>
                   <button
                     onClick={handlePresetThisYear}
-                    className="text-xs px-2.5 py-1 rounded-lg border border-taruna-border dark:border-slate-800 bg-taruna-surface dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-gray-600 dark:text-slate-300 font-medium transition"
+                    className="text-xs px-2.5 py-1 rounded-lg border border-[#466060] bg-[#163E4F] hover:bg-[#466060] text-[#D6DDD5] hover:text-white font-medium transition"
                   >
                     Tahun 2026
                   </button>
                   <button
                     onClick={handlePresetThisMonth}
-                    className="text-xs px-2.5 py-1 rounded-lg border border-taruna-border dark:border-slate-800 bg-taruna-surface dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-gray-600 dark:text-slate-300 font-medium transition"
+                    className="text-xs px-2.5 py-1 rounded-lg border border-[#466060] bg-[#163E4F] hover:bg-[#466060] text-[#D6DDD5] hover:text-white font-medium transition"
                   >
                     Bulan Ini
                   </button>
                   <button
                     onClick={handlePresetLast30Days}
-                    className="text-xs px-2.5 py-1 rounded-lg border border-taruna-border dark:border-slate-800 bg-taruna-surface dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-gray-600 dark:text-slate-300 font-medium transition"
+                    className="text-xs px-2.5 py-1 rounded-lg border border-[#466060] bg-[#163E4F] hover:bg-[#466060] text-[#D6DDD5] hover:text-white font-medium transition"
                   >
                     30 Hari Terakhir
                   </button>
@@ -692,7 +694,7 @@ export default function FinancialReportsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                 {/* Tanggal Awal */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
+                  <label className="block text-xs font-bold text-[#D6DDD5] mb-1">
                     Tanggal Awal:
                   </label>
                   <Input
@@ -707,7 +709,7 @@ export default function FinancialReportsPage() {
 
                 {/* Tanggal Akhir */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
+                  <label className="block text-xs font-bold text-[#D6DDD5] mb-1">
                     Tanggal Akhir:
                   </label>
                   <Input
@@ -722,7 +724,7 @@ export default function FinancialReportsPage() {
 
                 {/* Bulan */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
+                  <label className="block text-xs font-bold text-[#D6DDD5] mb-1">
                     Pilih Bulan:
                   </label>
                   <Select
@@ -738,7 +740,7 @@ export default function FinancialReportsPage() {
 
                 {/* Tahun */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
+                  <label className="block text-xs font-bold text-[#D6DDD5] mb-1">
                     Pilih Tahun:
                   </label>
                   <Select
@@ -750,7 +752,7 @@ export default function FinancialReportsPage() {
 
                 {/* Jenis Transaksi */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">
+                  <label className="block text-xs font-bold text-[#D6DDD5] mb-1">
                     Jenis Transaksi:
                   </label>
                   <Select
@@ -762,14 +764,14 @@ export default function FinancialReportsPage() {
               </div>
 
               {hasActiveFilters && (
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-taruna-border dark:border-slate-800 text-xs">
-                  <span className="text-gray-500 dark:text-slate-400 flex items-center gap-1.5">
-                    <Info className="w-3.5 h-3.5 text-emerald-500" />
-                    Periode aktif: <strong className="text-taruna-dark dark:text-white">{report?.filter.periodLabel}</strong>
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#466060] text-xs">
+                  <span className="text-[#D6DDD5] flex items-center gap-1.5">
+                    <Info className="w-3.5 h-3.5 text-[#4ADE80]" />
+                    Periode aktif: <strong className="text-white">{report?.filter.periodLabel}</strong>
                   </span>
                   <button
                     onClick={resetFilters}
-                    className="text-red-600 dark:text-red-400 font-semibold hover:underline flex items-center gap-1"
+                    className="text-red-300 hover:text-red-200 font-semibold hover:underline flex items-center gap-1"
                   >
                     <X className="w-3.5 h-3.5" />
                     Reset Semua Filter
@@ -782,54 +784,54 @@ export default function FinancialReportsPage() {
           {/* ── 4 SUMMARY CARDS (REQUIRED: total pemasukan, total pengeluaran, saldo, jumlah transaksi) ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 print:hidden">
             {/* 1. TOTAL PEMASUKAN */}
-            <Card hoverable className="border-t-4 border-t-emerald-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
                   TOTAL PEMASUKAN
                 </span>
-                <div className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 ring-2 ring-black/5 dark:ring-white/5">
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-[#4ADE80] border border-[#163E4F]">
                   <ArrowDownLeft className="w-5 h-5" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                <div className="text-2xl sm:text-3xl font-black text-[#4ADE80]">
                   {formatRupiah(report?.summary.totalPemasukan || 0)}
                 </div>
-                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                  <TrendingUp className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-[#D6DDD5]">
+                  <TrendingUp className="w-3.5 h-3.5 text-[#4ADE80]" />
                   <span>Kas masuk pada periode ini</span>
                 </div>
               </CardContent>
             </Card>
 
             {/* 2. TOTAL PENGELUARAN */}
-            <Card hoverable className="border-t-4 border-t-red-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
                   TOTAL PENGELUARAN
                 </span>
-                <div className="p-2.5 rounded-2xl bg-red-50 dark:bg-slate-800 text-red-600 dark:text-red-400 ring-2 ring-black/5 dark:ring-white/5">
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-[#F87171] border border-[#163E4F]">
                   <ArrowUpRight className="w-5 h-5" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-red-600 dark:text-red-400">
+                <div className="text-2xl sm:text-3xl font-black text-[#F87171]">
                   {formatRupiah(report?.summary.totalPengeluaran || 0)}
                 </div>
-                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-gray-500 dark:text-slate-400">
-                  <ArrowUpRight className="w-3.5 h-3.5 text-red-500" />
+                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-[#D6DDD5]">
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[#F87171]" />
                   <span>Kas keluar pada periode ini</span>
                 </div>
               </CardContent>
             </Card>
 
             {/* 3. SALDO */}
-            <Card hoverable className="border-t-4 border-t-sky-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
                   SALDO PERIODE (NET)
                 </span>
-                <div className="p-2.5 rounded-2xl bg-sky-50 dark:bg-slate-800 text-sky-600 dark:text-sky-400 ring-2 ring-black/5 dark:ring-white/5">
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-[#38BDF8] border border-[#163E4F]">
                   <Scale className="w-5 h-5" />
                 </div>
               </CardHeader>
@@ -837,34 +839,34 @@ export default function FinancialReportsPage() {
                 <div
                   className={`text-2xl sm:text-3xl font-black ${
                     (report?.summary.saldo || 0) >= 0
-                      ? 'text-taruna-dark dark:text-white'
-                      : 'text-red-600 dark:text-red-400'
+                      ? 'text-white'
+                      : 'text-[#F87171]'
                   }`}
                 >
                   {formatRupiah(report?.summary.saldo || 0)}
                 </div>
-                <div className="mt-2 text-[11px] font-mono font-medium text-sky-800 dark:text-sky-300 bg-sky-50/80 dark:bg-slate-800/80 px-2 py-0.5 rounded-lg border border-sky-200/60 dark:border-slate-700">
+                <div className="mt-2 text-[11px] font-mono font-medium text-[#D6DDD5] bg-[#163E4F]/50 px-2 py-0.5 rounded-lg border border-[#466060]">
                   saldo = pemasukan - pengeluaran
                 </div>
               </CardContent>
             </Card>
 
             {/* 4. JUMLAH TRANSAKSI */}
-            <Card hoverable className="border-t-4 border-t-purple-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
                   JUMLAH TRANSAKSI
                 </span>
-                <div className="p-2.5 rounded-2xl bg-purple-50 dark:bg-slate-800 text-purple-600 dark:text-purple-400 ring-2 ring-black/5 dark:ring-white/5">
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-white border border-[#163E4F]">
                   <FileSpreadsheet className="w-5 h-5" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400">
+                <div className="text-2xl sm:text-3xl font-black text-white">
                   {report?.summary.jumlahTransaksi || 0}
                 </div>
-                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-gray-500 dark:text-slate-400">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-purple-500" />
+                <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-[#D6DDD5]">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#4ADE80]" />
                   <span>Transaksi terverifikasi pembukuan</span>
                 </div>
               </CardContent>
@@ -872,21 +874,21 @@ export default function FinancialReportsPage() {
           </div>
 
           {/* ── SALDO FLOW AUDIT BANNER ── */}
-          <div className="print:hidden p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
+          <div className="print:hidden p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-slate-800 text-emerald-600">
+              <div className="p-2.5 rounded-xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
                 <Wallet className="w-5 h-5" />
               </div>
               <div>
-                <p className="font-bold text-taruna-dark dark:text-white">Rekonsiliasi Saldo Kas Organisasi</p>
-                <p className="text-gray-500 dark:text-slate-400">
+                <p className="font-bold text-white">Rekonsiliasi Saldo Kas Organisasi</p>
+                <p className="text-[#D6DDD5]">
                   Saldo Awal ({formatRupiah(report?.summary.saldoAwal || 0)}) + Pemasukan ({formatRupiah(report?.summary.totalPemasukan || 0)}) - Pengeluaran ({formatRupiah(report?.summary.totalPengeluaran || 0)})
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 border-t md:border-t-0 pt-2 md:pt-0">
-              <span className="text-gray-500">Saldo Akhir Berjalan:</span>
-              <span className="text-base font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-xl border border-emerald-200 dark:border-emerald-800">
+            <div className="flex items-center gap-2 border-t border-[#466060] md:border-t-0 pt-2 md:pt-0">
+              <span className="text-[#D6DDD5]">Saldo Akhir Berjalan:</span>
+              <span className="text-base font-black text-[#4ADE80] bg-[#163E4F] px-3 py-1 rounded-xl border border-[#466060]">
                 {formatRupiah(report?.summary.saldoAkhir || 0)}
               </span>
             </div>
@@ -895,24 +897,24 @@ export default function FinancialReportsPage() {
           {/* ── CHARTS SECTION (RECHARTS) ── */}
           <div className="print:hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Chart Utama: Pemasukan vs Pengeluaran */}
-            <Card className="lg:col-span-2">
+            <Card className="lg:col-span-2 !bg-[#6A8578] text-white border-[#466060] shadow-md">
               <CardHeader className="flex-row items-center justify-between flex-wrap gap-2 pb-2">
                 <div>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-emerald-600" />
+                  <CardTitle className="text-lg flex items-center gap-2 text-white">
+                    <BarChart3 className="w-5 h-5 text-[#4ADE80]" />
                     Grafik Pemasukan vs Pengeluaran
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-[#D6DDD5]">
                     Perbandingan visual kas masuk dan keluar per {report?.chartData?.length && report.chartData.length <= 12 ? 'bulan / periode' : 'hari'}.
                   </CardDescription>
                 </div>
-                <div className="flex items-center gap-1 bg-taruna-surface dark:bg-slate-800 p-1 rounded-xl border border-taruna-border dark:border-slate-700">
+                <div className="flex items-center gap-1 bg-[#163E4F] p-1 rounded-xl border border-[#466060]">
                   <button
                     onClick={() => setActiveChartTab('bar')}
                     className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
                       activeChartTab === 'bar'
-                        ? 'bg-white dark:bg-slate-900 text-taruna-dark dark:text-white shadow-xs'
-                        : 'text-gray-500 hover:text-taruna-dark'
+                        ? 'bg-[#466060] text-white shadow-xs'
+                        : 'text-[#D6DDD5] hover:text-white'
                     }`}
                   >
                     Batang (Bar)
@@ -921,8 +923,8 @@ export default function FinancialReportsPage() {
                     onClick={() => setActiveChartTab('area')}
                     className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
                       activeChartTab === 'area'
-                        ? 'bg-white dark:bg-slate-900 text-taruna-dark dark:text-white shadow-xs'
-                        : 'text-gray-500 hover:text-taruna-dark'
+                        ? 'bg-[#466060] text-white shadow-xs'
+                        : 'text-[#D6DDD5] hover:text-white'
                     }`}
                   >
                     Area / Tren
@@ -932,43 +934,45 @@ export default function FinancialReportsPage() {
               <CardContent>
                 <div className="h-72 w-full pt-4">
                   {isLoading ? (
-                    <div className="h-full flex items-center justify-center text-gray-400">
-                      <RefreshCw className="w-6 h-6 animate-spin mr-2 text-emerald-600" />
+                    <div className="h-full flex items-center justify-center text-[#D6DDD5]">
+                      <RefreshCw className="w-6 h-6 animate-spin mr-2 text-[#4ADE80]" />
                       <span>Memuat grafik keuangan...</span>
                     </div>
                   ) : !report?.chartData || report.chartData.length === 0 ? (
-                    <div className="h-full flex items-center justify-center text-gray-400">
+                    <div className="h-full flex items-center justify-center text-[#D6DDD5]">
                       <span>Tidak ada data untuk periode ini.</span>
                     </div>
                   ) : activeChartTab === 'bar' ? (
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={report.chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.6} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#D6DDD5" opacity={0.25} />
                         <XAxis
                           dataKey="period"
-                          tick={{ fontSize: 11, fill: '#64748b' }}
-                          stroke="#cbd5e1"
+                          tick={{ fontSize: 11, fill: '#D6DDD5' }}
+                          stroke="#D6DDD5"
+                          strokeOpacity={0.4}
                         />
                         <YAxis
-                          tick={{ fontSize: 10, fill: '#64748b' }}
-                          stroke="#cbd5e1"
+                          tick={{ fontSize: 10, fill: '#D6DDD5' }}
+                          stroke="#D6DDD5"
+                          strokeOpacity={0.4}
                           tickFormatter={(val) => `Rp${(val / 1000).toLocaleString('id-ID')}k`}
                         />
                         <Tooltip content={<CustomChartTooltip />} />
                         <Legend
                           wrapperStyle={{ paddingTop: 10, fontSize: 12 }}
-                          formatter={(value) => <span className="font-semibold text-xs">{value}</span>}
+                          formatter={(value) => <span className="font-semibold text-xs text-[#D6DDD5]">{value}</span>}
                         />
                         <Bar
                           dataKey="pemasukan"
                           name="Pemasukan (Kas Masuk)"
-                          fill="#10b981"
+                          fill="#4ADE80"
                           radius={[6, 6, 0, 0]}
                         />
                         <Bar
                           dataKey="pengeluaran"
                           name="Pengeluaran (Kas Keluar)"
-                          fill="#f43f5e"
+                          fill="#F87171"
                           radius={[6, 6, 0, 0]}
                         />
                       </BarChart>
@@ -978,35 +982,37 @@ export default function FinancialReportsPage() {
                       <AreaChart data={report.chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
                         <defs>
                           <linearGradient id="colorInc" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
-                            <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                            <stop offset="5%" stopColor="#4ADE80" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#4ADE80" stopOpacity={0.0} />
                           </linearGradient>
                           <linearGradient id="colorExp" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.4} />
-                            <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.0} />
+                            <stop offset="5%" stopColor="#F87171" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#F87171" stopOpacity={0.0} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" opacity={0.6} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#D6DDD5" opacity={0.25} />
                         <XAxis
                           dataKey="period"
-                          tick={{ fontSize: 11, fill: '#64748b' }}
-                          stroke="#cbd5e1"
+                          tick={{ fontSize: 11, fill: '#D6DDD5' }}
+                          stroke="#D6DDD5"
+                          strokeOpacity={0.4}
                         />
                         <YAxis
-                          tick={{ fontSize: 10, fill: '#64748b' }}
-                          stroke="#cbd5e1"
+                          tick={{ fontSize: 10, fill: '#D6DDD5' }}
+                          stroke="#D6DDD5"
+                          strokeOpacity={0.4}
                           tickFormatter={(val) => `Rp${(val / 1000).toLocaleString('id-ID')}k`}
                         />
                         <Tooltip content={<CustomChartTooltip />} />
                         <Legend
                           wrapperStyle={{ paddingTop: 10, fontSize: 12 }}
-                          formatter={(value) => <span className="font-semibold text-xs">{value}</span>}
+                          formatter={(value) => <span className="font-semibold text-xs text-[#D6DDD5]">{value}</span>}
                         />
                         <Area
                           type="monotone"
                           dataKey="pemasukan"
                           name="Pemasukan"
-                          stroke="#10b981"
+                          stroke="#4ADE80"
                           strokeWidth={2}
                           fillOpacity={1}
                           fill="url(#colorInc)"
@@ -1015,7 +1021,7 @@ export default function FinancialReportsPage() {
                           type="monotone"
                           dataKey="pengeluaran"
                           name="Pengeluaran"
-                          stroke="#f43f5e"
+                          stroke="#F87171"
                           strokeWidth={2}
                           fillOpacity={1}
                           fill="url(#colorExp)"
@@ -1024,9 +1030,9 @@ export default function FinancialReportsPage() {
                           type="monotone"
                           dataKey="saldo"
                           name="Net Saldo"
-                          stroke="#0ea5e9"
+                          stroke="#38BDF8"
                           strokeWidth={2}
-                          dot={{ r: 3 }}
+                          dot={{ r: 3, fill: '#38BDF8' }}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -1038,10 +1044,10 @@ export default function FinancialReportsPage() {
             {/* Distribusi Pengeluaran & Sumber Pemasukan */}
             <div className="space-y-6">
               {/* Kategori Pengeluaran */}
-              <Card>
+              <Card className="!bg-[#6A8578] text-white border-[#466060]">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-bold flex items-center gap-1.5">
-                    <PieIcon className="w-4 h-4 text-red-500" />
+                  <CardTitle className="text-sm font-bold flex items-center gap-1.5 text-white">
+                    <PieIcon className="w-4 h-4 text-[#F87171]" />
                     Distribusi Pengeluaran ({report?.categoryBreakdown?.length || 0} Kategori)
                   </CardTitle>
                 </CardHeader>
@@ -1050,30 +1056,30 @@ export default function FinancialReportsPage() {
                     report.categoryBreakdown.map((cat) => (
                       <div key={cat.name} className="space-y-1">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-semibold text-gray-700 dark:text-slate-300">{cat.name}</span>
-                          <span className="font-black text-red-600 dark:text-red-400">
+                          <span className="font-semibold text-white">{cat.name}</span>
+                          <span className="font-black text-[#F87171]">
                             {formatRupiah(cat.amount)} ({cat.percentage}%)
                           </span>
                         </div>
-                        <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                        <div className="w-full bg-[#466060] rounded-full h-1.5 overflow-hidden">
                           <div
-                            className="bg-red-500 h-1.5 rounded-full transition-all duration-500"
+                            className="bg-[#F87171] h-1.5 rounded-full transition-all duration-500"
                             style={{ width: `${Math.min(100, cat.percentage)}%` }}
                           />
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="text-xs text-gray-400 text-center py-4">Belum ada pengeluaran pada periode ini.</p>
+                    <p className="text-xs text-[#D6DDD5] text-center py-4">Belum ada pengeluaran pada periode ini.</p>
                   )}
                 </CardContent>
               </Card>
 
               {/* Sumber Pemasukan */}
-              <Card>
+              <Card className="!bg-[#6A8578] text-white border-[#466060]">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-bold flex items-center gap-1.5">
-                    <Coins className="w-4 h-4 text-emerald-500" />
+                  <CardTitle className="text-sm font-bold flex items-center gap-1.5 text-white">
+                    <Coins className="w-4 h-4 text-[#4ADE80]" />
                     Sumber Pemasukan ({report?.sourceBreakdown?.length || 0} Sumber)
                   </CardTitle>
                 </CardHeader>
@@ -1082,21 +1088,21 @@ export default function FinancialReportsPage() {
                     report.sourceBreakdown.map((src) => (
                       <div key={src.name} className="space-y-1">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-semibold text-gray-700 dark:text-slate-300">{src.name}</span>
-                          <span className="font-black text-emerald-600 dark:text-emerald-400">
+                          <span className="font-semibold text-white">{src.name}</span>
+                          <span className="font-black text-[#4ADE80]">
                             {formatRupiah(src.amount)} ({src.percentage}%)
                           </span>
                         </div>
-                        <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                        <div className="w-full bg-[#466060] rounded-full h-1.5 overflow-hidden">
                           <div
-                            className="bg-emerald-500 h-1.5 rounded-full transition-all duration-500"
+                            className="bg-[#4ADE80] h-1.5 rounded-full transition-all duration-500"
                             style={{ width: `${Math.min(100, src.percentage)}%` }}
                           />
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="text-xs text-gray-400 text-center py-4">Belum ada pemasukan pada periode ini.</p>
+                    <p className="text-xs text-[#D6DDD5] text-center py-4">Belum ada pemasukan pada periode ini.</p>
                   )}
                 </CardContent>
               </Card>
@@ -1104,14 +1110,14 @@ export default function FinancialReportsPage() {
           </div>
 
           {/* ── TRANSACTIONS DETAIL TABLE ── */}
-          <Card className="print:hidden">
+          <Card className="print:hidden !bg-[#6A8578] text-white border-[#466060] shadow-md">
             <CardHeader className="flex-row items-center justify-between flex-wrap gap-3">
               <div>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <FileSpreadsheet className="w-5 h-5 text-emerald-600" />
+                <CardTitle className="text-lg flex items-center gap-2 text-white">
+                  <FileSpreadsheet className="w-5 h-5 text-[#4ADE80]" />
                   Rincian Buku Jurnal Transaksi
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-[#D6DDD5]">
                   Semua transaksi dalam periode ini dengan kalkulasi akumulasi saldo berjalan (Running Balance).
                 </CardDescription>
               </div>
@@ -1122,10 +1128,10 @@ export default function FinancialReportsPage() {
                     placeholder="Cari transaksi..."
                     value={searchTable}
                     onChange={(e) => setSearchTable(e.target.value)}
-                    leftIcon={<Search className="w-4 h-4 text-gray-400" />}
+                    leftIcon={<Search className="w-4 h-4 text-[#D6DDD5]" />}
                   />
                 </div>
-                <Badge variant="success" dot>
+                <Badge variant="primary" dot className="bg-[#163E4F] text-[#D6DDD5] border-[#466060]">
                   {filteredTransactions.length} Data
                 </Badge>
               </div>
@@ -1134,22 +1140,22 @@ export default function FinancialReportsPage() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12 text-center">No</TableHead>
-                      <TableHead className="w-32">Tanggal</TableHead>
-                      <TableHead className="w-24 text-center">Jenis</TableHead>
-                      <TableHead className="w-36">Kategori / Sumber</TableHead>
-                      <TableHead>Keterangan Transaksi</TableHead>
-                      <TableHead className="text-right w-36">Nominal</TableHead>
-                      <TableHead className="text-right w-40">Saldo Berjalan</TableHead>
+                    <TableRow className="bg-[#466060] text-white border-b border-[#163E4F] hover:bg-[#466060]">
+                      <TableHead className="w-12 text-center text-white">No</TableHead>
+                      <TableHead className="w-32 text-white">Tanggal</TableHead>
+                      <TableHead className="w-24 text-center text-white">Jenis</TableHead>
+                      <TableHead className="w-36 text-white">Kategori / Sumber</TableHead>
+                      <TableHead className="text-white">Keterangan Transaksi</TableHead>
+                      <TableHead className="text-right w-36 text-white">Nominal</TableHead>
+                      <TableHead className="text-right w-40 text-white">Saldo Berjalan</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
                         <TableCell colSpan={7} className="text-center py-12">
-                          <div className="flex flex-col items-center gap-2 text-gray-400">
-                            <RefreshCw className="w-5 h-5 animate-spin text-emerald-600" />
+                          <div className="flex flex-col items-center gap-2 text-[#D6DDD5]">
+                            <RefreshCw className="w-5 h-5 animate-spin text-[#4ADE80]" />
                             <span className="text-xs">Memuat rincian transaksi...</span>
                           </div>
                         </TableCell>
@@ -1157,27 +1163,27 @@ export default function FinancialReportsPage() {
                     ) : filteredTransactions.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={7} className="text-center py-12">
-                          <div className="flex flex-col items-center gap-1.5 text-gray-400">
+                          <div className="flex flex-col items-center gap-1.5 text-[#D6DDD5]">
                             <Info className="w-6 h-6" />
-                            <span className="text-sm font-semibold text-gray-600 dark:text-slate-300">
+                            <span className="text-sm font-semibold text-white">
                               Tidak ada transaksi yang cocok
                             </span>
-                            <span className="text-xs">Ubah rentang tanggal atau kata kunci pencarian.</span>
+                            <span className="text-xs text-[#D6DDD5]">Ubah rentang tanggal atau kata kunci pencarian.</span>
                           </div>
                         </TableCell>
                       </TableRow>
                     ) : (
                       filteredTransactions.map((t, idx) => (
-                        <TableRow key={t.id} className="hover:bg-taruna-surface/60 dark:hover:bg-slate-800/50">
+                        <TableRow key={t.id} className="hover:bg-[#466060]/30 border-b border-[#466060]/40 transition">
                           {/* No */}
-                          <TableCell className="text-center text-xs text-gray-400 font-medium">
+                          <TableCell className="text-center text-xs text-[#D6DDD5] font-medium">
                             {idx + 1}
                           </TableCell>
 
                           {/* Tanggal */}
-                          <TableCell className="text-xs font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">
+                          <TableCell className="text-xs font-medium text-[#D6DDD5] whitespace-nowrap">
                             <div className="flex items-center gap-1.5">
-                              <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                              <Calendar className="w-3.5 h-3.5 text-[#D6DDD5] shrink-0" />
                               {new Date(t.transactionDate).toLocaleDateString('id-ID', {
                                 day: 'numeric',
                                 month: 'short',
@@ -1204,10 +1210,10 @@ export default function FinancialReportsPage() {
 
                           {/* Keterangan */}
                           <TableCell>
-                            <p className="font-semibold text-sm text-taruna-dark dark:text-white">
+                            <p className="font-semibold text-sm text-white">
                               {t.description}
                             </p>
-                            <span className="text-[11px] text-gray-400 dark:text-slate-500">
+                            <span className="text-[11px] text-[#D6DDD5]">
                               Dicatat: {t.creatorName}
                             </span>
                           </TableCell>
@@ -1216,8 +1222,8 @@ export default function FinancialReportsPage() {
                           <TableCell
                             className={`text-right font-black text-sm whitespace-nowrap ${
                               t.type === 'INCOME'
-                                ? 'text-emerald-600 dark:text-emerald-400'
-                                : 'text-red-600 dark:text-red-400'
+                                ? 'text-[#4ADE80]'
+                                : 'text-[#F87171]'
                             }`}
                           >
                             {t.type === 'INCOME' ? '+' : '-'}
@@ -1225,7 +1231,7 @@ export default function FinancialReportsPage() {
                           </TableCell>
 
                           {/* Saldo Berjalan */}
-                          <TableCell className="text-right font-bold text-sm text-taruna-dark dark:text-white whitespace-nowrap bg-taruna-surface/40 dark:bg-slate-900/40">
+                          <TableCell className="text-right font-bold text-sm text-white whitespace-nowrap bg-[#163E4F]/30">
                             {formatRupiah(t.runningBalance)}
                           </TableCell>
                         </TableRow>

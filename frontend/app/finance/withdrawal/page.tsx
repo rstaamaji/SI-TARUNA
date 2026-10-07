@@ -344,7 +344,7 @@ export default function CashWithdrawalPage() {
 
   // ── JSX ──
   return (
-    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex bg-[#D6DDD5] text-[#163E4F] transition-colors">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={currentUser.role} />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -353,11 +353,11 @@ export default function CashWithdrawalPage() {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
 
           {/* ── PAGE HEADER ── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#466060] text-white p-5 sm:p-6 rounded-3xl border border-[#163E4F] shadow-sm">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#F87171] animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#D6DDD5]">
                   Transparansi Keuangan
                 </span>
                 <Badge variant={currentUser.role === 'SUPERADMIN' ? 'warning' : isAdmin ? 'accent' : 'primary'} size="sm">
@@ -370,22 +370,34 @@ export default function CashWithdrawalPage() {
                   )}
                 </Badge>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                 Catatan Pengambilan Kas
               </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1">
                 Riwayat siapa yang mengambil kas organisasi, untuk keperluan apa, dan berapa jumlahnya.
                 Setiap pengambilan otomatis tercatat sebagai pengeluaran kas.
               </p>
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
-              <Button variant="outline" size="sm" leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
-                onClick={() => fetchData(true)} disabled={isRefreshing}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white/10 hover:bg-white/20 text-white border-white/20"
+                leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
+                onClick={() => fetchData(true)}
+                disabled={isRefreshing}
+              >
                 {isRefreshing ? 'Memuat...' : 'Segarkan'}
               </Button>
               {isAdmin && (
-                <Button variant="primary" size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={openCreate}>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="bg-[#163E4F] hover:bg-[#163E4F]/90 text-white border border-[#466060]"
+                  leftIcon={<Plus className="w-4 h-4" />}
+                  onClick={openCreate}
+                >
                   Catat Pengambilan Kas
                 </Button>
               )}
@@ -394,47 +406,47 @@ export default function CashWithdrawalPage() {
 
           {/* ── SUMMARY CARDS ── */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card hoverable className="border-t-4 border-t-red-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-sm">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">TOTAL PENGAMBILAN</span>
-                <div className="p-2.5 rounded-2xl bg-red-50 dark:bg-slate-800 text-red-600 dark:text-red-400 ring-2 ring-black/5 dark:ring-white/5">
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">TOTAL PENGAMBILAN</span>
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-[#F87171] border border-[#163E4F]">
                   <Banknote className="w-5 h-5" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-black text-red-600 dark:text-red-400">{formatRupiah(summary.totalWithdrawn)}</div>
-                <div className="text-xs text-gray-500 dark:text-slate-400 mt-1.5 flex items-center gap-1">
-                  <ArrowUpRight className="w-3.5 h-3.5 text-red-500" />Keseluruhan kas yang keluar
+                <div className="text-2xl font-black text-[#F87171]">{formatRupiah(summary.totalWithdrawn)}</div>
+                <div className="text-xs text-[#D6DDD5] mt-1.5 flex items-center gap-1">
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[#F87171]" />Keseluruhan kas yang keluar
                 </div>
               </CardContent>
             </Card>
 
-            <Card hoverable className="border-t-4 border-t-amber-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-sm">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">BULAN INI</span>
-                <div className="p-2.5 rounded-2xl bg-amber-50 dark:bg-slate-800 text-amber-600 dark:text-amber-400 ring-2 ring-black/5 dark:ring-white/5">
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">BULAN INI</span>
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-[#FDE047] border border-[#163E4F]">
                   <Calendar className="w-5 h-5" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-black text-amber-600 dark:text-amber-400">{formatRupiah(summary.totalWithdrawnMonth)}</div>
-                <div className="text-xs text-gray-500 dark:text-slate-400 mt-1.5 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-500" />Pengambilan bulan berjalan
+                <div className="text-2xl font-black text-[#FDE047]">{formatRupiah(summary.totalWithdrawnMonth)}</div>
+                <div className="text-xs text-[#D6DDD5] mt-1.5 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#FDE047]" />Pengambilan bulan berjalan
                 </div>
               </CardContent>
             </Card>
 
-            <Card hoverable className="border-t-4 border-t-sky-500">
+            <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-sm">
               <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">TOTAL CATATAN</span>
-                <div className="p-2.5 rounded-2xl bg-sky-50 dark:bg-slate-800 text-sky-600 dark:text-sky-400 ring-2 ring-black/5 dark:ring-white/5">
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">TOTAL CATATAN</span>
+                <div className="p-2.5 rounded-2xl bg-[#466060] text-white border border-[#163E4F]">
                   <ClipboardList className="w-5 h-5" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-black text-taruna-dark dark:text-white">{summary.totalCount}</div>
-                <div className="text-xs text-gray-500 dark:text-slate-400 mt-1.5 flex items-center gap-1">
-                  <ClipboardList className="w-3.5 h-3.5 text-sky-500" />Transaksi pengambilan tercatat
+                <div className="text-2xl font-black text-white">{summary.totalCount}</div>
+                <div className="text-xs text-[#D6DDD5] mt-1.5 flex items-center gap-1">
+                  <ClipboardList className="w-3.5 h-3.5 text-[#38BDF8]" />Transaksi pengambilan tercatat
                 </div>
               </CardContent>
             </Card>
@@ -442,36 +454,41 @@ export default function CashWithdrawalPage() {
 
           {/* ── INFO BANNER (Member) ── */}
           {!isAdmin && (
-            <div className="flex items-start gap-3 p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-800/40 text-sky-800 dark:text-sky-300 text-sm">
-              <Info className="w-5 h-5 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#466060]/20 border border-[#466060] text-[#163E4F] text-sm">
+              <Info className="w-5 h-5 shrink-0 mt-0.5 text-[#163E4F]" />
               <div>
                 <p className="font-bold mb-0.5">Informasi Transparansi</p>
-                <p className="text-xs">Semua anggota dapat melihat riwayat pengambilan kas ini sebagai bentuk transparansi keuangan organisasi. Setiap pengambilan tercatat otomatis sebagai pengeluaran dan mempengaruhi saldo kas.</p>
+                <p className="text-xs text-[#163E4F]">Semua anggota dapat melihat riwayat pengambilan kas ini sebagai bentuk transparansi keuangan organisasi. Setiap pengambilan tercatat otomatis sebagai pengeluaran dan mempengaruhi saldo kas.</p>
               </div>
             </div>
           )}
 
           {/* ── FILTER BAR ── */}
-          <Card>
+          <Card className="!bg-[#6A8578] text-white border-[#466060]">
             <CardContent className="p-4 sm:p-5">
               <div className="flex flex-col sm:flex-row gap-3 items-end">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 flex-1">
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Filter Bulan:</label>
+                    <label className="block text-xs font-bold text-[#D6DDD5] mb-1">Filter Bulan:</label>
                     <Select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} options={MONTH_OPTIONS} />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Filter Tahun:</label>
+                    <label className="block text-xs font-bold text-[#D6DDD5] mb-1">Filter Tahun:</label>
                     <Select value={selectedYear} onChange={e => setSelectedYear(e.target.value)} options={YEAR_OPTIONS} />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 dark:text-slate-400 mb-1">Cari:</label>
-                    <Input placeholder="Nama, keperluan..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} leftIcon={<Search className="w-4 h-4 text-gray-400" />} />
+                    <label className="block text-xs font-bold text-[#D6DDD5] mb-1">Cari:</label>
+                    <Input placeholder="Nama, keperluan..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} leftIcon={<Search className="w-4 h-4 text-[#D6DDD5]" />} />
                   </div>
                 </div>
                 {hasFilters && (
-                  <Button variant="secondary" size="sm" leftIcon={<X className="w-3.5 h-3.5" />} className="h-10 whitespace-nowrap"
-                    onClick={() => { setSelectedMonth(''); setSelectedYear(''); setSearchQuery(''); }}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    leftIcon={<X className="w-3.5 h-3.5" />}
+                    className="h-10 whitespace-nowrap bg-[#163E4F] hover:bg-[#466060] text-white border border-[#466060]"
+                    onClick={() => { setSelectedMonth(''); setSelectedYear(''); setSearchQuery(''); }}
+                  >
                     Reset Filter
                   </Button>
                 )}
@@ -480,36 +497,36 @@ export default function CashWithdrawalPage() {
           </Card>
 
           {/* ── TABLE ── */}
-          <Card>
+          <Card className="!bg-[#6A8578] text-white border-[#466060] shadow-sm">
             <CardHeader className="flex-row items-center justify-between flex-wrap gap-2">
               <div>
-                <CardTitle>Riwayat Pengambilan Kas</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-white">Riwayat Pengambilan Kas</CardTitle>
+                <CardDescription className="text-[#D6DDD5]">
                   Daftar siapa yang mengambil kas organisasi, jumlah, tanggal, dan keperluan.
                   Setiap baris terhubung dengan satu catatan pengeluaran kas.
                 </CardDescription>
               </div>
-              <Badge variant="accent" dot>{withdrawals.length} Catatan</Badge>
+              <Badge variant="primary" dot className="bg-[#163E4F] text-[#D6DDD5] border-[#466060]">{withdrawals.length} Catatan</Badge>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-44">Nama Pengambil</TableHead>
-                      <TableHead className="w-28">Tanggal</TableHead>
-                      <TableHead>Keperluan</TableHead>
-                      <TableHead className="w-36 text-right">Jumlah</TableHead>
-                      <TableHead className="w-36">Admin Pencatat</TableHead>
-                      <TableHead className="text-center w-28">Aksi</TableHead>
+                    <TableRow className="bg-[#466060] text-white border-b border-[#163E4F] hover:bg-[#466060]">
+                      <TableHead className="w-44 text-white">Nama Pengambil</TableHead>
+                      <TableHead className="w-28 text-white">Tanggal</TableHead>
+                      <TableHead className="text-white">Keperluan</TableHead>
+                      <TableHead className="w-36 text-right text-white">Jumlah</TableHead>
+                      <TableHead className="w-36 text-white">Admin Pencatat</TableHead>
+                      <TableHead className="text-center w-28 text-white">Aksi</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
                         <TableCell colSpan={6} className="text-center py-12">
-                          <div className="flex flex-col items-center gap-2 text-gray-400">
-                            <RefreshCw className="w-5 h-5 animate-spin text-red-500" />
+                          <div className="flex flex-col items-center gap-2 text-[#D6DDD5]">
+                            <RefreshCw className="w-5 h-5 animate-spin text-[#4ADE80]" />
                             <span className="text-xs">Memuat riwayat pengambilan kas...</span>
                           </div>
                         </TableCell>
@@ -517,10 +534,10 @@ export default function CashWithdrawalPage() {
                     ) : withdrawals.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={6} className="text-center py-12">
-                          <div className="flex flex-col items-center gap-1.5 text-gray-400">
-                            <Wallet className="w-8 h-8 mb-1" />
-                            <span className="text-sm font-semibold text-gray-600 dark:text-slate-300">Belum ada catatan pengambilan kas</span>
-                            <span className="text-xs">
+                          <div className="flex flex-col items-center gap-1.5 text-[#D6DDD5]">
+                            <Wallet className="w-8 h-8 mb-1 text-[#D6DDD5]" />
+                            <span className="text-sm font-semibold text-white">Belum ada catatan pengambilan kas</span>
+                            <span className="text-xs text-[#D6DDD5]">
                               {isAdmin ? 'Klik tombol "Catat Pengambilan Kas" untuk menambahkan.' : 'Belum ada pengambilan kas yang tercatat.'}
                             </span>
                           </div>
@@ -528,17 +545,17 @@ export default function CashWithdrawalPage() {
                       </TableRow>
                     ) : (
                       withdrawals.map(item => (
-                        <TableRow key={item.id} className="hover:bg-taruna-surface/60 dark:hover:bg-slate-800/50 cursor-pointer" onClick={() => openDetail(item)}>
+                        <TableRow key={item.id} className="hover:bg-[#466060]/30 border-b border-[#466060]/40 text-white cursor-pointer transition" onClick={() => openDetail(item)}>
                           {/* Nama Pengambil */}
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-950/60 flex items-center justify-center text-red-600 dark:text-red-400 font-black text-xs shrink-0">
+                              <div className="w-8 h-8 rounded-full bg-[#163E4F] flex items-center justify-center text-[#F87171] font-black text-xs shrink-0 border border-[#466060]">
                                 {item.withdrawerName.charAt(0).toUpperCase()}
                               </div>
                               <div>
-                                <p className="font-bold text-sm text-taruna-dark dark:text-white">{item.withdrawerName}</p>
+                                <p className="font-bold text-sm text-white">{item.withdrawerName}</p>
                                 {item.memberName && item.memberName !== item.withdrawerName && (
-                                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5">
+                                  <span className="text-[10px] text-[#4ADE80] flex items-center gap-0.5">
                                     <Users className="w-2.5 h-2.5" />Anggota terdaftar
                                   </span>
                                 )}
@@ -547,30 +564,30 @@ export default function CashWithdrawalPage() {
                           </TableCell>
 
                           {/* Tanggal */}
-                          <TableCell className="text-xs font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">
+                          <TableCell className="text-xs font-medium text-[#D6DDD5] whitespace-nowrap">
                             <div className="flex items-center gap-1">
-                              <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                              <Calendar className="w-3.5 h-3.5 text-[#D6DDD5] shrink-0" />
                               {new Date(item.withdrawalDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </div>
                           </TableCell>
 
                           {/* Keperluan */}
                           <TableCell>
-                            <p className="font-semibold text-sm text-taruna-dark dark:text-white">{item.purpose}</p>
+                            <p className="font-semibold text-sm text-white">{item.purpose}</p>
                             {item.description && (
-                              <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-0.5 line-clamp-1">{item.description}</p>
+                              <p className="text-[11px] text-[#D6DDD5] mt-0.5 line-clamp-1">{item.description}</p>
                             )}
                           </TableCell>
 
                           {/* Jumlah */}
-                          <TableCell className="text-right font-black text-red-600 dark:text-red-400 whitespace-nowrap">
+                          <TableCell className="text-right font-black text-[#F87171] whitespace-nowrap">
                             -{formatRupiah(item.amount)}
                           </TableCell>
 
                           {/* Admin pencatat */}
-                          <TableCell className="text-xs text-gray-500 dark:text-slate-400">
+                          <TableCell className="text-xs text-[#D6DDD5]">
                             <div className="flex items-center gap-1">
-                              <ShieldCheck className="w-3 h-3 text-emerald-500 shrink-0" />
+                              <ShieldCheck className="w-3 h-3 text-[#4ADE80] shrink-0" />
                               {item.creatorName}
                             </div>
                           </TableCell>
@@ -578,16 +595,16 @@ export default function CashWithdrawalPage() {
                           {/* Aksi */}
                           <TableCell onClick={e => e.stopPropagation()}>
                             <div className="flex items-center justify-center gap-1.5">
-                              <button onClick={() => openDetail(item)} className="p-1.5 rounded-lg border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition" title="Detail">
-                                <FileText className="w-3.5 h-3.5 text-sky-600" />
+                              <button onClick={() => openDetail(item)} className="p-1.5 rounded-lg border border-[#466060] bg-[#163E4F] hover:bg-[#466060] text-[#38BDF8] transition" title="Detail">
+                                <FileText className="w-3.5 h-3.5" />
                               </button>
                               {isAdmin && (
                                 <>
-                                  <button onClick={() => openEdit(item)} className="p-1.5 rounded-lg border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition" title="Edit">
-                                    <Pencil className="w-3.5 h-3.5 text-amber-600" />
+                                  <button onClick={() => openEdit(item)} className="p-1.5 rounded-lg border border-[#466060] bg-[#163E4F] hover:bg-[#466060] text-[#FDE047] transition" title="Edit">
+                                    <Pencil className="w-3.5 h-3.5" />
                                   </button>
-                                  <button onClick={() => openDelete(item)} className="p-1.5 rounded-lg border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-red-50 dark:hover:bg-red-950/40 transition" title="Hapus">
-                                    <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                                  <button onClick={() => openDelete(item)} className="p-1.5 rounded-lg border border-[#466060] bg-[#163E4F] hover:bg-[#466060] text-[#F87171] transition" title="Hapus">
+                                    <Trash2 className="w-3.5 h-3.5" />
                                   </button>
                                 </>
                               )}

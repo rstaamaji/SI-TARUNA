@@ -506,34 +506,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     data={charts.incomeVsExpense}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-gray-200 dark:stroke-slate-800" />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#D6DDD5" strokeOpacity={0.25} />
                     <XAxis
                       dataKey="month"
                       tickLine={false}
                       axisLine={false}
-                      className="text-xs fill-gray-500 dark:fill-slate-400"
+                      className="text-xs fill-[#D6DDD5]"
                     />
                     <YAxis
                       tickLine={false}
                       axisLine={false}
                       tickFormatter={formatCompactRupiah}
-                      className="text-xs fill-gray-500 dark:fill-slate-400"
+                      className="text-xs fill-[#D6DDD5]"
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#0f172a',
-                        borderColor: '#334155',
+                        backgroundColor: '#163E4F',
+                        borderColor: '#466060',
                         borderRadius: '16px',
                         color: '#fff',
                         fontSize: '12px',
-                        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
                       }}
                       formatter={(val: any) => [formatRupiah(Number(val) || 0), '']}
                     />
                     <Legend
                       wrapperStyle={{ paddingTop: '12px', fontSize: '12px' }}
                       formatter={(value) => (
-                        <span className="font-semibold text-gray-700 dark:text-slate-300 capitalize">
+                        <span className="font-semibold text-[#D6DDD5] capitalize">
                           {value}
                         </span>
                       )}
@@ -541,13 +541,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <Bar
                       dataKey="pemasukan"
                       name="Pemasukan"
-                      fill="#059669"
+                      fill="#4ADE80"
                       radius={[6, 6, 0, 0]}
                     />
                     <Bar
                       dataKey="pengeluaran"
                       name="Pengeluaran"
-                      fill="#dc2626"
+                      fill="#F87171"
                       radius={[6, 6, 0, 0]}
                     />
                   </BarChart>
@@ -568,9 +568,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     Pertumbuhan akumulasi saldo simpanan kas pemuda Setya Bakti
                   </CardDescription>
                 </div>
-                <Badge variant="success" dot>
-                  Sehat
-                </Badge>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#466060] text-emerald-300 border border-emerald-400/40">
+                  ● Sehat
+                </span>
               </div>
             </CardHeader>
             <CardContent className="pt-4">
@@ -582,31 +582,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   >
                     <defs>
                       <linearGradient id="colorSaldo" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#eab308" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#eab308" stopOpacity={0.05} />
+                        <stop offset="5%" stopColor="#38BDF8" stopOpacity={0.6} />
+                        <stop offset="95%" stopColor="#163E4F" stopOpacity={0.05} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-gray-200 dark:stroke-slate-800" />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#D6DDD5" strokeOpacity={0.25} />
                     <XAxis
                       dataKey="month"
                       tickLine={false}
                       axisLine={false}
-                      className="text-xs fill-gray-500 dark:fill-slate-400"
+                      className="text-xs fill-[#D6DDD5]"
                     />
                     <YAxis
                       tickLine={false}
                       axisLine={false}
                       tickFormatter={formatCompactRupiah}
-                      className="text-xs fill-gray-500 dark:fill-slate-400"
+                      className="text-xs fill-[#D6DDD5]"
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#0f172a',
-                        borderColor: '#334155',
+                        backgroundColor: '#163E4F',
+                        borderColor: '#466060',
                         borderRadius: '16px',
                         color: '#fff',
                         fontSize: '12px',
-                        boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
                       }}
                       formatter={(val: any) => [formatRupiah(Number(val) || 0), 'Saldo Kas']}
                     />
@@ -614,7 +614,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       type="monotone"
                       dataKey="saldo"
                       name="Saldo Akhir"
-                      stroke="#ca8a04"
+                      stroke="#38BDF8"
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorSaldo)"
@@ -638,8 +638,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-gray-500 dark:text-slate-400">Rata-rata:</span>
-              <Badge variant="accent">91% Partisipasi</Badge>
+              <span className="text-xs font-semibold text-[#D6DDD5]">Rata-rata:</span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#466060] text-emerald-300 border border-emerald-400/40">
+                91% Partisipasi
+              </span>
             </div>
           </CardHeader>
           <CardContent className="pt-4">
@@ -649,27 +651,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   data={charts.attendanceStats}
                   margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-gray-200 dark:stroke-slate-800" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#D6DDD5" strokeOpacity={0.25} />
                   <XAxis
                     dataKey="shortTitle"
                     tickLine={false}
                     axisLine={false}
-                    className="text-xs fill-gray-500 dark:fill-slate-400"
+                    className="text-xs fill-[#D6DDD5]"
                   />
                   <YAxis
                     tickLine={false}
                     axisLine={false}
-                    className="text-xs fill-gray-500 dark:fill-slate-400"
+                    className="text-xs fill-[#D6DDD5]"
                     unit=" org"
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#0f172a',
-                      borderColor: '#334155',
+                      backgroundColor: '#163E4F',
+                      borderColor: '#466060',
                       borderRadius: '16px',
                       color: '#fff',
                       fontSize: '12px',
-                      boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+                      boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
                     }}
                     formatter={(val: any, name: any) => [
                       `${val} orang`,
@@ -680,14 +682,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <Legend
                     wrapperStyle={{ paddingTop: '12px', fontSize: '12px' }}
                     formatter={(value) => (
-                      <span className="font-semibold text-gray-700 dark:text-slate-300 capitalize">
+                      <span className="font-semibold text-[#D6DDD5] capitalize">
                         {value === 'hadir' ? 'Hadir' : value === 'izin' ? 'Izin Resmi' : 'Alpa'}
                       </span>
                     )}
                   />
-                  <Bar dataKey="hadir" fill="#059669" radius={[4, 4, 0, 0]} name="hadir" />
-                  <Bar dataKey="izin" fill="#eab308" radius={[4, 4, 0, 0]} name="izin" />
-                  <Bar dataKey="alpa" fill="#ef4444" radius={[4, 4, 0, 0]} name="alpa" />
+                  <Bar dataKey="hadir" fill="#4ADE80" radius={[4, 4, 0, 0]} name="hadir" />
+                  <Bar dataKey="izin" fill="#FDE047" radius={[4, 4, 0, 0]} name="izin" />
+                  <Bar dataKey="alpa" fill="#F87171" radius={[4, 4, 0, 0]} name="alpa" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
