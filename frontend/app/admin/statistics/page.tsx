@@ -401,23 +401,29 @@ export default function MemberStatisticsPage() {
                       </div>
                     ) : (
                       <ResponsiveContainer width="100%" height={220}>
-                        <BarChart data={data.chartData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#D6DDD5" opacity={0.25} />
+                        <BarChart data={data.chartData} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="4 4" stroke="#163E4F" strokeWidth={1.5} opacity={0.8} />
                           <XAxis
                             dataKey="month"
-                            tick={{ fontSize: 11, fill: '#D6DDD5' }}
+                            axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                            tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
+                            tick={{ fontSize: 11, fill: '#ffffff', fontWeight: 600 }}
                           />
-                          <YAxis tick={{ fontSize: 11, fill: '#D6DDD5' }} />
+                          <YAxis
+                            axisLine={{ stroke: '#163E4F', strokeWidth: 2 }}
+                            tickLine={{ stroke: '#163E4F', strokeWidth: 1.5 }}
+                            tick={{ fontSize: 11, fill: '#ffffff', fontWeight: 600 }}
+                          />
                           <Tooltip content={<ChartTooltip />} />
                           <Legend
                             iconType="circle"
-                            iconSize={8}
-                            wrapperStyle={{ fontSize: 12 }}
-                            formatter={(value) => <span className="text-[#D6DDD5] font-semibold">{value}</span>}
+                            iconSize={10}
+                            wrapperStyle={{ fontSize: 12, paddingTop: 6 }}
+                            formatter={(value) => <span className="text-white font-bold">{value}</span>}
                           />
-                          <Bar dataKey="hadir" name="Hadir" stackId="a" fill="#4ADE80" radius={[0, 0, 0, 0]} />
-                          <Bar dataKey="izin" name="Izin" stackId="a" fill="#FDE047" radius={[0, 0, 0, 0]} />
-                          <Bar dataKey="tidakHadir" name="Tidak Hadir" stackId="a" fill="#F87171" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="hadir" name="Hadir" stackId="a" fill="#4ADE80" stroke="#163E4F" strokeWidth={1} radius={[0, 0, 0, 0]} />
+                          <Bar dataKey="izin" name="Izin" stackId="a" fill="#FDE047" stroke="#163E4F" strokeWidth={1} radius={[0, 0, 0, 0]} />
+                          <Bar dataKey="tidakHadir" name="Tidak Hadir" stackId="a" fill="#F87171" stroke="#163E4F" strokeWidth={1} radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     )}
@@ -468,10 +474,10 @@ export default function MemberStatisticsPage() {
                                     className="w-2 h-2 rounded-full flex-shrink-0"
                                     style={{ backgroundColor: d.color }}
                                   />
-                                  <span className="text-[#D6DDD5]">{d.name}</span>
+                                  <span className="text-white font-bold">{d.name}</span>
                                 </div>
                                 <span className="font-semibold text-white">
-                                  {d.value} <span className="font-normal text-[#D6DDD5]">({pct}%)</span>
+                                  {d.value} <span className="font-bold text-[#FDE047]">({pct}%)</span>
                                 </span>
                               </div>
                             );
