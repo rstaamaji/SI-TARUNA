@@ -43,7 +43,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   }, []);
 
   return (
-    <div className="min-h-screen flex bg-[#C9D1C8] text-[#04202C] transition-colors print:bg-white print:text-black print:min-h-0">
+    <div className="min-h-screen flex bg-[#D6DDD5] text-[#163E4F] transition-colors print:bg-white print:text-black print:min-h-0">
       {/* Sidebar Navigation with RBAC */}
       <div className="print:hidden lg:sticky lg:top-0 lg:h-screen lg:shrink-0">
         <Sidebar

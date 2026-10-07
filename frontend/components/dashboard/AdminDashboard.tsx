@@ -262,37 +262,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   return (
     <div className="space-y-8 pb-12">
       {/* ─────────────────────────────────────────────────────────────────────────────
-          1. HEADER DASHBOARD ADMIN
+          1. HEADER DASHBOARD ADMIN / SUPERADMIN (BAGIAN UTAMA #466060)
       ───────────────────────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs transition-colors">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#466060] text-white p-6 rounded-3xl border border-[#163E4F] shadow-lg transition-colors">
         <div>
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-xs font-bold uppercase tracking-wider text-[#D6DDD5]">
               Overview Organisasi
             </span>
             {userRole === 'SUPERADMIN' ? (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#163E4F] text-amber-300 border border-amber-400/40">
                 👑 SUPERADMIN
               </span>
             ) : (
-              <Badge variant="accent" size="sm">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578]">
                 <ShieldCheck className="w-3 h-3 mr-1 inline" />
                 ADMINISTRATOR
-              </Badge>
+              </span>
             )}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             {userRole === 'SUPERADMIN'
               ? `Dashboard Superadmin: ${userName}`
               : `Dashboard Pengurus: ${userName}`}
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1">
             {userRole === 'SUPERADMIN'
               ? 'Hak Akses Penuh: Monitoring seluruh data, kontrol anggaran, dan kelola otorisasi pengurus.'
               : 'Monitoring keuangan, partisipasi pemuda, dan kegiatan Dusun Tuk Uluh.'}
             {isLoading && (
-              <span className="ml-2 text-xs text-taruna-yellow-600 dark:text-taruna-yellow-400 font-semibold animate-pulse">
+              <span className="ml-2 text-xs text-amber-300 font-semibold animate-pulse">
                 (Memuat data...)
               </span>
             )}
@@ -306,6 +306,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
             onClick={() => fetchDashboardData(true)}
             disabled={isRefreshing}
+            className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] transition shadow-sm"
           >
             {isRefreshing ? 'Memperbarui...' : 'Sinkronkan Data'}
           </Button>
@@ -316,16 +317,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           1.5. KONTROL KHUSUS SUPERADMIN (HANYA DITAMPILKAN KEPADA SUPERADMIN)
       ───────────────────────────────────────────────────────────────────────────── */}
       {userRole === 'SUPERADMIN' && (
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border-2 border-amber-300 dark:border-amber-700/80 p-6 shadow-xs">
+        <div className="relative overflow-hidden rounded-3xl bg-[#163E4F] text-white border border-[#466060] p-6 shadow-md">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div className="space-y-1.5 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-amber-500 text-white shadow-xs">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-[#466060] text-amber-300 border border-amber-400/30 shadow-xs">
                 👑 KONTROL OTORITAS TERTINGGI SUPERADMIN
               </div>
-              <h2 className="text-xl font-black text-amber-950 dark:text-amber-100 tracking-tight">
+              <h2 className="text-xl font-black text-white tracking-tight">
                 Pusat Otorisasi Pengurus &amp; Kendali Sistem
               </h2>
-              <p className="text-xs sm:text-sm text-amber-900/80 dark:text-amber-200/80 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#D6DDD5] leading-relaxed">
                 Anda memiliki hak eksklusif untuk menyetujui, mengangkat, dan mencabut akses pengurus/admin. Pengguna dengan kredensial admin tidak akan dapat login ke dashboard sebelum mendapatkan konfirmasi langsung dari Anda.
               </p>
             </div>
@@ -333,16 +334,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               <Link
                 href="/dashboard/pengurus"
-                className="px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2"
+                className="px-4 py-2.5 rounded-2xl bg-[#6A8578] hover:bg-[#466060] active:scale-95 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2 border border-[#466060]"
               >
                 <ShieldCheck className="w-4 h-4" />
                 Kelola Otorisasi Pengurus
               </Link>
               <Link
                 href="/admin/settings"
-                className="px-4 py-2.5 rounded-2xl bg-white dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700 font-bold text-xs sm:text-sm shadow-xs transition flex items-center gap-2"
+                className="px-4 py-2.5 rounded-2xl bg-[#466060] hover:bg-[#6A8578] text-white border border-[#163E4F] font-bold text-xs sm:text-sm shadow-xs transition flex items-center gap-2"
               >
-                <Sparkles className="w-4 h-4 text-amber-500" />
+                <Sparkles className="w-4 h-4 text-amber-300" />
                 Konfigurasi Sistem
               </Link>
             </div>
@@ -351,27 +352,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       )}
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          2. METRIC STATISTIC CARDS (6 INDIKATOR KUNCI ORGANISASI)
+          2. METRIC STATISTIC CARDS (6 INDIKATOR KUNCI ORGANISASI - ISINYA #6A8578)
       ───────────────────────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {/* Card 1: Total Anggota Aktif */}
-        <Card hoverable className="border-t-4 border-t-taruna-yellow-500">
+        <Card hoverable className="border-t-4 border-t-amber-300">
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
               Total Anggota Aktif
             </span>
-            <div className="p-2.5 rounded-2xl bg-taruna-yellow-50 dark:bg-slate-800 text-taruna-yellow-700 dark:text-taruna-yellow-400 ring-2 ring-black/5 dark:ring-white/5">
+            <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
               <Users className="w-5 h-5" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+            <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               {metrics.totalActiveMembers}{' '}
-              <span className="text-base font-semibold text-gray-500 dark:text-slate-400">
+              <span className="text-base font-semibold text-[#D6DDD5]">
                 / {metrics.totalMembers} Pemuda
               </span>
             </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-300">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Dusun Tuk Uluh (RT 01 - RT 03)</span>
             </div>
@@ -379,41 +380,41 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </Card>
 
         {/* Card 2: Total Kas Organisasi */}
-        <Card hoverable className="border-t-4 border-t-emerald-500">
+        <Card hoverable className="border-t-4 border-t-emerald-400">
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
               Total Kas Organisasi
             </span>
-            <div className="p-2.5 rounded-2xl bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 ring-2 ring-black/5 dark:ring-white/5">
+            <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
               <Wallet className="w-5 h-5" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
+            <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               {formatRupiah(metrics.totalCashBalance)}
             </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-gray-500 dark:text-slate-400">
-              <TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-300">
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-300" />
               <span>Saldo Kas Bersih Siap Pakai</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Card 3: Pemasukan Bulan Berjalan */}
-        <Card hoverable className="border-t-4 border-t-emerald-600">
+        <Card hoverable className="border-t-4 border-t-emerald-300">
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
               Pemasukan Bulan Berjalan
             </span>
-            <div className="p-2.5 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 ring-2 ring-black/5 dark:ring-white/5">
+            <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
               <ArrowDownLeft className="w-5 h-5" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+            <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               {formatRupiah(metrics.currentMonthIncome)}
             </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-300">
               <ArrowUpRight className="w-3.5 h-3.5" />
               <span>Iuran kas, donasi, &amp; kas desa</span>
             </div>
@@ -421,45 +422,45 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </Card>
 
         {/* Card 4: Pengeluaran Bulan Berjalan */}
-        <Card hoverable className="border-t-4 border-t-taruna-red-500">
+        <Card hoverable className="border-t-4 border-t-rose-400">
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
               Pengeluaran Bulan Berjalan
             </span>
-            <div className="p-2.5 rounded-2xl bg-taruna-red-50 dark:bg-slate-800 text-taruna-red-600 dark:text-red-400 ring-2 ring-black/5 dark:ring-white/5">
+            <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
               <ArrowUpRight className="w-5 h-5" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-taruna-red-600 dark:text-red-400 tracking-tight">
+            <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">
               {formatRupiah(metrics.currentMonthExpense)}
             </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-gray-500 dark:text-slate-400">
+            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-[#D6DDD5]">
               <span>Kegiatan sosial, logistik &amp; konsumsi</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Card 5: Jumlah Anggota Hadir Kegiatan Terakhir */}
-        <Card hoverable className="border-t-4 border-t-indigo-500">
+        <Card hoverable className="border-t-4 border-t-teal-300">
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-            <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
               Kehadiran Kegiatan Terakhir
             </span>
-            <div className="p-2.5 rounded-2xl bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 ring-2 ring-black/5 dark:ring-white/5">
+            <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
               <CalendarCheck2 className="w-5 h-5" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+              <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                 {metrics.lastEventAttendance.totalPresent} Pemuda
               </span>
-              <Badge variant="success" size="sm">
+              <span className="px-2 py-0.5 rounded text-xs font-bold bg-[#466060] text-emerald-300 border border-emerald-400/40">
                 {metrics.lastEventAttendance.attendanceRate}% Hadir
-              </Badge>
+              </span>
             </div>
-            <p className="text-xs text-gray-500 dark:text-slate-400 mt-2 truncate">
+            <p className="text-xs text-[#D6DDD5] mt-2 truncate">
               {metrics.lastEventAttendance.eventTitle}
             </p>
           </CardContent>

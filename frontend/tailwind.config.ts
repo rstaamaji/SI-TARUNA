@@ -54,10 +54,10 @@ const config: Config = {
           border: '#e5e7eb',
         },
         palette: {
-          forest: '#04202C',
-          evergreen: '#304040',
-          pine: '#5B7065',
-          fog: '#C9D1C8',
+          forest: '#163E4F',
+          evergreen: '#466060',
+          pine: '#6A8578',
+          fog: '#D6DDD5',
         },
       },
       fontFamily: {

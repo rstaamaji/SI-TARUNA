@@ -7,8 +7,6 @@ import {
   LogOut,
   Info,
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { useToast } from '@/components/ui/Toast';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
@@ -193,12 +191,12 @@ export default function UnifiedMainPage() {
   // ─────────────────────────────────────────────────────────────────────────────
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex flex-col bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
+      <div className="min-h-screen flex flex-col bg-[#D6DDD5] text-[#163E4F] transition-colors">
         {/* Navbar Ringkas */}
-        <header className="border-b border-taruna-border dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 py-4 flex items-center justify-between">
+        <header className="border-b border-[#163E4F] bg-[#466060] text-white px-6 py-4 flex items-center justify-between shadow-sm">
           <Logo size={40} />
           <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold text-gray-500 dark:text-slate-400 hidden sm:inline">
+            <span className="text-xs font-semibold text-[#D6DDD5] hidden sm:inline">
               Sistem Informasi Karang Taruna
             </span>
             <ThemeToggle />
@@ -207,57 +205,66 @@ export default function UnifiedMainPage() {
 
         {/* Content Box Login */}
         <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
-          <div className="max-w-md w-full bg-white dark:bg-slate-900 p-8 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xl space-y-6">
+          <div className="max-w-md w-full bg-[#6A8578] text-white p-8 rounded-3xl border border-[#466060] shadow-2xl space-y-6">
             <div className="text-center space-y-2">
-              <div className="inline-flex p-3 rounded-2xl bg-taruna-yellow-50 dark:bg-slate-800 text-taruna-yellow-700 dark:text-taruna-yellow-400 mb-1">
+              <div className="inline-flex p-3 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F] mb-1">
                 <Lock className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-black text-taruna-dark dark:text-white tracking-tight">
+              <h2 className="text-2xl font-black text-white tracking-tight">
                 SI-TARUNA
               </h2>
-              <p className="text-xs font-semibold text-taruna-yellow-600 dark:text-taruna-yellow-400">
+              <p className="text-xs font-semibold text-[#D6DDD5]">
                 Sistem Informasi Karang Taruna
               </p>
-              <p className="text-[11px] font-bold text-taruna-red-600 dark:text-red-400">
+              <p className="text-[11px] font-bold text-white/90">
                 Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono
               </p>
             </div>
 
             {loginError && (
-              <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/60 text-xs text-red-600 dark:text-red-300 flex items-center gap-2">
-                <Info className="w-4 h-4 shrink-0" />
+              <div className="p-3.5 rounded-xl bg-[#163E4F] border border-rose-400 text-xs text-rose-200 flex items-center gap-2">
+                <Info className="w-4 h-4 shrink-0 text-rose-300" />
                 <span>{loginError}</span>
               </div>
             )}
 
             <form onSubmit={handleLogin} className="space-y-4">
-              <Input
-                label="Username"
-                type="text"
-                placeholder="Masukkan username"
-                value={usernameInput}
-                onChange={(e) => setUsernameInput(e.target.value)}
-                required
-              />
+              <div>
+                <label className="text-xs font-semibold text-[#D6DDD5] block mb-1.5">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  placeholder="Masukkan username"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value)}
+                  required
+                  className="w-full rounded-xl bg-[#466060] border border-[#163E4F] text-sm text-white placeholder-[#D6DDD5]/60 py-2.5 px-3.5 focus:border-[#D6DDD5] outline-none transition"
+                />
+              </div>
 
-              <Input
-                label="Kata Sandi"
-                type="password"
-                placeholder="Masukkan password"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                required
-              />
+              <div>
+                <label className="text-xs font-semibold text-[#D6DDD5] block mb-1.5">
+                  Kata Sandi
+                </label>
+                <input
+                  type="password"
+                  placeholder="Masukkan password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  required
+                  className="w-full rounded-xl bg-[#466060] border border-[#163E4F] text-sm text-white placeholder-[#D6DDD5]/60 py-2.5 px-3.5 focus:border-[#D6DDD5] outline-none transition"
+                />
+              </div>
 
-              <Button
+              <button
                 type="submit"
-                variant="primary"
-                className="w-full justify-center text-sm font-bold py-2.5"
-                isLoading={isLoggingIn}
-                rightIcon={<ArrowRight className="w-4 h-4" />}
+                disabled={isLoggingIn}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#163E4F] hover:bg-[#466060] text-white text-sm font-bold py-2.5 px-4 border border-[#466060] shadow-md transition disabled:opacity-60"
               >
-                Masuk ke Dashboard
-              </Button>
+                <span>{isLoggingIn ? 'Memproses...' : 'Masuk ke Dashboard'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </form>
           </div>
         </main>
@@ -272,7 +279,7 @@ export default function UnifiedMainPage() {
   // 2. TAMPILAN DASHBOARD RESMI DENGAN ROLE-BASED ACCESS CONTROL (RBAC)
   // ─────────────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex bg-taruna-surface dark:bg-slate-950 text-taruna-dark dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex bg-[#D6DDD5] text-[#163E4F] transition-colors">
       {/* Sidebar Navigation - Otomatis menyaring menu khusus ADMIN dari MEMBER */}
       <Sidebar
         isOpen={sidebarOpen}
@@ -294,16 +301,16 @@ export default function UnifiedMainPage() {
         />
 
         {/* Sesi Pengguna Bar */}
-        <div className="bg-gradient-to-r from-taruna-yellow-500 to-amber-600 dark:from-taruna-yellow-600 dark:to-amber-700 text-white px-4 sm:px-8 py-2.5 flex items-center justify-between shadow-xs flex-wrap gap-2">
+        <div className="bg-[#466060] text-white border-b border-[#163E4F] px-4 sm:px-8 py-2.5 flex items-center justify-between shadow-xs flex-wrap gap-2">
           <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold flex-wrap">
-            <span className="w-2 h-2 rounded-full bg-white animate-ping shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-emerald-300 animate-ping shrink-0" />
             <span>
               Sesi Aktif: <strong>{currentUser.name}</strong>
             </span>
-            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-white dark:bg-slate-900 text-taruna-dark dark:text-white">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578]">
               Peran: {currentUser.role}
             </span>
-            <span className="hidden md:inline text-white/80">
+            <span className="hidden md:inline text-[#D6DDD5]/80">
               — Dusun Tuk Uluh, Sringin, Jumantono
             </span>
           </div>
@@ -311,7 +318,7 @@ export default function UnifiedMainPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-black/20 hover:bg-black/30 text-white text-xs font-bold transition"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#163E4F] hover:bg-[#6A8578] text-white text-xs font-bold transition border border-[#6A8578]"
             >
               <LogOut className="w-3.5 h-3.5" />
               Keluar ke Login
