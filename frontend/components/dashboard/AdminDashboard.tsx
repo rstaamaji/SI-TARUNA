@@ -18,7 +18,6 @@ import {
   MapPin,
   ChevronRight,
   CheckCircle2,
-  Gift,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -36,7 +35,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
-import { AdminEventsAndAnnouncements } from './AdminEventsAndAnnouncements';
 
 export interface AdminDashboardData {
   metrics: {
@@ -696,102 +694,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </Card>
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          3.5. ARISAN TERDEKAT (MODULE 20)
-      ───────────────────────────────────────────────────────────────────────────── */}
-      {data.nearestArisan && (
-        <Card className="border-amber-300/80 dark:border-amber-700/60 bg-gradient-to-br from-amber-50/50 via-white to-amber-50/20 dark:from-amber-950/20 dark:via-slate-900 dark:to-slate-900">
-          <CardHeader className="flex-row items-center justify-between pb-3 flex-wrap gap-2">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                <Gift className="w-5 h-5" />
-              </div>
-              <div>
-                <CardTitle className="text-base sm:text-lg">Arisan Terdekat</CardTitle>
-                <CardDescription>
-                  Putaran arisan pemuda Dusun Tuk Uluh mendatang •{' '}
-                  <Link
-                    href="/dashboard/arisan"
-                    className="text-amber-700 dark:text-amber-400 font-bold hover:underline inline-flex items-center gap-0.5"
-                  >
-                    Buka Kelola Arisan <ChevronRight className="w-3 h-3" />
-                  </Link>
-                </CardDescription>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="warning" size="sm" dot>
-                {data.nearestArisan.status === 'UPCOMING' ? 'UPCOMING' : data.nearestArisan.status}
-              </Badge>
-              {data.nearestArisan.timingLabel && (
-                <Badge variant="accent" size="sm">
-                  {data.nearestArisan.timingLabel}
-                </Badge>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900/90 border border-amber-200/80 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">
-                    {data.nearestArisan.periodLabel}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-slate-400">
-                    Nominal: <strong className="text-emerald-600 dark:text-emerald-400">Rp {formatRupiah(data.nearestArisan.amount || 500000)}</strong>
-                  </span>
-                </div>
-                <h3 className="text-lg font-black text-taruna-dark dark:text-white">
-                  Penerima: <span className="text-amber-600 dark:text-amber-400">{data.nearestArisan.recipientName}</span>
-                  {data.nearestArisan.recipientNumber && (
-                    <span className="text-xs font-normal text-gray-400 dark:text-slate-500 ml-2">
-                      ({data.nearestArisan.recipientNumber})
-                    </span>
-                  )}
-                </h3>
-                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-slate-400 flex-wrap">
-                  <span className="inline-flex items-center gap-1 font-medium">
-                    <Clock className="w-3.5 h-3.5 text-amber-600" />
-                    Tanggal: {data.nearestArisan.drawDate ? new Date(data.nearestArisan.drawDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Belum ditentukan'}
-                  </span>
-                  <span className="inline-flex items-center gap-1 font-medium">
-                    <MapPin className="w-3.5 h-3.5 text-red-500" />
-                    Tempat: {data.nearestArisan.location}
-                  </span>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-2 self-end md:self-center shrink-0">
-                <Link
-                  href="/dashboard/arisan"
-                  className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition shadow-xs inline-flex items-center gap-1.5"
-                >
-                  <Gift className="w-3.5 h-3.5" />
-                  Kelola Arisan
-                </Link>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          4. KEGIATAN TERDEKAT & PENGUMUMAN TERBARU (DENGAN CRUD REAL-TIME ADMIN)
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <div className="pt-2">
-        <div className="mb-4">
-          <h2 className="text-xl font-black text-taruna-dark dark:text-white tracking-tight">
-            Kegiatan Terdekat &amp; Pengumuman Terbaru
-          </h2>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400">
-            Kelola agenda kegiatan arisan bergilir dan pengumuman resmi organisasi.
-          </p>
-        </div>
-        <AdminEventsAndAnnouncements onDataChanged={() => fetchDashboardData(false)} />
-      </div>
-
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          5. NOTULENSI RAPAT TERBARU (DOKUMENTASI ADMIN)
+          4. NOTULENSI RAPAT TERBARU (DOKUMENTASI ADMIN)
       ───────────────────────────────────────────────────────────────────────────── */}
       {data.latestMeetingMinute && (
         <Card className="mt-6">
