@@ -69,7 +69,7 @@ export default function NotulensiListPage() {
   const [formDayOfWeek, setFormDayOfWeek] = useState('Kamis');
   const [formTitle, setFormTitle] = useState('');
   const [formLocation, setFormLocation] = useState('Balai Dusun Tuk Uluh');
-  const [formMeetingLeader, setFormMeetingLeader] = useState('Rustam Aji (Ketua Karang Taruna)');
+  const [formMeetingLeader, setFormMeetingLeader] = useState('Rustam Aji (Super Admin)');
   const [formNoteTaker, setFormNoteTaker] = useState('Siti Nurhaliza (Sekretaris)');
   const [formContent, setFormContent] = useState('');
   const [formConclusion, setFormConclusion] = useState('');
@@ -164,7 +164,7 @@ export default function NotulensiListPage() {
     setFormDayOfWeek(deriveDayIndo(today));
     setFormTitle('');
     setFormLocation('Balai Dusun Tuk Uluh');
-    setFormMeetingLeader('Rustam Aji (Ketua Karang Taruna)');
+    setFormMeetingLeader('Rustam Aji (Super Admin)');
     setFormNoteTaker('Siti Nurhaliza (Sekretaris)');
     setFormContent('');
     setFormConclusion('');
@@ -185,7 +185,7 @@ export default function NotulensiListPage() {
     }
     setFormTitle(item.title);
     setFormLocation(item.location || 'Balai Dusun Tuk Uluh');
-    setFormMeetingLeader(item.meetingLeader || 'Ketua Karang Taruna');
+    setFormMeetingLeader(item.meetingLeader || 'Super Admin');
     setFormNoteTaker(item.noteTaker || 'Sekretaris');
     setFormContent(item.content);
     setFormConclusion(item.conclusion || '');
@@ -220,7 +220,7 @@ export default function NotulensiListPage() {
         dayOfWeek: formDayOfWeek.trim() || deriveDayIndo(formMeetingDate),
         title: formTitle.trim(),
         location: formLocation.trim() || 'Balai Dusun Tuk Uluh',
-        meetingLeader: formMeetingLeader.trim() || 'Ketua Karang Taruna',
+        meetingLeader: formMeetingLeader.trim() || 'Super Admin',
         noteTaker: formNoteTaker.trim() || 'Sekretaris',
         content: formContent.trim(),
         conclusion: formConclusion.trim() || null,
@@ -659,7 +659,7 @@ export default function NotulensiListPage() {
                   </label>
                   <Input
                     type="text"
-                    placeholder="Contoh: Rustam Aji (Ketua Karang Taruna)"
+                    placeholder="Contoh: Rustam Aji (Super Admin)"
                     value={formMeetingLeader}
                     onChange={(e) => setFormMeetingLeader(e.target.value)}
                     required
