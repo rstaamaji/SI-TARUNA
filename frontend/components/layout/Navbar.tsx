@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Menu, Search, LogOut, User, Settings } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
 import { Logo } from '@/components/ui/Logo';
+import { logoutUser } from '@/lib/auth';
 
 export interface NavbarProps {
   onMenuToggle: () => void;
@@ -117,12 +118,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    if (typeof window !== 'undefined') {
-                      localStorage.removeItem('si_taruna_token');
-                      localStorage.removeItem('si_taruna_user');
-                    }
                     setShowProfileMenu(false);
-                    router.push('/');
+                    logoutUser();
                   }}
                   className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-300 hover:text-rose-100 rounded-xl hover:bg-rose-950/40 transition text-left"
                 >
