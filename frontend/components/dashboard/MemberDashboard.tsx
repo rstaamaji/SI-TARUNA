@@ -133,14 +133,14 @@ export interface MemberDashboardData {
 // Fallback data realistis untuk Dusun Tuk Uluh, Desa Sringin, Jumantono
 const FALLBACK_DASHBOARD: MemberDashboardData = {
   memberProfile: {
-    id: 'm-02',
-    name: 'Anggota 2',
-    memberNumber: 'KT-SB-002',
+    id: 'm-04',
+    name: 'Wahyu Pratama',
+    memberNumber: 'KT-SB-004',
     role: 'MEMBER',
     gender: 'MALE',
-    address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
+    address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
     status: 'ACTIVE',
-    joinDate: '2023-01-15T00:00:00.000Z',
+    joinDate: '2023-02-15T00:00:00.000Z',
   },
   stats: {
     totalMembers: 25,

@@ -13,9 +13,8 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Logo } from '@/components/ui/Logo';
 import { MemberDashboard } from '@/components/dashboard/MemberDashboard';
 import { AdminDashboard } from '@/components/dashboard/AdminDashboard';
-import { ThemeToggle } from '@/components/theme/ThemeProvider';
 import { Footer } from '@/components/layout/Footer';
-import { getStoredUser, UserRole } from '@/lib/auth';
+import { getStoredUser, logoutUser, UserRole } from '@/lib/auth';
 
 interface CurrentUser {
   id: string;
@@ -38,23 +37,25 @@ export default function UnifiedMainPage() {
   // Dashboard UI State
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Check existing session
+  // Check existing session (strictly require both valid stored user AND token)
   React.useEffect(() => {
     try {
       const storedToken =
         localStorage.getItem('si_taruna_token') || localStorage.getItem('token');
       const u = getStoredUser();
-      if (u) {
+      if (u && storedToken) {
         setCurrentUser({
           id: u.id,
           name: u.name,
           role: u.role,
           username: u.username || 'user',
-          token: storedToken || undefined,
+          token: storedToken,
         });
+      } else {
+        setCurrentUser(null);
       }
     } catch {
-      // Ignore parse error
+      setCurrentUser(null);
     }
   }, []);
 
@@ -177,13 +178,7 @@ export default function UnifiedMainPage() {
 
   const handleLogout = () => {
     setCurrentUser(null);
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('si_taruna_token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('si_taruna_user');
-    }
-    toast.info('Anda telah keluar dari sistem.');
+    logoutUser('/');
   };
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -199,7 +194,6 @@ export default function UnifiedMainPage() {
             <span className="text-xs font-semibold text-[#D6DDD5] hidden sm:inline">
               Sistem Informasi Karang Taruna
             </span>
-            <ThemeToggle />
           </div>
         </header>
 
