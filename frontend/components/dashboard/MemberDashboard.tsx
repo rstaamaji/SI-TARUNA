@@ -200,7 +200,7 @@ const FALLBACK_DASHBOARD: MemberDashboardData = {
         'Dalam rangka menjaga kebersihan lingkungan dan mengantisipasi musim penghujan, seluruh pemuda diharapkan hadir pada kerja bakti hari Minggu, 12 Oktober 2026 pukul 06.30 WIB dengan membawa alat kerja bakti.',
       date: '2026-09-24T00:00:00.000Z',
       eventDate: '2026-10-12T06:30:00.000Z',
-      author: 'Rustam Aji (Ketua)',
+      author: 'Rustam Aji (Super Admin)',
     },
   ],
   upcomingEvents: [
@@ -337,7 +337,7 @@ const FALLBACK_DASHBOARD: MemberDashboardData = {
     meetingDate: '2026-09-10T19:30:00.000Z',
     dayOfWeek: 'Kamis',
     location: 'Balai Dusun Tuk Uluh, Desa Sringin',
-    meetingLeader: 'Rustam Aji (Ketua Karang Taruna)',
+    meetingLeader: 'Rustam Aji (Super Admin)',
     noteTaker: 'Siti Nurhaliza (Sekretaris)',
     content: 'Pembahasan evaluasi kas keuangan, kesepakatan jadwal kerja bakti saluran air, dan partisipasi turnamen voli antardusun.',
     conclusion: 'Laporan kas disetujui, kerja bakti disepakati 12 Oktober 2026, dan subsidi tim voli disetujui.',

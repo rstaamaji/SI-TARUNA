@@ -157,7 +157,7 @@ const FALLBACK_ADMIN_DASHBOARD: AdminDashboardData = {
     meetingDate: '2026-09-10T19:30:00.000Z',
     dayOfWeek: 'Kamis',
     location: 'Balai Dusun Tuk Uluh, Desa Sringin',
-    meetingLeader: 'Rustam Aji (Ketua Karang Taruna)',
+    meetingLeader: 'Rustam Aji (Super Admin)',
     noteTaker: 'Siti Nurhaliza (Sekretaris)',
     content: 'Pembahasan evaluasi kas keuangan, kesepakatan jadwal kerja bakti saluran air, dan partisipasi turnamen voli antardusun.',
     conclusion: 'Laporan kas disetujui, kerja bakti disepakati 12 Oktober 2026, dan subsidi tim voli disetujui.',

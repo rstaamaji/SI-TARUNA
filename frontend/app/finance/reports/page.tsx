@@ -621,7 +621,7 @@ export default function FinancialReportsPage() {
             <div className="pt-8 flex justify-between text-xs px-8">
               <div className="text-center">
                 <p>Mengetahui,</p>
-                <p className="font-bold mt-1">Ketua Karang Taruna</p>
+                <p className="font-bold mt-1">Super Admin</p>
                 <div className="h-16" />
                 <p className="font-bold underline">( Rustam Aji )</p>
               </div>
