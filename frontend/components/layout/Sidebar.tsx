@@ -24,7 +24,9 @@ import {
   ClipboardList,
   BarChart2,
   Settings,
+  LogOut,
 } from 'lucide-react';
+import { logoutUser } from '@/lib/auth';
 
 export interface SidebarProps {
   isOpen: boolean;
@@ -402,8 +404,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </div>
 
-        {/* Sidebar Footer Organization Badge */}
-        <div className="shrink-0 mt-auto p-3.5 border-t border-[#466060] bg-[#466060]/30 m-3 rounded-2xl">
+        {/* Sidebar Footer Organization Badge & Logout */}
+        <div className="shrink-0 mt-auto p-3 border-t border-[#466060] bg-[#466060]/30 m-3 rounded-2xl space-y-2.5">
           <div className="flex items-center gap-3">
             {/* Logo Karang Taruna asli tidak dirubah */}
             <Logo size={36} showText={false} />
@@ -416,6 +418,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </p>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => logoutUser()}
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold text-rose-300 hover:text-white bg-[#163E4F] hover:bg-rose-900/60 border border-rose-500/30 transition shadow-xs"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Keluar Akun</span>
+          </button>
         </div>
       </aside>
     </>
