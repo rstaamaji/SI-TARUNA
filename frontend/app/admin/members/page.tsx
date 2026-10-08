@@ -59,128 +59,22 @@ export interface MemberItem {
 
 // Data dummy realistis Karang Taruna Setya Bakti (Dusun Tuk Uluh, Desa Sringin)
 const DUMMY_MEMBERS: MemberItem[] = [
-  {
-    id: 'm-01',
-    memberNumber: 'KT-SB-001',
-    name: 'Rustam Aji',
-    gender: 'MALE',
-    phone: '081234567801',
-    address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'ACTIVE',
-    joinDate: '2023-01-10T00:00:00.000Z',
-    user: { id: 'u-01', username: 'admin', role: 'ADMIN' },
-  },
-  {
-    id: 'm-02',
-    memberNumber: 'KT-SB-002',
-    name: 'Anggota 2',
-    gender: 'MALE',
-    phone: '081234567802',
-    address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'ACTIVE',
-    joinDate: '2023-01-15T00:00:00.000Z',
-    user: { id: 'u-02', username: 'member', role: 'MEMBER' },
-  },
-  {
-    id: 'm-03',
-    memberNumber: 'KT-SB-003',
-    name: 'Anggota 3',
-    gender: 'FEMALE',
-    phone: '081234567803',
-    address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'ACTIVE',
-    joinDate: '2023-02-01T00:00:00.000Z',
-  },
-  {
-    id: 'm-04',
-    memberNumber: 'KT-SB-004',
-    name: 'Anggota 4',
-    gender: 'MALE',
-    phone: '081234567804',
-    address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'ACTIVE',
-    joinDate: '2023-02-15T00:00:00.000Z',
-  },
-  {
-    id: 'm-05',
-    memberNumber: 'KT-SB-005',
-    name: 'Anggota 5',
-    gender: 'FEMALE',
-    phone: '081234567805',
-    address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'ACTIVE',
-    joinDate: '2023-03-01T00:00:00.000Z',
-  },
-  {
-    id: 'm-06',
-    memberNumber: 'KT-SB-006',
-    name: 'Anggota 6',
-    gender: 'MALE',
-    phone: '081234567806',
-    address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'ACTIVE',
-    joinDate: '2023-03-15T00:00:00.000Z',
-  },
-  {
-    id: 'm-07',
-    memberNumber: 'KT-SB-007',
-    name: 'Anggota 7',
-    gender: 'FEMALE',
-    phone: '081234567807',
-    address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'INACTIVE',
-    joinDate: '2023-04-01T00:00:00.000Z',
-  },
-  {
-    id: 'm-08',
-    memberNumber: 'KT-SB-008',
-    name: 'Anggota 8',
-    gender: 'MALE',
-    phone: '081234567808',
-    address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'ACTIVE',
-    joinDate: '2023-04-15T00:00:00.000Z',
-  },
-  {
-    id: 'm-09',
-    memberNumber: 'KT-SB-009',
-    name: 'Anggota 9',
-    gender: 'FEMALE',
-    phone: '081234567809',
-    address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'ACTIVE',
-    joinDate: '2023-05-01T00:00:00.000Z',
-  },
-  {
-    id: 'm-10',
-    memberNumber: 'KT-SB-010',
-    name: 'Anggota 10',
-    gender: 'MALE',
-    phone: '081234567810',
-    address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'ACTIVE',
-    joinDate: '2023-05-15T00:00:00.000Z',
-  },
-  {
-    id: 'm-11',
-    memberNumber: 'KT-SB-011',
-    name: 'Anggota 11',
-    gender: 'FEMALE',
-    phone: '081234567811',
-    address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'INACTIVE',
-    joinDate: '2023-06-01T00:00:00.000Z',
-  },
-  {
-    id: 'm-12',
-    memberNumber: 'KT-SB-012',
-    name: 'Anggota 12',
-    gender: 'MALE',
-    phone: '081234567812',
-    address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin',
-    status: 'ACTIVE',
-    joinDate: '2023-06-15T00:00:00.000Z',
-  },
+  { id: 'm-01', memberNumber: 'KT-SB-001', name: 'Rustam Aji', gender: 'MALE', phone: '081234567801', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-01-10T00:00:00.000Z', user: { id: 'u-01', username: 'rustamaji', role: 'SUPERADMIN' } },
+  { id: 'm-02', memberNumber: 'KT-SB-002', name: 'Eko Prasetyo', gender: 'MALE', phone: '081234567802', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-01-15T00:00:00.000Z', user: { id: 'u-02', username: 'ekoprasetyo', role: 'ADMIN' } },
+  { id: 'm-03', memberNumber: 'KT-SB-003', name: 'Bambang Setyawan', gender: 'MALE', phone: '081234567803', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-02-01T00:00:00.000Z', user: { id: 'u-03', username: 'bambangsetyawan', role: 'ADMIN' } },
+  { id: 'm-04', memberNumber: 'KT-SB-004', name: 'Wahyu Pratama', gender: 'MALE', phone: '081234567804', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-02-15T00:00:00.000Z', user: { id: 'u-04', username: 'wahyu', role: 'MEMBER' } },
+  { id: 'm-05', memberNumber: 'KT-SB-005', name: 'Siti Rahmawati', gender: 'FEMALE', phone: '081234567805', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-03-01T00:00:00.000Z', user: { id: 'u-05', username: 'sitirahma', role: 'MEMBER' } },
+  { id: 'm-06', memberNumber: 'KT-SB-006', name: 'Dwi Astuti', gender: 'FEMALE', phone: '081234567806', address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-03-15T00:00:00.000Z', user: { id: 'u-06', username: 'dwiastuti', role: 'MEMBER' } },
+  { id: 'm-07', memberNumber: 'KT-SB-007', name: 'Hendra Gunawan', gender: 'MALE', phone: '081234567807', address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-04-01T00:00:00.000Z', user: { id: 'u-07', username: 'hendragunawan', role: 'MEMBER' } },
+  { id: 'm-08', memberNumber: 'KT-SB-008', name: 'Rina Wijaya', gender: 'FEMALE', phone: '081234567808', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-04-10T00:00:00.000Z', user: { id: 'u-08', username: 'rinawijaya', role: 'MEMBER' } },
+  { id: 'm-09', memberNumber: 'KT-SB-009', name: 'Agus Santoso', gender: 'MALE', phone: '081234567809', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-05-01T00:00:00.000Z' },
+  { id: 'm-10', memberNumber: 'KT-SB-010', name: 'Nur Hidayah', gender: 'FEMALE', phone: '081234567810', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-05-15T00:00:00.000Z' },
+  { id: 'm-11', memberNumber: 'KT-SB-011', name: 'Fajar Nugroho', gender: 'MALE', phone: '081234567811', address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-06-01T00:00:00.000Z' },
+  { id: 'm-12', memberNumber: 'KT-SB-012', name: 'Budi Utomo', gender: 'MALE', phone: '081234567812', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-06-20T00:00:00.000Z' },
+  { id: 'm-13', memberNumber: 'KT-SB-013', name: 'Dewi Lestari', gender: 'FEMALE', phone: '081234567813', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-07-01T00:00:00.000Z' },
+  { id: 'm-14', memberNumber: 'KT-SB-014', name: 'Arif Kurniawan', gender: 'MALE', phone: '081234567814', address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-07-15T00:00:00.000Z' },
+  { id: 'm-15', memberNumber: 'KT-SB-015', name: 'Tri Wahyuni', gender: 'FEMALE', phone: '081234567815', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-08-01T00:00:00.000Z' },
+  { id: 'm-16', memberNumber: 'KT-SB-016', name: 'Bayu Saputra', gender: 'MALE', phone: '081234567816', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-08-20T00:00:00.000Z' },
 ];
 
 export default function AdminMembersPage() {
@@ -1086,7 +980,7 @@ export default function AdminMembersPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 space-y-1">
+              <div className="p-3 rounded-xl border border-taruna-border dark:border-slate-800 bg-[#466060] text-white space-y-1">
                 <span className="text-gray-400 font-medium">Nomor WhatsApp:</span>
                 <p className="font-semibold text-taruna-dark dark:text-white font-mono flex items-center gap-1.5">
                   <Phone className="w-3.5 h-3.5 text-emerald-600" />
@@ -1094,7 +988,7 @@ export default function AdminMembersPage() {
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 space-y-1">
+              <div className="p-3 rounded-xl border border-taruna-border dark:border-slate-800 bg-[#466060] text-white space-y-1">
                 <span className="text-gray-400 font-medium">Akun Sistem / Login:</span>
                 <p className="font-semibold text-taruna-dark dark:text-white flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-taruna-red-600" />
@@ -1105,7 +999,7 @@ export default function AdminMembersPage() {
               </div>
             </div>
 
-            <div className="p-3 rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-xs space-y-1">
+            <div className="p-3 rounded-xl border border-taruna-border dark:border-slate-800 bg-[#466060] text-white text-xs space-y-1">
               <span className="text-gray-400 font-medium">Alamat Domisili Dusun:</span>
               <p className="font-semibold text-taruna-dark dark:text-white flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-taruna-red-600 shrink-0" />
@@ -1113,7 +1007,7 @@ export default function AdminMembersPage() {
               </p>
             </div>
 
-            <div className="p-3 rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-xs space-y-1">
+            <div className="p-3 rounded-xl border border-taruna-border dark:border-slate-800 bg-[#466060] text-white text-xs space-y-1">
               <span className="text-gray-400 font-medium">Organisasi:</span>
               <p className="text-gray-700 dark:text-slate-300 font-medium">
                 Karang Taruna Setya Bakti, Dusun Tuk Uluh, Desa Sringin, Kec. Jumantono, Kab. Karanganyar.

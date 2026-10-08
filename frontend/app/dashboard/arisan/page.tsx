@@ -153,9 +153,12 @@ export default function ArisanPage() {
     return localStorage.getItem('si_taruna_token');
   };
 
-  const getApiBase = () => {
+    const getApiBase = () => {
     if (process.env.NEXT_PUBLIC_API_URL) {
       return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
+    }
+    if (typeof window !== 'undefined' && window.location.hostname) {
+      return `http://${window.location.hostname}:5000/api`;
     }
     return 'http://localhost:5000/api';
   };
@@ -205,7 +208,7 @@ export default function ArisanPage() {
         membersRes.json(),
       ]);
 
-      if (allJson.success && Array.isArray(allJson.data)) {
+      if (allJson.success && Array.isArray(allJson.data) && allJson.data.length > 0) {
         setArisans(allJson.data);
       } else {
         loadFallbackArisans();
@@ -234,7 +237,7 @@ export default function ArisanPage() {
     }
   }, [toast]);
 
-  const loadFallbackArisans = () => {
+    const loadFallbackArisans = () => {
     const demoItems: ArisanItem[] = [
       {
         id: 'ar-demo-1',
@@ -242,16 +245,18 @@ export default function ArisanPage() {
         monthName: 'Oktober',
         year: 2026,
         periodLabel: 'Arisan Oktober 2026',
-        recipientName: 'Anggota 05',
+        recipientName: 'Siti Rahmawati',
         recipientNumber: 'KT-SB-005',
-        drawDate: '2026-10-01T19:30:00.000Z',
-        location: 'Rumah Anggota 05',
+        recipientPhone: '081234567805',
+        recipientAddress: 'RT 02 / RW 01, Dusun Tuk Uluh',
+        drawDate: '2026-10-15T19:30:00.000Z',
+        location: 'Kediaman Sdri. Siti Rahmawati (RT 02)',
         status: 'UPCOMING',
         amount: 500000,
-        daysRemaining: 0,
-        timingLabel: 'HARI INI',
+        daysRemaining: 8,
+        timingLabel: '8 Hari Lagi',
         isUpcoming: true,
-        notes: 'Pertemuan kocokan arisan putaran ke-10 bertempat di rumah Anggota 05.',
+        notes: 'Pertemuan kocokan arisan pemuda putaran ke-10 bertempat di rumah Sdri. Siti Rahmawati.',
       },
       {
         id: 'ar-demo-2',
@@ -260,24 +265,41 @@ export default function ArisanPage() {
         year: 2026,
         periodLabel: 'Arisan November 2026',
         recipientName: 'Belum Ditentukan',
-        drawDate: '2026-11-05T19:30:00.000Z',
+        drawDate: '2026-11-15T19:30:00.000Z',
         location: 'Balai Dusun Tuk Uluh',
         status: 'PENDING',
         amount: 500000,
-        daysRemaining: 33,
-        timingLabel: '33 Hari Lagi',
+        daysRemaining: 39,
+        timingLabel: '39 Hari Lagi',
         isUpcoming: false,
         notes: 'Undian arisan putaran ke-11.',
       },
       {
         id: 'ar-demo-3',
+        month: 12,
+        monthName: 'Desember',
+        year: 2026,
+        periodLabel: 'Arisan Desember 2026',
+        recipientName: 'Belum Ditentukan',
+        drawDate: '2026-12-15T19:30:00.000Z',
+        location: 'Balai Dusun Tuk Uluh',
+        status: 'PENDING',
+        amount: 500000,
+        daysRemaining: 69,
+        timingLabel: '69 Hari Lagi',
+        isUpcoming: false,
+        notes: 'Undian arisan putaran ke-12 penutup tahun.',
+      },
+      {
+        id: 'ar-demo-4',
         month: 9,
         monthName: 'September',
         year: 2026,
         periodLabel: 'Arisan September 2026',
-        recipientName: 'Bambang Sudarsono',
+        recipientName: 'Bambang Setyawan',
         recipientNumber: 'KT-SB-003',
-        drawDate: '2026-09-01T19:30:00.000Z',
+        recipientPhone: '081234567803',
+        drawDate: '2026-09-15T19:30:00.000Z',
         location: 'Kediaman Sdr. Bambang (RT 01)',
         status: 'PAID',
         amount: 500000,
@@ -286,14 +308,15 @@ export default function ArisanPage() {
         notes: 'Telah diserahkan lunas.',
       },
       {
-        id: 'ar-demo-4',
+        id: 'ar-demo-5',
         month: 8,
         monthName: 'Agustus',
         year: 2026,
         periodLabel: 'Arisan Agustus 2026',
         recipientName: 'Eko Prasetyo',
         recipientNumber: 'KT-SB-002',
-        drawDate: '2026-08-01T19:30:00.000Z',
+        recipientPhone: '081234567802',
+        drawDate: '2026-08-15T19:30:00.000Z',
         location: 'Kediaman Sdr. Eko (RT 02)',
         status: 'PAID',
         amount: 500000,
@@ -302,15 +325,50 @@ export default function ArisanPage() {
         notes: 'Telah diserahkan lunas.',
       },
       {
-        id: 'ar-demo-5',
+        id: 'ar-demo-6',
         month: 7,
         monthName: 'Juli',
         year: 2026,
         periodLabel: 'Arisan Juli 2026',
         recipientName: 'Rustam Aji',
         recipientNumber: 'KT-SB-001',
-        drawDate: '2026-07-01T19:30:00.000Z',
+        recipientPhone: '081234567801',
+        drawDate: '2026-07-15T19:30:00.000Z',
         location: 'Kediaman Sdr. Rustam Aji (RT 01)',
+        status: 'PAID',
+        amount: 500000,
+        timingLabel: 'Selesai',
+        isUpcoming: false,
+        notes: 'Telah diserahkan lunas.',
+      },
+      {
+        id: 'ar-demo-7',
+        month: 6,
+        monthName: 'Juni',
+        year: 2026,
+        periodLabel: 'Arisan Juni 2026',
+        recipientName: 'Wahyu Pratama',
+        recipientNumber: 'KT-SB-004',
+        recipientPhone: '081234567804',
+        drawDate: '2026-06-15T19:30:00.000Z',
+        location: 'Kediaman Sdr. Wahyu Pratama (RT 02)',
+        status: 'PAID',
+        amount: 500000,
+        timingLabel: 'Selesai',
+        isUpcoming: false,
+        notes: 'Telah diserahkan lunas.',
+      },
+      {
+        id: 'ar-demo-8',
+        month: 5,
+        monthName: 'Mei',
+        year: 2026,
+        periodLabel: 'Arisan Mei 2026',
+        recipientName: 'Dwi Astuti',
+        recipientNumber: 'KT-SB-006',
+        recipientPhone: '081234567806',
+        drawDate: '2026-05-15T19:30:00.000Z',
+        location: 'Kediaman Sdri. Dwi Astuti (RT 03)',
         status: 'PAID',
         amount: 500000,
         timingLabel: 'Selesai',
@@ -319,9 +377,25 @@ export default function ArisanPage() {
       },
     ];
 
+    const demoMembers: ArisanMember[] = [
+      { id: 'm-01', memberNumber: 'KT-SB-001', name: 'Rustam Aji', phone: '081234567801', address: 'RT 01 / RW 01', hasWon: true, winMonth: 7, winMonthName: 'Juli', winYear: 2026 },
+      { id: 'm-02', memberNumber: 'KT-SB-002', name: 'Eko Prasetyo', phone: '081234567802', address: 'RT 02 / RW 01', hasWon: true, winMonth: 8, winMonthName: 'Agustus', winYear: 2026 },
+      { id: 'm-03', memberNumber: 'KT-SB-003', name: 'Bambang Setyawan', phone: '081234567803', address: 'RT 01 / RW 01', hasWon: true, winMonth: 9, winMonthName: 'September', winYear: 2026 },
+      { id: 'm-04', memberNumber: 'KT-SB-004', name: 'Wahyu Pratama', phone: '081234567804', address: 'RT 02 / RW 01', hasWon: true, winMonth: 6, winMonthName: 'Juni', winYear: 2026 },
+      { id: 'm-05', memberNumber: 'KT-SB-005', name: 'Siti Rahmawati', phone: '081234567805', address: 'RT 02 / RW 01', hasWon: true, winMonth: 10, winMonthName: 'Oktober', winYear: 2026 },
+      { id: 'm-06', memberNumber: 'KT-SB-006', name: 'Dwi Astuti', phone: '081234567806', address: 'RT 03 / RW 01', hasWon: true, winMonth: 5, winMonthName: 'Mei', winYear: 2026 },
+      { id: 'm-07', memberNumber: 'KT-SB-007', name: 'Hendra Gunawan', phone: '081234567807', address: 'RT 03 / RW 01', hasWon: false },
+      { id: 'm-08', memberNumber: 'KT-SB-008', name: 'Rina Wijaya', phone: '081234567808', address: 'RT 01 / RW 01', hasWon: false },
+      { id: 'm-09', memberNumber: 'KT-SB-009', name: 'Agus Santoso', phone: '081234567809', address: 'RT 02 / RW 01', hasWon: false },
+      { id: 'm-10', memberNumber: 'KT-SB-010', name: 'Nur Hidayah', phone: '081234567810', address: 'RT 01 / RW 01', hasWon: false },
+      { id: 'm-11', memberNumber: 'KT-SB-011', name: 'Fajar Nugroho', phone: '081234567811', address: 'RT 03 / RW 01', hasWon: false },
+      { id: 'm-12', memberNumber: 'KT-SB-012', name: 'Budi Utomo', phone: '081234567812', address: 'RT 02 / RW 01', hasWon: false },
+    ];
+
     setArisans(demoItems);
     setNearestArisan(demoItems[0]);
     setHistoryList(demoItems.filter((d) => d.status === 'PAID' || d.status === 'WON'));
+    setMembers(demoMembers);
   };
 
   useEffect(() => {
@@ -567,7 +641,7 @@ export default function ArisanPage() {
       {/* ─────────────────────────────────────────────────────────────────────────
           1. HEADER & HERO SECTION
       ───────────────────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 sm:p-7 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs transition-colors">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#466060] text-white p-6 sm:p-7 rounded-3xl border border-[#163E4F] shadow-xs transition-colors">
         <div>
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
@@ -796,7 +870,7 @@ export default function ArisanPage() {
           3. STATS SUMMARY ROW
       ───────────────────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800">
+        <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
           <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
             Total Putaran
           </span>
@@ -806,7 +880,7 @@ export default function ArisanPage() {
           <span className="text-[11px] text-gray-400 mt-0.5 block">Tercatat di sistem</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800">
+        <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
           <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
             Akan Datang
           </span>
@@ -816,7 +890,7 @@ export default function ArisanPage() {
           <span className="text-[11px] text-gray-400 mt-0.5 block">Putaran terjadwal</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800">
+        <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
           <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
             Penerima / Selesai
           </span>
@@ -826,7 +900,7 @@ export default function ArisanPage() {
           <span className="text-[11px] text-gray-400 mt-0.5 block">Telah mendapatkan arisan</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800">
+        <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
           <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
             Belum Dapat
           </span>
@@ -892,7 +966,7 @@ export default function ArisanPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Cari periode, nama penerima, atau tempat arisan..."
-                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-taruna-border dark:border-slate-700 bg-taruna-surface/50 dark:bg-slate-800 text-taruna-dark dark:text-white placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-amber-500 transition"
+                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-[#466060] bg-[#163E4F] text-white placeholder:text-[#D6DDD5]/70 placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-amber-500 transition"
               />
             </div>
 
@@ -900,7 +974,7 @@ export default function ArisanPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-800 text-taruna-dark dark:text-slate-200 font-semibold focus:outline-hidden"
+                className="px-3 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
               >
                 <option value="ALL">Semua Status</option>
                 <option value="UPCOMING">UPCOMING</option>
@@ -912,7 +986,7 @@ export default function ArisanPage() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="px-3 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-800 text-taruna-dark dark:text-slate-200 font-semibold focus:outline-hidden"
+                className="px-3 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
               >
                 <option value="ALL">Semua Tahun</option>
                 <option value="2026">2026</option>
@@ -1086,7 +1160,7 @@ export default function ArisanPage() {
               </p>
             </div>
           ) : (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-taruna-border dark:border-slate-800 overflow-hidden">
+            <div className="bg-[#6A8578] text-white rounded-3xl border border-[#466060] overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-taruna-surface/70 dark:bg-slate-800/80 border-b border-taruna-border dark:border-slate-800 text-gray-500 dark:text-slate-400 font-bold uppercase tracking-wider">
@@ -1264,7 +1338,7 @@ export default function ArisanPage() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
               <div>
                 <span className="text-gray-400 block font-medium">Tanggal Arisan:</span>
                 <strong className="text-taruna-dark dark:text-white font-bold">
