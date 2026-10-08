@@ -65,3 +65,36 @@ export function getStoredUser(): StoredUser | null {
     return null;
   }
 }
+
+/**
+ * Completely clears all authentication tokens, cached user data, and resets session,
+ * then forces browser navigation back to the login page.
+ */
+export function logoutUser(redirectTo: string = '/'): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    // Thoroughly remove all known token and user cache keys
+    localStorage.removeItem('token');
+    localStorage.removeItem('si_taruna_token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('si_taruna_user');
+    localStorage.removeItem('si_taruna_role');
+    sessionStorage.clear();
+
+    // Expire cookies if any exist
+    document.cookie.split(';').forEach((cookieStr) => {
+      const eqPos = cookieStr.indexOf('=');
+      const name = eqPos > -1 ? cookieStr.substring(0, eqPos).trim() : cookieStr.trim();
+      if (name) {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+      }
+    });
+  } catch (err) {
+    console.error('Failed to clear credentials during logout:', err);
+  }
+
+  // Hard reload/redirect to ensure all in-memory React state is cleanly destroyed
+  window.location.href = redirectTo;
+}
+

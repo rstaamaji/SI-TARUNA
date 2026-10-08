@@ -12,6 +12,7 @@ interface LogoProps {
   showText?: boolean;
   href?: string;
   subtitle?: string;
+  badge?: string;
   src?: string;
 }
 
@@ -21,6 +22,7 @@ export const Logo: React.FC<LogoProps> = ({
   showText = true,
   href,
   subtitle,
+  badge,
   src,
 }) => {
   const { config } = useOrganization();
@@ -28,6 +30,7 @@ export const Logo: React.FC<LogoProps> = ({
 
   const effectiveLogoUrl = src || config.logoUrl || '/assets/logo.png';
   const effectiveSubtitle = subtitle || 'Sistem Informasi Karang Taruna';
+  const effectiveBadge = badge || (config.hamlet ? `Dusun ${config.hamlet}` : 'Dusun Tuk Uluh');
 
   const LogoContent = (
     <div className={cn('flex items-center gap-3 select-none group', className)}>
@@ -118,8 +121,11 @@ export const Logo: React.FC<LogoProps> = ({
             <span className="font-black text-base sm:text-lg tracking-tight text-taruna-yellow-500 dark:text-taruna-yellow-400 whitespace-nowrap leading-none group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
               SI-TARUNA
             </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold bg-taruna-yellow-100 dark:bg-amber-950/80 text-taruna-yellow-900 dark:text-amber-300 border border-taruna-yellow-200 dark:border-amber-800/60 whitespace-nowrap shrink-0">
-              Dusun Tuk Uluh, Sringin, Jumantono
+            <span
+              title="Dusun Tuk Uluh, Sringin, Jumantono"
+              className="text-[10px] px-1.5 py-0.5 rounded-md font-bold bg-taruna-yellow-100 dark:bg-amber-950/80 text-taruna-yellow-900 dark:text-amber-300 border border-taruna-yellow-200 dark:border-amber-800/60 whitespace-nowrap shrink-0 max-w-[130px] truncate"
+            >
+              {effectiveBadge}
             </span>
           </div>
           <span className="text-[11px] font-medium text-gray-500 dark:text-slate-400 tracking-wide mt-0.5 whitespace-nowrap truncate">
