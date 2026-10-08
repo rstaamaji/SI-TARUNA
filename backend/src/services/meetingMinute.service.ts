@@ -160,7 +160,7 @@ export class MeetingMinuteService {
         dayOfWeek,
         title: dto.title.trim(),
         location: dto.location?.trim() || 'Balai Dusun Tuk Uluh',
-        meetingLeader: dto.meetingLeader?.trim() || 'Ketua Karang Taruna',
+        meetingLeader: dto.meetingLeader?.trim() || 'Super Admin',
         noteTaker: dto.noteTaker?.trim() || 'Sekretaris',
         content: dto.content.trim(),
         conclusion: dto.conclusion?.trim() || null,

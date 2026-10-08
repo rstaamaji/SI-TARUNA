@@ -49,19 +49,19 @@ async function main() {
     },
   });
 
-  // Member Rustam Aji: Nama Lengkap sebagai username / TukuluhJaya
+  // Super Admin Rustam Aji: Nama Lengkap sebagai username / TukuluhJaya
   const rustamAjiMemberUser = await prisma.user.upsert({
     where: { username: 'Rustam Aji' },
     update: {
       password: hashedPasswordTukuluhJaya,
-      role: Role.MEMBER,
+      role: Role.SUPERADMIN,
       isApproved: true,
     },
     create: {
       username: 'Rustam Aji',
       email: 'rustam.aji@taruna-setyabakti.id',
       password: hashedPasswordTukuluhJaya,
-      role: Role.MEMBER,
+      role: Role.SUPERADMIN,
       isApproved: true,
     },
   });
@@ -612,9 +612,9 @@ async function main() {
         dayOfWeek: 'Kamis',
         title: 'Rapat Pleno & Evaluasi Program Kerja September 2026',
         location: 'Balai Dusun Tuk Uluh, Desa Sringin',
-        meetingLeader: 'Rustam Aji (Ketua Karang Taruna)',
+        meetingLeader: 'Rustam Aji (Super Admin)',
         noteTaker: 'Siti Nurhaliza (Sekretaris 1)',
-        content: `1. Pembukaan oleh Ketua Karang Taruna Setya Bakti (Sdr. Rustam Aji) pukul 19.45 WIB.
+        content: `1. Pembukaan oleh Super Admin Karang Taruna Setya Bakti (Sdr. Rustam Aji) pukul 19.45 WIB.
 2. Sambutan dari Penasihat Karang Taruna Dusun Tuk Uluh mengenai ketertiban pemuda dan keaktifan siskamling.
 3. Laporan Kas Keuangan oleh Bendahara (Sdri. Dewi Lestari):
    - Saldo awal: Rp 4.500.000
@@ -639,7 +639,7 @@ async function main() {
         dayOfWeek: 'Senin',
         title: 'Rapat Koordinasi Persiapan Malam Tirakatan & Pentas Seni Dusun',
         location: 'Kediaman Sdr. Bambang (RT 01 Dusun Tuk Uluh)',
-        meetingLeader: 'Rustam Aji (Ketua)',
+        meetingLeader: 'Rustam Aji (Super Admin)',
         noteTaker: 'Eko Prasetyo (Sekretaris 2)',
         content: `1. Rapat dibuka pukul 20.00 WIB di kediaman Sdr. Bambang RT 01.
 2. Pembentukan kepanitiaan malam tirakatan HUT RI ke-81.
