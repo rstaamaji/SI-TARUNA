@@ -362,7 +362,7 @@ export default function MemberProfilePage() {
       {/* ─────────────────────────────────────────────────────────────────────────
           1. HEADER & HERO SECTION
       ───────────────────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 sm:p-7 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs transition-colors">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#466060] text-white p-6 sm:p-7 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs transition-colors">
         <div>
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -534,7 +534,7 @@ export default function MemberProfilePage() {
           {/* 4 Stat Cards: Total Kegiatan, Hadir, Izin, Tidak Hadir */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
             {/* Total Kegiatan */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 shadow-xs">
+            <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060] shadow-xs">
               <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">
                 Total Kegiatan
               </span>
@@ -547,7 +547,7 @@ export default function MemberProfilePage() {
             </div>
 
             {/* Hadir */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/20 shadow-xs">
+            <div className="p-4 rounded-2xl bg-[#466060] text-white border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/20 shadow-xs">
               <span className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 tracking-wider block">
                 Hadir
               </span>
@@ -560,7 +560,7 @@ export default function MemberProfilePage() {
             </div>
 
             {/* Izin */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/60 bg-amber-50/20 shadow-xs">
+            <div className="p-4 rounded-2xl bg-[#466060] text-white border border-amber-200 dark:border-amber-900/60 bg-amber-50/20 shadow-xs">
               <span className="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400 tracking-wider block">
                 Izin
               </span>
@@ -573,7 +573,7 @@ export default function MemberProfilePage() {
             </div>
 
             {/* Tidak Hadir */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/60 bg-red-50/20 shadow-xs">
+            <div className="p-4 rounded-2xl bg-[#466060] text-white border border-red-200 dark:border-red-900/60 bg-red-50/20 shadow-xs">
               <span className="text-[10px] uppercase font-bold text-red-600 dark:text-red-400 tracking-wider block">
                 Tidak Hadir
               </span>
@@ -599,7 +599,7 @@ export default function MemberProfilePage() {
               className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition flex items-center gap-2 ${
                 activeTab === 'OVERVIEW'
                   ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border border-taruna-border dark:border-slate-800 hover:bg-gray-50'
+                  : 'bg-[#466060] text-white text-gray-600 dark:text-slate-300 border border-taruna-border dark:border-slate-800 hover:bg-gray-50'
               }`}
             >
               <CalendarCheck2 className="w-4 h-4" />
@@ -611,7 +611,7 @@ export default function MemberProfilePage() {
               className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition flex items-center gap-2 ${
                 activeTab === 'NOTIFICATIONS'
                   ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border border-taruna-border dark:border-slate-800 hover:bg-gray-50'
+                  : 'bg-[#466060] text-white text-gray-600 dark:text-slate-300 border border-taruna-border dark:border-slate-800 hover:bg-gray-50'
               }`}
             >
               <Bell className="w-4 h-4" />

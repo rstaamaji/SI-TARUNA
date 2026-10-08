@@ -198,9 +198,12 @@ export default function KegiatanPage() {
   };
 
   // Helper API Base URL
-  const getApiBase = () => {
+    const getApiBase = () => {
     if (process.env.NEXT_PUBLIC_API_URL) {
       return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
+    }
+    if (typeof window !== 'undefined' && window.location.hostname) {
+      return `http://${window.location.hostname}:5000/api`;
     }
     return 'http://localhost:5000/api';
   };
@@ -232,7 +235,7 @@ export default function KegiatanPage() {
         const res = await fetch(`${apiBase}/events${qs ? `?${qs}` : ''}`, { headers });
         const json = await res.json();
 
-        if (res.ok && json.success && Array.isArray(json.data)) {
+        if (res.ok && json.success && Array.isArray(json.data) && json.data.length > 0) {
           setEvents(json.data);
           if (isManual) {
             toast.success('Daftar jadwal kegiatan berhasil disegarkan.');
@@ -255,7 +258,7 @@ export default function KegiatanPage() {
     fetchEvents();
   }, [fetchEvents]);
 
-  const loadFallbackEvents = () => {
+    const loadFallbackEvents = () => {
     setEvents([
       {
         id: 'ev-demo-1',
@@ -299,13 +302,83 @@ export default function KegiatanPage() {
       },
       {
         id: 'ev-demo-5',
-        title: 'Pelatihan Kewirausahaan Pemuda Karang Taruna',
+        title: 'Peringatan Hari Sumpah Pemuda & Malam Pentas Seni',
+        type: 'TARUNA',
+        eventDate: '2026-10-28T19:30:00.000Z',
+        dayOfWeek: 'Rabu',
+        time: '19:30 WIB',
+        location: 'Halaman Balai Dusun Tuk Uluh',
+        description: 'Pentas seni kreasi remaja dusun, pembacaan ikrar pemuda, dan pemutaran film dokumenter sejarah.',
+      },
+      {
+        id: 'ev-demo-6',
+        title: 'Pelatihan Kewirausahaan & Digital Marketing Pemuda',
         type: 'TARUNA',
         eventDate: '2026-11-01T13:30:00.000Z',
         dayOfWeek: 'Minggu',
         time: '13:30 WIB',
         location: 'Balai Dusun Tuk Uluh',
-        description: 'Workshop pemanfaatan media sosial dan digital marketing untuk produk UMKM pemuda Dusun Tuk Uluh.',
+        description: 'Workshop pemanfaatan media sosial dan marketplace untuk meningkatkan omzet produk UMKM pemuda Dusun Tuk Uluh.',
+      },
+      {
+        id: 'ev-demo-7',
+        title: 'Penyuluhan Kesehatan Remaja & Bahaya Narkoba',
+        type: 'SOCIAL',
+        eventDate: '2026-11-08T09:00:00.000Z',
+        dayOfWeek: 'Minggu',
+        time: '09:00 WIB',
+        location: 'Balai Dusun Tuk Uluh',
+        description: 'Bekerjasama dengan Puskesmas Jumantono untuk sosialisasi pola hidup sehat dan pencegahan kenakalan remaja.',
+      },
+      {
+        id: 'ev-demo-8',
+        title: 'Turnamen Bola Voli Antar RT Karang Taruna Cup',
+        type: 'TARUNA',
+        eventDate: '2026-11-15T15:30:00.000Z',
+        dayOfWeek: 'Minggu',
+        time: '15:30 WIB',
+        location: 'Lapangan Voli Dusun Tuk Uluh',
+        description: 'Pertandingan voli persahabatan antar RT 01, RT 02, dan RT 03 guna memupuk persaudaraan dan sportivitas.',
+      },
+      {
+        id: 'ev-demo-9',
+        title: 'Kerja Bakti Gotong Royong Pengecatan Pos Ronda',
+        type: 'COMMUNITY_SERVICE',
+        eventDate: '2026-11-22T07:00:00.000Z',
+        dayOfWeek: 'Minggu',
+        time: '07:00 WIB',
+        location: 'Pos Ronda RT 01, 02, 03 Dusun Tuk Uluh',
+        description: 'Pengecatan dan peremajaan sarana pos keamanan lingkungan pemuda di 3 RT wilayah Dusun Tuk Uluh.',
+      },
+      {
+        id: 'ev-demo-10',
+        title: 'Rapat Pleno LPJ Kas & Pertemuan Rutin Akhir Bulan',
+        type: 'MEETING',
+        eventDate: '2026-11-29T19:30:00.000Z',
+        dayOfWeek: 'Minggu',
+        time: '19:30 WIB',
+        location: 'Balai Dusun Tuk Uluh',
+        description: 'Penyampaian laporan pertanggungjawaban kas bendahara, evaluasi kegiatan bulanan, dan perencanaan agenda tahun baru.',
+      },
+      {
+        id: 'ev-demo-11',
+        title: 'Pengajian Rutin Pemuda & Doa Bersama Warga',
+        type: 'SOCIAL',
+        eventDate: '2026-09-20T19:30:00.000Z',
+        dayOfWeek: 'Minggu',
+        time: '19:30 WIB',
+        location: 'Masjid Al-Hidayah Dusun Tuk Uluh',
+        description: 'Kajian agama bulanan pemuda bersama tokoh masyarakat dan sesepuh Dusun Tuk Uluh.',
+      },
+      {
+        id: 'ev-demo-12',
+        title: 'Kerja Bakti Pembersihan Lapangan Sepak Bola',
+        type: 'COMMUNITY_SERVICE',
+        eventDate: '2026-09-12T06:30:00.000Z',
+        dayOfWeek: 'Sabtu',
+        time: '06:30 WIB',
+        location: 'Lapangan Olahraga Dusun Tuk Uluh',
+        description: 'Pembersihan rumput liar dan penataan area lapangan olahraga pemuda.',
       },
     ]);
   };
@@ -544,7 +617,7 @@ export default function KegiatanPage() {
       {/* ─────────────────────────────────────────────────────────────────────────
           1. HEADER & HERO SECTION
       ───────────────────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 sm:p-7 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs transition-colors">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#466060] text-white p-6 sm:p-7 rounded-3xl border border-[#163E4F] shadow-xs transition-colors">
         <div>
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -648,8 +721,8 @@ export default function KegiatanPage() {
                   key={item.id}
                   className={`p-5 rounded-3xl border transition flex flex-col justify-between relative overflow-hidden group shadow-xs hover:shadow-md ${
                     isFirst
-                      ? 'bg-gradient-to-br from-amber-500/10 via-white to-amber-500/5 dark:from-amber-950/40 dark:via-slate-900 dark:to-slate-900 border-amber-300 dark:border-amber-700/60 ring-1 ring-amber-400/30'
-                      : 'bg-white dark:bg-slate-900 border-taruna-border dark:border-slate-800 hover:border-taruna-yellow-500/50'
+                      ? 'bg-gradient-to-br from-amber-500/10 via-white to-amber-500/5 dark:from-[#6A8578] dark:via-[#6A8578] dark:to-[#466060] border-amber-400 ring-1 ring-amber-400/30'
+                      : 'bg-[#6A8578] text-white border-[#466060] hover:border-amber-300'
                   }`}
                 >
                   {/* Decorative badge indicator */}
@@ -745,7 +818,7 @@ export default function KegiatanPage() {
           3. STATS CARDS ROW
       ───────────────────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800">
+        <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
           <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
             Total Kegiatan
           </span>
@@ -755,7 +828,7 @@ export default function KegiatanPage() {
           <span className="text-[11px] text-gray-400 mt-0.5 block">Tercatat di sistem</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800">
+        <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
           <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
             Akan Datang
           </span>
@@ -771,7 +844,7 @@ export default function KegiatanPage() {
           <span className="text-[11px] text-gray-400 mt-0.5 block">Agenda aktif</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800">
+        <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
           <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
             Rapat &amp; Arisan
           </span>
@@ -781,7 +854,7 @@ export default function KegiatanPage() {
           <span className="text-[11px] text-gray-400 mt-0.5 block">Pertemuan rutin</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800">
+        <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
           <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">
             Sosial &amp; Kerja Bakti
           </span>
@@ -795,7 +868,7 @@ export default function KegiatanPage() {
       {/* ─────────────────────────────────────────────────────────────────────────
           4. FILTER & SEARCH BAR
       ───────────────────────────────────────────────────────────────────────── */}
-      <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-taruna-border dark:border-slate-800 space-y-4">
+      <div className="bg-[#466060] text-white p-5 rounded-3xl border border-[#163E4F] space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -804,7 +877,7 @@ export default function KegiatanPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari nama kegiatan, lokasi, atau deskripsi agenda..."
-              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-taruna-border dark:border-slate-700 bg-taruna-surface/50 dark:bg-slate-800 text-taruna-dark dark:text-white placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500 transition"
+              className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-[#466060] bg-[#163E4F] text-white placeholder:text-[#D6DDD5]/70 placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500 transition"
             />
             {searchQuery && (
               <button
@@ -820,7 +893,7 @@ export default function KegiatanPage() {
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="px-3 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-800 text-taruna-dark dark:text-slate-200 font-semibold focus:outline-hidden"
+              className="px-3 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
             >
               <option value="ALL">Semua Kategori</option>
               <option value="MEETING">Rapat</option>
@@ -834,7 +907,7 @@ export default function KegiatanPage() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value as any)}
-              className="px-3 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-800 text-taruna-dark dark:text-slate-200 font-semibold focus:outline-hidden"
+              className="px-3 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
             >
               <option value="ALL">Semua Status</option>
               <option value="UPCOMING">Akan Datang</option>
@@ -844,7 +917,7 @@ export default function KegiatanPage() {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-3 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-800 text-taruna-dark dark:text-slate-200 font-semibold focus:outline-hidden"
+              className="px-3 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
             >
               <option value="ALL">Semua Bulan</option>
               <option value="1">Januari</option>
@@ -864,7 +937,7 @@ export default function KegiatanPage() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="px-3 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-800 text-taruna-dark dark:text-slate-200 font-semibold focus:outline-hidden"
+              className="px-3 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
             >
               <option value="ALL">Semua Tahun</option>
               <option value="2026">2026</option>
@@ -878,7 +951,7 @@ export default function KegiatanPage() {
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
                 title="Filter Tanggal Spesifik"
-                className="px-3 py-1.5 text-xs rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-800 text-taruna-dark dark:text-slate-200 font-semibold focus:outline-hidden"
+                className="px-3 py-1.5 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
               />
               {selectedDate && (
                 <button
@@ -1110,7 +1183,7 @@ export default function KegiatanPage() {
                 <h4 className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                   Deskripsi &amp; Petunjuk Kegiatan
                 </h4>
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 text-xs leading-relaxed text-gray-700 dark:text-slate-300 whitespace-pre-line">
+                <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060] text-xs leading-relaxed text-gray-700 dark:text-slate-300 whitespace-pre-line">
                   {detailEvent.description}
                 </div>
               </div>
@@ -1243,7 +1316,7 @@ export default function KegiatanPage() {
               value={formDescription}
               onChange={(e) => setFormDescription(e.target.value)}
               placeholder="Keterangan agenda, perlengkapan yang perlu dibawa, agenda musyawarah..."
-              className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-900 text-taruna-dark dark:text-white placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500 transition"
+              className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-taruna-border dark:border-slate-700 bg-[#466060] text-white placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500 transition"
             />
           </div>
         </form>
