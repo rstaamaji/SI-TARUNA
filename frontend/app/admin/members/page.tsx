@@ -35,7 +35,6 @@ import {
 } from '@/components/ui/Table';
 import { Avatar } from '@/components/ui/Avatar';
 import { useToast } from '@/components/ui/Toast';
-import { ThemeToggle } from '@/components/theme/ThemeProvider';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Navbar } from '@/components/layout/Navbar';
 import { getStoredUser, UserRole } from '@/lib/auth';
@@ -96,7 +95,7 @@ export default function AdminMembersPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ name: string; role: UserRole }>({
     name: 'Pengurus Taruna',
-    role: 'ADMIN',
+    role: 'MEMBER',
   });
 
   useEffect(() => {
@@ -109,6 +108,8 @@ export default function AdminMembersPage() {
       // ignore
     }
   }, []);
+
+  const isAdmin = currentUser.role === 'ADMIN' || currentUser.role === 'SUPERADMIN';
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -447,9 +448,8 @@ export default function AdminMembersPage() {
 
           <div className="flex items-center gap-3">
             <Badge variant="primary" size="sm" className="bg-[#163E4F] text-[#D6DDD5] border-[#466060]">
-              Hak Akses: ADMIN
+              Hak Akses: {currentUser.role === 'SUPERADMIN' ? 'SUPERADMIN' : isAdmin ? 'ADMIN' : 'ANGGOTA'}
             </Badge>
-            <ThemeToggle />
           </div>
         </div>
 
@@ -489,15 +489,17 @@ export default function AdminMembersPage() {
               >
                 Muat Ulang
               </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                className="bg-[#163E4F] hover:bg-[#163E4F]/90 text-white border border-[#466060]"
-                leftIcon={<UserPlus className="w-4 h-4" />}
-                onClick={handleOpenAddModal}
-              >
-                Tambah Anggota Baru
-              </Button>
+              {isAdmin && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="bg-[#163E4F] hover:bg-[#163E4F]/90 text-white border border-[#466060]"
+                  leftIcon={<UserPlus className="w-4 h-4" />}
+                  onClick={handleOpenAddModal}
+                >
+                  Tambah Anggota Baru
+                </Button>
+              )}
             </div>
           </div>
 
@@ -674,11 +676,21 @@ export default function AdminMembersPage() {
 
                         {/* Status Anggota */}
                         <TableCell className="text-center">
-                          <button
-                            onClick={() => handleToggleStatus(member)}
-                            title="Klik untuk mengubah status aktif / tidak aktif"
-                            className="cursor-pointer hover:opacity-80 transition"
-                          >
+                          {isAdmin ? (
+                            <button
+                              onClick={() => handleToggleStatus(member)}
+                              title="Klik untuk mengubah status aktif / tidak aktif"
+                              className="cursor-pointer hover:opacity-80 transition"
+                            >
+                              <Badge
+                                variant={member.status === 'ACTIVE' ? 'success' : 'neutral'}
+                                size="sm"
+                                dot
+                              >
+                                {member.status === 'ACTIVE' ? 'AKTIF' : 'NONAKTIF'}
+                              </Badge>
+                            </button>
+                          ) : (
                             <Badge
                               variant={member.status === 'ACTIVE' ? 'success' : 'neutral'}
                               size="sm"
@@ -686,7 +698,7 @@ export default function AdminMembersPage() {
                             >
                               {member.status === 'ACTIVE' ? 'AKTIF' : 'NONAKTIF'}
                             </Badge>
-                          </button>
+                          )}
                         </TableCell>
 
                         {/* Aksi */}
@@ -699,20 +711,24 @@ export default function AdminMembersPage() {
                             >
                               <Eye className="w-4 h-4 text-[#38BDF8]" />
                             </button>
-                            <button
-                              onClick={() => handleOpenEditModal(member)}
-                              title="Ubah Data Anggota"
-                              className="p-1.5 rounded-lg bg-[#163E4F] text-white hover:bg-[#466060] border border-[#466060] transition"
-                            >
-                              <Edit2 className="w-4 h-4 text-[#FDE047]" />
-                            </button>
-                            <button
-                              onClick={() => handleOpenDeleteDialog(member)}
-                              title="Hapus / Nonaktifkan Anggota"
-                              className="p-1.5 rounded-lg bg-[#163E4F] text-white hover:bg-[#F87171]/20 border border-[#466060] transition"
-                            >
-                              <Trash2 className="w-4 h-4 text-[#F87171]" />
-                            </button>
+                            {isAdmin && (
+                              <>
+                                <button
+                                  onClick={() => handleOpenEditModal(member)}
+                                  title="Ubah Data Anggota"
+                                  className="p-1.5 rounded-lg bg-[#163E4F] text-white hover:bg-[#466060] border border-[#466060] transition"
+                                >
+                                  <Edit2 className="w-4 h-4 text-[#FDE047]" />
+                                </button>
+                                <button
+                                  onClick={() => handleOpenDeleteDialog(member)}
+                                  title="Hapus / Nonaktifkan Anggota"
+                                  className="p-1.5 rounded-lg bg-[#163E4F] text-white hover:bg-[#F87171]/20 border border-[#466060] transition"
+                                >
+                                  <Trash2 className="w-4 h-4 text-[#F87171]" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -773,171 +789,175 @@ export default function AdminMembersPage() {
       {/* ───────────────────────────────────────────────────────────────────────────── */}
       {/* 1. MODAL TAMBAH ANGGOTA */}
       {/* ───────────────────────────────────────────────────────────────────────────── */}
-      <Modal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        title="Tambah Anggota Baru"
-        description="Daftarkan pemuda Dusun Tuk Uluh ke dalam database Karang Taruna Setya Bakti."
-        footer={
-          <>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setIsAddModalOpen(false)}
-              disabled={isSubmitting}
-            >
-              Batal
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleCreateMember}
-              isLoading={isSubmitting}
-            >
-              Simpan Anggota
-            </Button>
-          </>
-        }
-      >
-        <form onSubmit={handleCreateMember} className="space-y-4">
-          <Input
-            label="Nomor Anggota (Opsional)"
-            placeholder="Otomatis digenerate jika dikosongkan (contoh: KT-SB-026)"
-            value={formNumber}
-            onChange={(e) => setFormNumber(e.target.value)}
-          />
-
-          <Input
-            label="Nama Lengkap Pemuda *"
-            placeholder="Masukkan nama lengkap anggota"
-            value={formName}
-            onChange={(e) => setFormName(e.target.value)}
-            required
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Select
-              label="Jenis Kelamin *"
-              value={formGender}
-              onChange={(e) => setFormGender(e.target.value as 'MALE' | 'FEMALE')}
-              options={[
-                { value: 'MALE', label: 'Laki-laki (MALE)' },
-                { value: 'FEMALE', label: 'Perempuan (FEMALE)' },
-              ]}
+      {isAdmin && (
+        <Modal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          title="Tambah Anggota Baru"
+          description="Daftarkan pemuda Dusun Tuk Uluh ke dalam database Karang Taruna Setya Bakti."
+          footer={
+            <>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setIsAddModalOpen(false)}
+                disabled={isSubmitting}
+              >
+                Batal
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleCreateMember}
+                isLoading={isSubmitting}
+              >
+                Simpan Anggota
+              </Button>
+            </>
+          }
+        >
+          <form onSubmit={handleCreateMember} className="space-y-4">
+            <Input
+              label="Nomor Anggota (Opsional)"
+              placeholder="Otomatis digenerate jika dikosongkan (contoh: KT-SB-026)"
+              value={formNumber}
+              onChange={(e) => setFormNumber(e.target.value)}
             />
 
-            <Select
-              label="Status Keanggotaan *"
-              value={formStatus}
-              onChange={(e) => setFormStatus(e.target.value as 'ACTIVE' | 'INACTIVE')}
-              options={[
-                { value: 'ACTIVE', label: 'Aktif (ACTIVE)' },
-                { value: 'INACTIVE', label: 'Tidak Aktif (INACTIVE)' },
-              ]}
+            <Input
+              label="Nama Lengkap Pemuda *"
+              placeholder="Masukkan nama lengkap anggota"
+              value={formName}
+              onChange={(e) => setFormName(e.target.value)}
+              required
             />
-          </div>
 
-          <Input
-            label="Nomor WhatsApp / HP"
-            placeholder="Contoh: 081234567890"
-            value={formPhone}
-            onChange={(e) => setFormPhone(e.target.value)}
-            leftIcon={<Phone className="w-4 h-4" />}
-          />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Select
+                label="Jenis Kelamin *"
+                value={formGender}
+                onChange={(e) => setFormGender(e.target.value as 'MALE' | 'FEMALE')}
+                options={[
+                  { value: 'MALE', label: 'Laki-laki (MALE)' },
+                  { value: 'FEMALE', label: 'Perempuan (FEMALE)' },
+                ]}
+              />
 
-          <Input
-            label="Alamat Domisili *"
-            placeholder="Contoh: RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin"
-            value={formAddress}
-            onChange={(e) => setFormAddress(e.target.value)}
-            leftIcon={<MapPin className="w-4 h-4" />}
-            required
-          />
-        </form>
-      </Modal>
+              <Select
+                label="Status Keanggotaan *"
+                value={formStatus}
+                onChange={(e) => setFormStatus(e.target.value as 'ACTIVE' | 'INACTIVE')}
+                options={[
+                  { value: 'ACTIVE', label: 'Aktif (ACTIVE)' },
+                  { value: 'INACTIVE', label: 'Tidak Aktif (INACTIVE)' },
+                ]}
+              />
+            </div>
+
+            <Input
+              label="Nomor WhatsApp / HP"
+              placeholder="Contoh: 081234567890"
+              value={formPhone}
+              onChange={(e) => setFormPhone(e.target.value)}
+              leftIcon={<Phone className="w-4 h-4" />}
+            />
+
+            <Input
+              label="Alamat Domisili *"
+              placeholder="Contoh: RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin"
+              value={formAddress}
+              onChange={(e) => setFormAddress(e.target.value)}
+              leftIcon={<MapPin className="w-4 h-4" />}
+              required
+            />
+          </form>
+        </Modal>
+      )}
 
       {/* ───────────────────────────────────────────────────────────────────────────── */}
       {/* 2. MODAL EDIT ANGGOTA */}
       {/* ───────────────────────────────────────────────────────────────────────────── */}
-      <Modal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        title={`Ubah Data: ${selectedMember?.name}`}
-        description={`Memperbarui informasi anggota dengan nomor ${selectedMember?.memberNumber}`}
-        footer={
-          <>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setIsEditModalOpen(false)}
-              disabled={isSubmitting}
-            >
-              Batal
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleUpdateMember}
-              isLoading={isSubmitting}
-            >
-              Simpan Perubahan
-            </Button>
-          </>
-        }
-      >
-        <form onSubmit={handleUpdateMember} className="space-y-4">
-          <Input
-            label="Nomor Anggota"
-            value={formNumber}
-            disabled
-            helperText="Nomor anggota merupakan kode unik resmi yang terkunci."
-          />
-
-          <Input
-            label="Nama Lengkap *"
-            value={formName}
-            onChange={(e) => setFormName(e.target.value)}
-            required
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Select
-              label="Jenis Kelamin *"
-              value={formGender}
-              onChange={(e) => setFormGender(e.target.value as 'MALE' | 'FEMALE')}
-              options={[
-                { value: 'MALE', label: 'Laki-laki (MALE)' },
-                { value: 'FEMALE', label: 'Perempuan (FEMALE)' },
-              ]}
+      {isAdmin && (
+        <Modal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          title={`Ubah Data: ${selectedMember?.name}`}
+          description={`Memperbarui informasi anggota dengan nomor ${selectedMember?.memberNumber}`}
+          footer={
+            <>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setIsEditModalOpen(false)}
+                disabled={isSubmitting}
+              >
+                Batal
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleUpdateMember}
+                isLoading={isSubmitting}
+              >
+                Simpan Perubahan
+              </Button>
+            </>
+          }
+        >
+          <form onSubmit={handleUpdateMember} className="space-y-4">
+            <Input
+              label="Nomor Anggota"
+              value={formNumber}
+              disabled
+              helperText="Nomor anggota merupakan kode unik resmi yang terkunci."
             />
 
-            <Select
-              label="Status Keanggotaan *"
-              value={formStatus}
-              onChange={(e) => setFormStatus(e.target.value as 'ACTIVE' | 'INACTIVE')}
-              options={[
-                { value: 'ACTIVE', label: 'Aktif (ACTIVE)' },
-                { value: 'INACTIVE', label: 'Tidak Aktif (INACTIVE)' },
-              ]}
+            <Input
+              label="Nama Lengkap *"
+              value={formName}
+              onChange={(e) => setFormName(e.target.value)}
+              required
             />
-          </div>
 
-          <Input
-            label="Nomor WhatsApp / HP"
-            value={formPhone}
-            onChange={(e) => setFormPhone(e.target.value)}
-            leftIcon={<Phone className="w-4 h-4" />}
-          />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Select
+                label="Jenis Kelamin *"
+                value={formGender}
+                onChange={(e) => setFormGender(e.target.value as 'MALE' | 'FEMALE')}
+                options={[
+                  { value: 'MALE', label: 'Laki-laki (MALE)' },
+                  { value: 'FEMALE', label: 'Perempuan (FEMALE)' },
+                ]}
+              />
 
-          <Input
-            label="Alamat Domisili *"
-            value={formAddress}
-            onChange={(e) => setFormAddress(e.target.value)}
-            leftIcon={<MapPin className="w-4 h-4" />}
-            required
-          />
-        </form>
-      </Modal>
+              <Select
+                label="Status Keanggotaan *"
+                value={formStatus}
+                onChange={(e) => setFormStatus(e.target.value as 'ACTIVE' | 'INACTIVE')}
+                options={[
+                  { value: 'ACTIVE', label: 'Aktif (ACTIVE)' },
+                  { value: 'INACTIVE', label: 'Tidak Aktif (INACTIVE)' },
+                ]}
+              />
+            </div>
+
+            <Input
+              label="Nomor WhatsApp / HP"
+              value={formPhone}
+              onChange={(e) => setFormPhone(e.target.value)}
+              leftIcon={<Phone className="w-4 h-4" />}
+            />
+
+            <Input
+              label="Alamat Domisili *"
+              value={formAddress}
+              onChange={(e) => setFormAddress(e.target.value)}
+              leftIcon={<MapPin className="w-4 h-4" />}
+              required
+            />
+          </form>
+        </Modal>
+      )}
 
       {/* ───────────────────────────────────────────────────────────────────────────── */}
       {/* 3. MODAL DETAIL ANGGOTA */}
@@ -1020,17 +1040,19 @@ export default function AdminMembersPage() {
       {/* ───────────────────────────────────────────────────────────────────────────── */}
       {/* 4. DIALOG KONFIRMASI HAPUS / NONAKTIFKAN */}
       {/* ───────────────────────────────────────────────────────────────────────────── */}
-      <Dialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={handleConfirmDelete}
-        title={`Konfirmasi Hapus / Nonaktifkan`}
-        message={`Apakah Anda yakin ingin menghapus atau menonaktifkan anggota ${selectedMember?.name} (${selectedMember?.memberNumber})? Data historis terkait kehadiran atau kas akan tetap terlindungi.`}
-        confirmText="Hapus / Nonaktifkan"
-        cancelText="Batal"
-        variant="danger"
-        isLoading={isSubmitting}
-      />
+      {isAdmin && (
+        <Dialog
+          isOpen={isDeleteDialogOpen}
+          onClose={() => setIsDeleteDialogOpen(false)}
+          onConfirm={handleConfirmDelete}
+          title={`Konfirmasi Hapus / Nonaktifkan`}
+          message={`Apakah Anda yakin ingin menghapus atau menonaktifkan anggota ${selectedMember?.name} (${selectedMember?.memberNumber})? Data historis terkait kehadiran atau kas akan tetap terlindungi.`}
+          confirmText="Hapus / Nonaktifkan"
+          cancelText="Batal"
+          variant="danger"
+          isLoading={isSubmitting}
+        />
+      )}
     </div>
   );
 }

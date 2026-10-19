@@ -61,13 +61,13 @@ router.delete('/expense/:id', requireAdmin, FinanceController.deleteExpense);
 // ─────────────────────────────────────────────────────────────────────────────
 // MODULE 14: FINANCIAL REPORTS & EXPORT (/api/finance/reports & /report)
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /api/finance/reports/csv - Export CSV Laporan Keuangan (MEMBER & ADMIN)
-router.get('/reports/csv', FinanceController.exportCSV);
-router.get('/report/csv', FinanceController.exportCSV);
+// GET /api/finance/reports/csv - Export CSV Laporan Keuangan (KHUSUS ADMIN & SUPERADMIN)
+router.get('/reports/csv', requireAdmin, FinanceController.exportCSV);
+router.get('/report/csv', requireAdmin, FinanceController.exportCSV);
 
-// GET /api/finance/reports - Laporan Keuangan Komprehensif (MEMBER & ADMIN)
-router.get('/reports', FinanceController.getReport);
-router.get('/report', FinanceController.getReport);
+// GET /api/finance/reports - Laporan Keuangan Komprehensif (KHUSUS ADMIN & SUPERADMIN)
+router.get('/reports', requireAdmin, FinanceController.getReport);
+router.get('/report', requireAdmin, FinanceController.getReport);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GENERAL FINANCE TRANSACTIONS ROUTES

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Wallet,
   ArrowDownLeft,
@@ -192,15 +193,17 @@ const CustomChartTooltip: React.FC<CustomTooltipProps> = ({ active, payload, lab
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 export default function FinancialReportsPage() {
+  const router = useRouter();
   const toast = useToast();
 
   // Auth & Session
   const [currentUser, setCurrentUser] = useState<{ id: string; name: string; role: UserRole }>({
     id: 'user-default',
     name: 'Pengurus Setya Bakti',
-    role: 'MEMBER',
+    role: 'ADMIN',
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const isAdmin = isUserAdmin(currentUser.role);
 
   // Filters
@@ -222,7 +225,7 @@ export default function FinancialReportsPage() {
     return localStorage.getItem('si_taruna_token') || localStorage.getItem('token');
   };
 
-  // Load User Session
+  // Load User Session & Check Admin Permission
   useEffect(() => {
     try {
       const stored = getStoredUser();
@@ -232,11 +235,23 @@ export default function FinancialReportsPage() {
           name: stored.name,
           role: stored.role,
         });
+
+        if (stored.role !== 'ADMIN' && stored.role !== 'SUPERADMIN') {
+          setIsAuthorized(false);
+          toast.error('Akses ditolak: Laporan Keuangan hanya dapat diakses oleh Admin dan Superadmin.');
+          router.replace('/finance');
+          return;
+        }
+        setIsAuthorized(true);
+      } else {
+        // Fallback demo session jika preview offline
+        setIsAuthorized(true);
       }
     } catch {
-      // Default to MEMBER
+      setIsAuthorized(false);
+      router.replace('/finance');
     }
-  }, []);
+  }, [router, toast]);
 
   // Fetch Report Data
     const loadFallbackReport = () => {
@@ -558,6 +573,33 @@ export default function FinancialReportsPage() {
       );
     }
   };
+
+  if (isAuthorized === false) {
+    return (
+      <div className="min-h-screen flex bg-[#D6DDD5] text-[#163E4F] transition-colors">
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} userRole={currentUser.role} />
+        <div className="flex-1 flex flex-col min-w-0">
+          <Navbar onMenuToggle={() => setSidebarOpen(true)} user={{ name: currentUser.name, role: currentUser.role }} />
+          <main className="flex-1 p-8 max-w-xl mx-auto flex items-center justify-center">
+            <Card className="!bg-[#6A8578] text-white p-8 rounded-3xl border border-[#466060] text-center space-y-4">
+              <ShieldCheck className="w-12 h-12 text-amber-300 mx-auto" />
+              <h2 className="text-xl font-bold text-white">Akses Terbatas</h2>
+              <p className="text-xs text-[#D6DDD5]">
+                Fitur Laporan Keuangan khusus diperuntukkan bagi Pengurus (Admin / Super Admin). Anda dialihkan kembali ke Buku Kas Umum...
+              </p>
+              <Button
+                variant="primary"
+                onClick={() => router.replace('/finance')}
+                className="bg-[#163E4F] hover:bg-[#466060] text-white border border-[#466060]"
+              >
+                Kembali ke Buku Kas Umum
+              </Button>
+            </Card>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex bg-[#D6DDD5] text-[#163E4F] transition-colors">

@@ -5,7 +5,7 @@ export const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-x-auto rounded-2xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
+  <div className="relative w-full overflow-x-auto rounded-2xl border border-[#466060] bg-[#163E4F]/40 shadow-xs">
     <table
       ref={ref}
       className={cn('w-full caption-bottom text-sm text-left', className)}
@@ -22,7 +22,7 @@ export const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      'bg-taruna-surface dark:bg-slate-800/80 border-b border-taruna-border dark:border-slate-800 text-xs uppercase text-gray-500 dark:text-slate-400 font-semibold tracking-wider',
+      'bg-[#466060] border-b border-[#163E4F] text-xs uppercase text-white font-bold tracking-wider',
       className
     )}
     {...props}
@@ -37,7 +37,7 @@ export const TableBody = React.forwardRef<
   <tbody
     ref={ref}
     className={cn(
-      'divide-y divide-taruna-border dark:divide-slate-800 text-taruna-dark dark:text-slate-200',
+      'divide-y divide-[#466060]/50 text-white',
       className
     )}
     {...props}
@@ -52,7 +52,7 @@ export const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      'border-t border-taruna-border dark:border-slate-800 bg-taruna-surface dark:bg-slate-800/60 font-medium text-taruna-dark dark:text-slate-200',
+      'border-t border-[#466060] bg-[#466060] font-medium text-white',
       className
     )}
     {...props}
@@ -67,7 +67,7 @@ export const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'transition-colors hover:bg-taruna-yellow-50/40 dark:hover:bg-slate-800/60 data-[state=selected]:bg-taruna-yellow-50 dark:data-[state=selected]:bg-slate-800',
+      'transition-colors hover:bg-[#466060]/30 data-[state=selected]:bg-[#466060]',
       className
     )}
     {...props}
@@ -82,7 +82,7 @@ export const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'px-4 py-3.5 align-middle text-left font-bold text-taruna-dark/80 dark:text-slate-300',
+      'px-4 py-3.5 align-middle text-left font-bold text-white',
       className
     )}
     {...props}
@@ -97,7 +97,7 @@ export const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      'px-4 py-3.5 align-middle text-sm text-taruna-dark dark:text-slate-200',
+      'px-4 py-3.5 align-middle text-sm text-[#D6DDD5]',
       className
     )}
     {...props}

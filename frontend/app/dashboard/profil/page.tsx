@@ -362,37 +362,37 @@ export default function MemberProfilePage() {
       {/* ─────────────────────────────────────────────────────────────────────────
           1. HEADER & HERO SECTION
       ───────────────────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#466060] text-white p-6 sm:p-7 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs transition-colors">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#466060] text-white p-6 sm:p-7 rounded-3xl border border-[#163E4F] shadow-sm transition-colors">
         <div>
           <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-black tracking-wider uppercase text-emerald-700 dark:text-emerald-400">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#4ADE80] animate-pulse" />
+            <span className="text-xs font-black tracking-wider uppercase text-[#4ADE80]">
               Modul 26 • Member Profile
             </span>
-            <Badge variant="primary" size="sm">
+            <Badge variant="primary" size="sm" className="bg-[#163E4F] text-[#D6DDD5] border-[#466060]">
               <UserCircle className="w-3.5 h-3.5 mr-1 inline" />
               Profil Pribadi
             </Badge>
-            <Badge variant={profile.user.role === 'SUPERADMIN' ? 'warning' : profile.user.role === 'ADMIN' ? 'accent' : 'neutral'} size="sm">
+            <Badge variant="primary" size="sm" className="bg-[#163E4F] text-[#D6DDD5] border-[#466060]">
               {profile.user.role === 'SUPERADMIN' ? (
                 <>
-                  <ShieldCheck className="w-3 h-3 mr-1 inline" /> Superadmin / Pembina
+                  <ShieldCheck className="w-3 h-3 mr-1 inline text-amber-300" /> Superadmin / Pembina
                 </>
               ) : profile.user.role === 'ADMIN' ? (
                 <>
-                  <ShieldCheck className="w-3 h-3 mr-1 inline" /> Pengurus / Administrator
+                  <ShieldCheck className="w-3 h-3 mr-1 inline text-[#38BDF8]" /> Pengurus / Administrator
                 </>
               ) : (
                 <>
-                  <User className="w-3 h-3 mr-1 inline" /> Anggota Karang Taruna
+                  <User className="w-3 h-3 mr-1 inline text-[#4ADE80]" /> Anggota Karang Taruna
                 </>
               )}
             </Badge>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Profil &amp; Keaktifan Anggota
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1 max-w-2xl leading-relaxed">
             Kelola data diri, pantau riwayat keaktifan kegiatan, persentase kehadiran, dan notifikasi Karang Taruna Setya Bakti Dusun Tuk Uluh.
           </p>
         </div>
@@ -404,6 +404,7 @@ export default function MemberProfilePage() {
             onClick={() => fetchProfile(true)}
             disabled={isRefreshing || isLoading}
             leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
+            className="!bg-[#163E4F] !text-white !border-[#466060] hover:!bg-[#466060] transition"
           >
             Segarkan
           </Button>
@@ -413,7 +414,7 @@ export default function MemberProfilePage() {
             size="sm"
             onClick={openEditModal}
             leftIcon={<Pencil className="w-4 h-4" />}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+            className="!bg-[#163E4F] hover:!bg-[#466060] !text-white !border-[#466060] transition shadow-xs"
           >
             Ubah Profil
           </Button>

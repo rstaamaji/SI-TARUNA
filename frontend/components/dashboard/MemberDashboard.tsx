@@ -17,7 +17,6 @@ import {
   Check,
   FileText,
   BookOpen,
-  Sparkles,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -403,35 +402,6 @@ export const MemberDashboard: React.FC = () => {
 
   return (
     <div className="space-y-8 pb-16">
-      {/* ─────────────────────────────────────────────────────────────────────────────
-          PALETTE INDICATOR BAR (SIDEBAR #163E4F • HEADER #466060 • BG #D6DDD5 • ISI #6A8578)
-      ───────────────────────────────────────────────────────────────────────────── */}
-      <div className="p-3.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F] shadow-sm flex items-center justify-between gap-3 text-xs flex-wrap">
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="font-bold text-white flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-[#D6DDD5] animate-pulse" />
-            Tema Warna Aktif:
-          </span>
-          <div className="flex items-center gap-1.5 text-[11px] font-mono flex-wrap">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#163E4F] text-white font-medium border border-[#466060]">
-              Sidebar: #163E4F
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#466060] text-white font-medium border border-[#163E4F]">
-              Header / Utama: #466060
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#D6DDD5] text-[#163E4F] font-bold">
-              Background: #D6DDD5
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-[#6A8578] text-white font-medium border border-[#466060]">
-              Isinya: #6A8578
-            </span>
-          </div>
-        </div>
-        <span className="text-[11px] text-[#D6DDD5]/80 italic">
-          (Logo Karang Taruna tetap asli &amp; orisinil)
-        </span>
-      </div>
-
       {/* ─────────────────────────────────────────────────────────────────────────────
           1. HEADER PROFIL ANGGOTA & KARTU SELAMAT DATANG (BAGIAN UTAMA #466060)
       ───────────────────────────────────────────────────────────────────────────── */}

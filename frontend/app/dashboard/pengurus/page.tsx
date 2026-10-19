@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   ShieldCheck,
   ShieldAlert,
+  Shield,
   UserCheck,
   UserX,
   Search,
@@ -196,24 +197,24 @@ export default function PengurusManagementPage() {
   return (
     <div className="space-y-6 pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#466060] text-white p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#466060] text-white p-6 rounded-3xl border border-[#163E4F] shadow-sm">
         <div>
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             <Link
               href="/dashboard"
-              className="text-xs text-taruna-yellow-600 dark:text-taruna-yellow-400 font-bold hover:underline flex items-center gap-1"
+              className="text-xs text-[#D6DDD5] font-bold hover:text-white flex items-center gap-1 transition"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Dashboard
             </Link>
-            <span className="text-gray-300 dark:text-slate-700">•</span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+            <span className="text-[#D6DDD5]/60">•</span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-[#163E4F] text-amber-300 border border-amber-400/40">
               👑 OTORITAS SUPERADMIN
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Kelola Otorisasi Pengurus
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1">
             Konfirmasi akses, angkat anggota menjadi admin, atau cabut hak akses pengurus Dusun Tuk Uluh.
           </p>
         </div>
@@ -225,6 +226,7 @@ export default function PengurusManagementPage() {
             leftIcon={<RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />}
             onClick={fetchUsers}
             disabled={isLoading}
+            className="bg-[#163E4F] hover:bg-[#163E4F]/80 text-white border border-[#466060]"
           >
             {isLoading ? 'Memuat...' : 'Muat Ulang'}
           </Button>
@@ -233,49 +235,49 @@ export default function PengurusManagementPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border-t-4 border-t-amber-500">
+        <Card className="!bg-[#6A8578] text-white border border-[#466060] shadow-sm">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">
+              <p className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
                 Superadmin
               </p>
-              <p className="text-2xl font-black text-taruna-dark dark:text-white mt-1">
+              <p className="text-2xl font-black text-white mt-1">
                 {totalSuperAdmin} Akun
               </p>
             </div>
-            <div className="p-3 rounded-2xl bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300">
+            <div className="p-3 rounded-2xl bg-[#466060] text-amber-300 border border-[#163E4F]">
               <Crown className="w-6 h-6" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-t-4 border-t-blue-500">
+        <Card className="!bg-[#6A8578] text-white border border-[#466060] shadow-sm">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">
+              <p className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
                 Pengurus Aktif (ADMIN)
               </p>
-              <p className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">
+              <p className="text-2xl font-black text-white mt-1">
                 {totalAdminActive} Pengurus
               </p>
             </div>
-            <div className="p-3 rounded-2xl bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300">
+            <div className="p-3 rounded-2xl bg-[#466060] text-[#38BDF8] border border-[#163E4F]">
               <ShieldCheck className="w-6 h-6" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-t-4 border-t-emerald-500">
+        <Card className="!bg-[#6A8578] text-white border border-[#466060] shadow-sm">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-wider">
+              <p className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
                 Anggota Biasa (MEMBER)
               </p>
-              <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
+              <p className="text-2xl font-black text-white mt-1">
                 {totalMembers} Anggota
               </p>
             </div>
-            <div className="p-3 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300">
+            <div className="p-3 rounded-2xl bg-[#466060] text-[#4ADE80] border border-[#163E4F]">
               <UserCheck className="w-6 h-6" />
             </div>
           </CardContent>
@@ -283,27 +285,27 @@ export default function PengurusManagementPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <Card>
+      <Card className="!bg-[#6A8578] text-white border border-[#466060]">
         <CardContent className="p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="w-full md:w-80">
             <Input
               placeholder="Cari nama, username, atau no anggota..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              leftIcon={<Search className="w-4 h-4 text-gray-400" />}
+              leftIcon={<Search className="w-4 h-4 text-[#D6DDD5]" />}
             />
           </div>
 
           <div className="flex items-center gap-2 flex-wrap w-full md:w-auto">
-            <span className="text-xs font-bold text-gray-500 dark:text-slate-400">Filter Role:</span>
+            <span className="text-xs font-bold text-[#D6DDD5]">Filter Role:</span>
             {(['ALL', 'SUPERADMIN', 'ADMIN', 'MEMBER'] as const).map((r) => (
               <button
                 key={r}
                 onClick={() => setFilterRole(r)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
                   filterRole === r
-                    ? 'bg-taruna-yellow-500 text-white shadow-xs'
-                    : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700'
+                    ? 'bg-[#163E4F] text-white border-[#466060] shadow-xs'
+                    : 'bg-[#466060] text-[#D6DDD5] hover:bg-[#163E4F] hover:text-white border-transparent'
                 }`}
               >
                 {r === 'ALL' ? 'Semua' : r}
@@ -314,37 +316,37 @@ export default function PengurusManagementPage() {
       </Card>
 
       {/* Users Table */}
-      <Card>
+      <Card className="!bg-[#6A8578] text-white border border-[#466060] shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle>Daftar Akun Pengguna &amp; Status Hak Akses</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-white">Daftar Akun Pengguna &amp; Status Hak Akses</CardTitle>
+          <CardDescription className="text-[#D6DDD5]">
             Hanya Superadmin yang berwenang menetapkan siapa saja yang memiliki hak kelola sistem.
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
+        <CardContent className="p-4 pt-0">
+          <div className="overflow-x-auto rounded-2xl border border-[#466060] bg-[#163E4F]/40 shadow-xs">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="border-b border-taruna-border dark:border-slate-800 bg-gray-50/60 dark:bg-slate-800/40 text-xs font-bold uppercase text-gray-500 dark:text-slate-400">
-                  <th className="py-3.5 px-4">Pengguna</th>
-                  <th className="py-3.5 px-4">Anggota Terkait</th>
-                  <th className="py-3.5 px-4">Role Sistem</th>
-                  <th className="py-3.5 px-4">Status Konfirmasi</th>
-                  <th className="py-3.5 px-4">Dikonfirmasi Oleh</th>
-                  <th className="py-3.5 px-4 text-right">Aksi Superadmin</th>
+                <tr className="border-b border-[#163E4F] bg-[#466060] text-xs font-bold uppercase text-white">
+                  <th className="py-3.5 px-4 text-white">Pengguna</th>
+                  <th className="py-3.5 px-4 text-white">Anggota Terkait</th>
+                  <th className="py-3.5 px-4 text-white">Role Sistem</th>
+                  <th className="py-3.5 px-4 text-white">Status Konfirmasi</th>
+                  <th className="py-3.5 px-4 text-white">Dikonfirmasi Oleh</th>
+                  <th className="py-3.5 px-4 text-right text-white">Aksi Superadmin</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-taruna-border dark:divide-slate-800">
+              <tbody className="divide-y divide-[#466060]/50 text-white">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-gray-400 dark:text-slate-500">
-                      <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-taruna-yellow-500" />
+                    <td colSpan={6} className="py-8 text-center text-[#D6DDD5]">
+                      <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-[#4ADE80]" />
                       Memuat data pengurus...
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-gray-400 dark:text-slate-500">
+                    <td colSpan={6} className="py-8 text-center text-[#D6DDD5]">
                       Tidak ada data pengguna yang sesuai dengan pencarian atau filter.
                     </td>
                   </tr>
@@ -354,29 +356,29 @@ export default function PengurusManagementPage() {
                     const isBusy = actionLoading === u.id;
 
                     return (
-                      <tr key={u.id} className="hover:bg-gray-50/50 dark:hover:bg-slate-800/30 transition">
+                      <tr key={u.id} className="hover:bg-[#466060]/30 transition">
                         {/* Pengguna */}
                         <td className="py-3.5 px-4">
-                          <div className="font-bold text-taruna-dark dark:text-white flex items-center gap-1.5">
-                            {u.role === 'SUPERADMIN' && <Crown className="w-4 h-4 text-amber-500" />}
+                          <div className="font-bold text-white flex items-center gap-1.5">
+                            {u.role === 'SUPERADMIN' && <Crown className="w-4 h-4 text-amber-300" />}
                             {u.username}
                           </div>
-                          {u.email && <div className="text-xs text-gray-400 dark:text-slate-500">{u.email}</div>}
+                          {u.email && <div className="text-xs text-[#D6DDD5]">{u.email}</div>}
                         </td>
 
                         {/* Anggota Terkait */}
                         <td className="py-3.5 px-4">
                           {u.member ? (
                             <div>
-                              <p className="font-semibold text-gray-800 dark:text-slate-200">
+                              <p className="font-semibold text-white">
                                 {u.member.name}
                               </p>
-                              <p className="text-xs text-gray-400 dark:text-slate-500">
+                              <p className="text-xs text-[#D6DDD5]">
                                 {u.member.memberNumber} • {u.member.phone || '-'}
                               </p>
                             </div>
                           ) : (
-                            <span className="text-xs text-gray-400 dark:text-slate-500 italic">
+                            <span className="text-xs text-[#D6DDD5]/60 italic">
                               Tidak tertaut ke anggota
                             </span>
                           )}
@@ -385,15 +387,15 @@ export default function PengurusManagementPage() {
                         {/* Role Sistem */}
                         <td className="py-3.5 px-4">
                           {u.role === 'SUPERADMIN' ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black bg-[#163E4F] text-amber-300 border border-amber-400/50">
                               👑 SUPERADMIN
                             </span>
                           ) : u.role === 'ADMIN' ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-700">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#163E4F] text-[#38BDF8] border border-sky-400/50">
                               🛡️ ADMIN
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#163E4F] text-[#D6DDD5] border border-[#466060]">
                               👤 MEMBER
                             </span>
                           )}
@@ -402,27 +404,27 @@ export default function PengurusManagementPage() {
                         {/* Status Konfirmasi */}
                         <td className="py-3.5 px-4">
                           {u.role === 'SUPERADMIN' ? (
-                            <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 dark:text-amber-400">
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-300">
                               <CheckCircle2 className="w-3.5 h-3.5" /> Otoritas Utama
                             </span>
                           ) : u.role === 'ADMIN' ? (
-                            <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-700 dark:text-blue-400">
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-[#38BDF8]">
                               <CheckCircle2 className="w-3.5 h-3.5" /> Pengurus Aktif
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-[#4ADE80]">
                               <CheckCircle2 className="w-3.5 h-3.5" /> Anggota Biasa
                             </span>
                           )}
                         </td>
 
                         {/* Dikonfirmasi Oleh */}
-                        <td className="py-3.5 px-4 text-xs text-gray-500 dark:text-slate-400">
+                        <td className="py-3.5 px-4 text-xs text-[#D6DDD5]">
                           {u.approvedBy ? (
                             <div>
-                              <p className="font-semibold text-gray-700 dark:text-slate-300">{u.approvedBy}</p>
+                              <p className="font-semibold text-white">{u.approvedBy}</p>
                               {u.approvedAt && (
-                                <p className="text-[11px] text-gray-400">
+                                <p className="text-[11px] text-[#D6DDD5]/80">
                                   {new Date(u.approvedAt).toLocaleDateString('id-ID', {
                                     day: 'numeric',
                                     month: 'short',
@@ -439,7 +441,7 @@ export default function PengurusManagementPage() {
                         {/* Aksi Superadmin */}
                         <td className="py-3.5 px-4 text-right">
                           {isSelf ? (
-                            <span className="text-xs font-bold text-amber-600 dark:text-amber-400 px-3 py-1 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800">
+                            <span className="text-xs font-bold text-amber-300 px-3 py-1 bg-[#163E4F] rounded-xl border border-amber-400/40">
                               Akun Pemilik
                             </span>
                           ) : (
@@ -448,7 +450,7 @@ export default function PengurusManagementPage() {
                                 <button
                                   disabled={isBusy}
                                   onClick={() => handleChangeRole(u, 'MEMBER')}
-                                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-950/40 dark:hover:bg-red-950/80 dark:text-red-300 border border-red-200 dark:border-red-800 transition inline-flex items-center gap-1.5 shadow-xs"
+                                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#163E4F] hover:bg-rose-950/60 text-[#F87171] border border-rose-500/40 transition inline-flex items-center gap-1.5 shadow-xs"
                                   title="Copot jabatan Admin (kembalikan ke Member biasa)"
                                 >
                                   <UserX className="w-3.5 h-3.5" />
@@ -458,10 +460,10 @@ export default function PengurusManagementPage() {
                                 <button
                                   disabled={isBusy}
                                   onClick={() => handleChangeRole(u, 'ADMIN')}
-                                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-xs transition inline-flex items-center gap-1.5"
-                                  title="Angkat anggota ini menjadi Pengurus (Admin)"
+                                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#163E4F] hover:bg-emerald-950/60 text-[#4ADE80] border border-emerald-500/40 transition inline-flex items-center gap-1.5 shadow-xs"
+                                  title="Angkat menjadi Admin"
                                 >
-                                  <ShieldCheck className="w-3.5 h-3.5" />
+                                  <Shield className="w-3.5 h-3.5" />
                                   <span>Angkat Admin</span>
                                 </button>
                               )}

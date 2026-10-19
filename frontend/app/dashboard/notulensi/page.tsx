@@ -421,29 +421,29 @@ export default function NotulensiListPage() {
           {/* ─────────────────────────────────────────────────────────────────────────────
               3. SEARCH BAR
           ───────────────────────────────────────────────────────────────────────────── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-taruna-border dark:border-slate-800 pb-4">
+          <div className="bg-[#466060] p-4 sm:p-5 rounded-3xl border border-[#163E4F] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
             <div>
-              <h2 className="text-xl font-black text-[#163E4F] tracking-tight">
+              <h2 className="text-xl font-black text-white tracking-tight">
                 Arsip Catatan Rapat
               </h2>
-              <p className="text-xs font-bold text-[#163E4F]/80">
+              <p className="text-xs font-semibold text-[#D6DDD5] mt-1">
                 Daftar kronologis notulensi rapat pleno, koordinasi, dan pertemuan rutin anggota.
               </p>
             </div>
 
             <div className="relative w-full sm:w-80">
-              <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#D6DDD5] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Cari judul, pimpinan, notulis, tempat..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white placeholder:text-[#D6DDD5] focus:outline-none focus:ring-2 focus:ring-[#38BDF8]"
+                className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-[#163E4F] bg-[#163E4F] text-white placeholder:text-[#D6DDD5]/70 focus:outline-none focus:ring-2 focus:ring-emerald-400"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#D6DDD5] hover:text-white text-xs"
                 >
                   ×
                 </button>
@@ -489,59 +489,59 @@ export default function NotulensiListPage() {
               {filteredMinutes.map((item) => (
                 <div
                   key={item.id}
-                  className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-500/50 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-5 group"
+                  className="p-6 rounded-3xl bg-[#6A8578] text-white border border-[#466060] hover:border-amber-300 shadow-md hover:shadow-lg transition-all flex flex-col justify-between gap-5 group"
                 >
                   {/* Top: Header & Badges */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <div className="flex items-center gap-2">
-                        <Badge variant="primary" size="sm">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#466060] text-white border border-[#163E4F]">
                           {item.dayOfWeek || deriveDayIndo(item.meetingDate)}
-                        </Badge>
-                        <span className="text-xs font-bold text-gray-500 dark:text-slate-400 flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                        </span>
+                        <span className="text-xs font-bold text-[#D6DDD5] flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5 text-amber-300" />
                           {formatDateIndo(item.meetingDate)}
                         </span>
                       </div>
 
-                      <span className="text-[11px] text-gray-400 dark:text-slate-500 flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-red-500 shrink-0" />
+                      <span className="text-[11px] text-[#D6DDD5] flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-rose-300 shrink-0" />
                         <span className="truncate max-w-[160px]">{item.location}</span>
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-taruna-dark dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-lg font-black text-white leading-snug group-hover:text-amber-300 transition-colors">
                       {item.title}
                     </h3>
 
                     {/* Leaders info chips */}
-                    <div className="grid grid-cols-2 gap-2 text-[11px] bg-taruna-surface dark:bg-slate-800/60 p-2.5 rounded-2xl border border-taruna-border/50 dark:border-slate-700/60">
+                    <div className="grid grid-cols-2 gap-2 text-[11px] bg-[#466060] p-3 rounded-2xl border border-[#163E4F]">
                       <div>
-                        <span className="text-gray-400 dark:text-slate-500 block">Pimpinan:</span>
-                        <strong className="text-gray-700 dark:text-slate-300 truncate block">
+                        <span className="text-[#D6DDD5] block">Pimpinan:</span>
+                        <strong className="text-white truncate block">
                           {item.meetingLeader}
                         </strong>
                       </div>
                       <div>
-                        <span className="text-gray-400 dark:text-slate-500 block">Notulis:</span>
-                        <strong className="text-gray-700 dark:text-slate-300 truncate block">
+                        <span className="text-[#D6DDD5] block">Notulis:</span>
+                        <strong className="text-white truncate block">
                           {item.noteTaker}
                         </strong>
                       </div>
                     </div>
 
                     {/* Excerpt content */}
-                    <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed line-clamp-3">
+                    <p className="text-xs text-[#D6DDD5] leading-relaxed line-clamp-3">
                       {item.content}
                     </p>
 
                     {/* Conclusion snippet if exists */}
                     {item.conclusion && (
-                      <div className="p-3 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-xs text-blue-900 dark:text-blue-200 space-y-1">
-                        <span className="font-bold flex items-center gap-1 text-[11px] uppercase tracking-wider text-blue-700 dark:text-blue-300">
-                          <CheckCircle2 className="w-3 h-3" /> Kesimpulan Rapat:
+                      <div className="p-3 rounded-2xl bg-[#466060] border border-[#163E4F] text-xs text-[#D6DDD5] space-y-1">
+                        <span className="font-bold flex items-center gap-1 text-[11px] uppercase tracking-wider text-amber-300">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-300" /> Kesimpulan Rapat:
                         </span>
-                        <p className="line-clamp-2 text-xs leading-relaxed opacity-90">
+                        <p className="line-clamp-2 text-xs leading-relaxed text-[#D6DDD5]">
                           {item.conclusion}
                         </p>
                       </div>
@@ -549,27 +549,27 @@ export default function NotulensiListPage() {
                   </div>
 
                   {/* Bottom: Footer Links & Admin Actions */}
-                  <div className="pt-3 border-t border-taruna-border/60 dark:border-slate-800 flex items-center justify-between">
+                  <div className="pt-3 border-t border-[#466060] flex items-center justify-between">
                     <Link
                       href={`/dashboard/notulensi/${item.id}`}
-                      className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition"
+                      className="text-xs font-bold text-amber-300 hover:text-white inline-flex items-center gap-1 group-hover:translate-x-0.5 transition"
                     >
                       <span>Baca Notulensi Lengkap</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
 
                     {isAdmin && (
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => openEditModal(item)}
-                          className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition"
+                          className="p-1.5 rounded-lg border border-[#163E4F] bg-[#466060] text-amber-300 hover:bg-[#163E4F] transition"
                           title="Edit Notulensi"
                         >
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => confirmDelete(item)}
-                          className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-slate-800 transition"
+                          className="p-1.5 rounded-lg border border-[#163E4F] bg-[#466060] text-rose-300 hover:bg-[#163E4F] transition"
                           title="Hapus Notulensi"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

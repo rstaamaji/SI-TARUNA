@@ -40,6 +40,7 @@ export interface NavSubItem {
   icon?: any;
   badge?: string | null;
   adminOnly?: boolean;
+  superAdminOnly?: boolean;
 }
 
 export interface NavItem {
@@ -80,6 +81,7 @@ export const navigationItems: NavItem[] = [
         name: 'Laporan Keuangan',
         href: '/finance/reports',
         icon: BarChart3,
+        adminOnly: true,
       },
     ],
   },
@@ -232,9 +234,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
           {visibleItems.map((item) => {
-            const hasSub = Boolean(item.subItems && item.subItems.length > 0);
+            const itemSubItems = item.subItems
+              ? item.subItems.filter((sub) => {
+                  if (sub.superAdminOnly && userRole !== 'SUPERADMIN') return false;
+                  if (sub.adminOnly && userRole !== 'ADMIN' && userRole !== 'SUPERADMIN') return false;
+                  return true;
+                })
+              : [];
+            const hasSub = itemSubItems.length > 1;
             const isSubExpanded = Boolean(expandedMenus[item.name]);
-            const isChildActive = hasSub && item.subItems!.some((sub) => pathname === sub.href);
+            const isChildActive = hasSub && itemSubItems.some((sub) => pathname === sub.href);
             const isSelfActive =
               pathname === item.href ||
               (item.href !== '/dashboard' && pathname.startsWith(item.href));
@@ -304,7 +313,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   {/* Sub-item / Sub-bab Accordion List */}
                   {isSubExpanded && (
                     <div className="pl-4 pr-1 py-1 space-y-1 ml-4 border-l-2 border-[#6A8578] transition-all duration-200">
-                      {item.subItems!.map((sub) => {
+                      {itemSubItems.map((sub) => {
                         const isCurrentSubActive = pathname === sub.href;
                         const SubIcon = sub.icon;
 
