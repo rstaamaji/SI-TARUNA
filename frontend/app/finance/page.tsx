@@ -191,6 +191,16 @@ export default function FinanceOverviewPage() {
     return localStorage.getItem('si_taruna_token') || localStorage.getItem('token');
   };
 
+  const getApiBase = (): string => {
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
+    }
+    if (typeof window !== 'undefined' && window.location.hostname) {
+      return `http://${window.location.hostname}:5000/api`;
+    }
+    return 'http://localhost:5000/api';
+  };
+
   // ── 1. Load User Session & URL tab ──
   useEffect(() => {
     try {
@@ -333,9 +343,7 @@ export default function FinanceOverviewPage() {
       if (selectedCategory) params.append('category', selectedCategory);
       if (searchQuery.trim()) params.append('search', searchQuery.trim());
 
-      const apiBase = process.env.NEXT_PUBLIC_API_URL
-        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
-        : 'http://localhost:5000/api';
+      const apiBase = getApiBase();
 
       const [summaryRes, listRes] = await Promise.all([
         fetch(`${apiBase}/finance/overview?${params}`, { headers }),
@@ -433,9 +441,10 @@ export default function FinanceOverviewPage() {
       const token = getAuthToken();
       const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
 
+      const apiBase = getApiBase();
       const endpoint = formType === 'INCOME'
-        ? 'http://localhost:5000/api/finance/incomes'
-        : 'http://localhost:5000/api/finance/expenses';
+        ? `${apiBase}/finance/incomes`
+        : `${apiBase}/finance/expenses`;
 
       const body = formType === 'INCOME'
         ? { amount: numAmount, source: formSource.trim() || 'Lainnya', description: formDescription.trim(), transactionDate: new Date(formDate).toISOString() }
@@ -466,9 +475,10 @@ export default function FinanceOverviewPage() {
       const token = getAuthToken();
       const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
 
+      const apiBase = getApiBase();
       const endpoint = activeTransaction.type === 'INCOME'
-        ? `http://localhost:5000/api/finance/incomes/${activeTransaction.id}`
-        : `http://localhost:5000/api/finance/expenses/${activeTransaction.id}`;
+        ? `${apiBase}/finance/incomes/${activeTransaction.id}`
+        : `${apiBase}/finance/expenses/${activeTransaction.id}`;
 
       const body = activeTransaction.type === 'INCOME'
         ? { amount: numAmount, source: formSource.trim() || 'Lainnya', description: formDescription.trim(), transactionDate: new Date(formDate).toISOString() }
@@ -495,9 +505,10 @@ export default function FinanceOverviewPage() {
       const token = getAuthToken();
       const headers = { ...(token ? { Authorization: `Bearer ${token}` } : {}) };
 
+      const apiBase = getApiBase();
       const endpoint = activeTransaction.type === 'INCOME'
-        ? `http://localhost:5000/api/finance/incomes/${activeTransaction.id}`
-        : `http://localhost:5000/api/finance/expenses/${activeTransaction.id}`;
+        ? `${apiBase}/finance/incomes/${activeTransaction.id}`
+        : `${apiBase}/finance/expenses/${activeTransaction.id}`;
 
       const res = await fetch(endpoint, { method: 'DELETE', headers });
       const json = await res.json();

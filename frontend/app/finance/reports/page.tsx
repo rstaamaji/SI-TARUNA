@@ -308,6 +308,8 @@ export default function FinancialReportsPage() {
 
         const apiBase = process.env.NEXT_PUBLIC_API_URL
           ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+          : typeof window !== 'undefined' && window.location.hostname
+          ? `http://${window.location.hostname}:5000/api`
           : 'http://localhost:5000/api';
 
         const res = await fetch(`${apiBase}/finance/reports?${params}`, {
@@ -315,22 +317,37 @@ export default function FinancialReportsPage() {
         });
         const json = await res.json();
 
-        if (res.ok && json.success && json.data && json.data.summary?.totalIncome > 0) {
-          setReport(json.data);
+        if (res.ok && json.success && json.data) {
+          const hasTransactions = Array.isArray(json.data.transactions) && json.data.transactions.length > 0;
+          const hasNonZeroSummary =
+            (json.data.summary?.totalPemasukan ?? 0) > 0 ||
+            (json.data.summary?.totalPengeluaran ?? 0) > 0;
+
+          if (hasTransactions || hasNonZeroSummary) {
+            setReport(json.data);
+          } else if (startDate || endDate || selectedMonth || (selectedYear && selectedYear !== '2026') || selectedType !== 'ALL') {
+            // User specifically applied a filter that yields 0 results
+            setReport(json.data);
+          } else {
+            // Database empty without filters
+            loadFallbackReport();
+          }
           if (isManualRefresh) toast.success('Laporan keuangan berhasil diperbarui.');
-        } else if (isManualRefresh) {
+        } else {
           loadFallbackReport();
+          if (isManualRefresh) toast.error('Gagal memuat laporan keuangan dari server.');
         }
       } catch {
+        loadFallbackReport();
         if (isManualRefresh) {
-          loadFallbackReport();
+          toast.error('Gagal terhubung ke server.');
         }
       } finally {
         setIsLoading(false);
         setIsRefreshing(false);
       }
     },
-    [startDate, endDate, selectedMonth, selectedYear, selectedType]
+    [startDate, endDate, selectedMonth, selectedYear, selectedType, toast]
   );
 
   useEffect(() => {
@@ -409,12 +426,12 @@ export default function FinancialReportsPage() {
       lines.push('"LAPORAN KEUANGAN TRANSPARANSI KARANG TARUNA SETYA BAKTI"');
       lines.push('"Dukuh Tuk Uluh, Desa Sringin, Kec. Jumantono, Kab. Karanganyar"');
       lines.push(`"Periode Laporan","${report.filter.periodLabel}"`);
-      lines.push(`"Total Pemasukan","Rp ${report.summary.totalPemasukan.toLocaleString('id-ID')}"`);
-      lines.push(`"Total Pengeluaran","Rp ${report.summary.totalPengeluaran.toLocaleString('id-ID')}"`);
-      lines.push(`"Saldo Periode (Surplus/Defisit)","Rp ${report.summary.saldo.toLocaleString('id-ID')}"`);
-      lines.push(`"Saldo Awal Periode","Rp ${report.summary.saldoAwal.toLocaleString('id-ID')}"`);
-      lines.push(`"Saldo Akhir Kas","Rp ${report.summary.saldoAkhir.toLocaleString('id-ID')}"`);
-      lines.push(`"Jumlah Transaksi","${report.summary.jumlahTransaksi} transaksi"`);
+      lines.push(`"Total Pemasukan","Rp ${Number(report.summary.totalPemasukan || 0).toLocaleString('id-ID')}"`);
+      lines.push(`"Total Pengeluaran","Rp ${Number(report.summary.totalPengeluaran || 0).toLocaleString('id-ID')}"`);
+      lines.push(`"Saldo Periode (Surplus/Defisit)","Rp ${Number(report.summary.saldo || 0).toLocaleString('id-ID')}"`);
+      lines.push(`"Saldo Awal Periode","Rp ${Number(report.summary.saldoAwal || 0).toLocaleString('id-ID')}"`);
+      lines.push(`"Saldo Akhir Kas","Rp ${Number(report.summary.saldoAkhir || 0).toLocaleString('id-ID')}"`);
+      lines.push(`"Jumlah Transaksi","${report.summary.jumlahTransaksi || 0} transaksi"`);
       lines.push(`"Dicetak pada","${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}"`);
       lines.push('');
 

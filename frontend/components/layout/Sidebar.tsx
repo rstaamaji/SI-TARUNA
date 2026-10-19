@@ -19,7 +19,6 @@ import {
   ChevronRight,
   ChevronDown,
   ShieldCheck,
-  Banknote,
   BarChart3,
   ClipboardList,
   BarChart2,
@@ -76,11 +75,6 @@ export const navigationItems: NavItem[] = [
         name: 'Buku Kas Umum',
         href: '/finance',
         icon: Wallet,
-      },
-      {
-        name: 'Pengambilan Kas',
-        href: '/finance/withdrawal',
-        icon: Banknote,
       },
       {
         name: 'Laporan Keuangan',
