@@ -48,15 +48,15 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between p-3.5 bg-taruna-yellow-50/70 dark:bg-slate-800/80 border border-taruna-yellow-200/80 dark:border-slate-700 rounded-2xl flex-wrap gap-3 text-xs">
-        <span className="text-taruna-dark dark:text-slate-200 font-medium">
+      <div className="flex items-center justify-between p-3.5 bg-[#466060] text-white border border-[#163E4F] rounded-2xl flex-wrap gap-3 text-xs shadow-sm">
+        <span className="font-medium text-[#D6DDD5]">
           {userRole === 'SUPERADMIN' ? (
             <>
-              👑 Anda berada di <strong>Mode Superadmin</strong> dengan kontrol penuh sistem, data, dan kelola otorisasi akun pengurus.
+              👑 Anda berada di <strong className="text-white">Mode Superadmin</strong> dengan kontrol penuh sistem, data, dan kelola otorisasi akun pengurus.
             </>
           ) : (
             <>
-              🛡️ Anda berada di <strong>Mode Administrator</strong> dengan akses ke overview organisasi, keuangan &amp; chart analitik.
+              🛡️ Anda berada di <strong className="text-white">Mode Administrator</strong> dengan akses ke overview organisasi, keuangan &amp; chart analitik.
             </>
           )}
         </span>
@@ -64,6 +64,7 @@ export default function DashboardPage() {
           variant="outline"
           size="sm"
           onClick={() => setViewMode('MEMBER')}
+          className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] shadow-xs"
         >
           👁️ Pratinjau Dashboard Member
         </Button>

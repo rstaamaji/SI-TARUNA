@@ -403,7 +403,7 @@ export default function MemberAttendancePage() {
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
                   title="Filter Berdasarkan Tanggal"
-                  className="px-3 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500/50"
+                  className="px-3 py-2 text-xs rounded-xl border border-[#163E4F] bg-[#163E4F] text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-400"
                 />
                 {dateFilter && (
                   <button

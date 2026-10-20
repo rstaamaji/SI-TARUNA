@@ -659,10 +659,10 @@ export default function ArisanPage() {
               </Badge>
             )}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Manajemen &amp; Jadwal Arisan
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1 max-w-2xl leading-relaxed">
             Pengelolaan giliran arisan bergilir pemuda Dusun Tuk Uluh. Admin menentukan penerima arisan tiap bulan, lokasi pertemuan tuan rumah, dan rekapitulasi riwayat penyerahan dana.
           </p>
         </div>
@@ -674,6 +674,7 @@ export default function ArisanPage() {
             onClick={() => fetchData(true)}
             isLoading={isRefreshing}
             leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
+            className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] transition shadow-xs"
           >
             Segarkan
           </Button>
@@ -684,6 +685,7 @@ export default function ArisanPage() {
               size="sm"
               onClick={openCreateModal}
               leftIcon={<Plus className="w-4 h-4" />}
+              className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] transition shadow-xs"
             >
               Tambah Jadwal Arisan
             </Button>
@@ -958,15 +960,15 @@ export default function ArisanPage() {
       {activeTab === 'SCHEDULE' && (
         <div className="space-y-4">
           {/* Filter Bar */}
-          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-taruna-border dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="bg-[#466060] text-white p-4 rounded-2xl border border-[#163E4F] flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-sm">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#D6DDD5] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Cari periode, nama penerima, atau tempat arisan..."
-                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-[#466060] bg-[#163E4F] text-white placeholder:text-[#D6DDD5]/70 placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-amber-500 transition"
+                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-[#163E4F] bg-[#163E4F] text-white placeholder:text-[#D6DDD5]/70 focus:outline-hidden focus:ring-2 focus:ring-emerald-400 transition"
               />
             </div>
 
@@ -974,7 +976,7 @@ export default function ArisanPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-3 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
+                className="px-3 py-2 text-xs rounded-xl border border-[#163E4F] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
               >
                 <option value="ALL">Semua Status</option>
                 <option value="UPCOMING">UPCOMING</option>
@@ -986,7 +988,7 @@ export default function ArisanPage() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="px-3 py-2 text-xs rounded-xl border border-[#466060] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
+                className="px-3 py-2 text-xs rounded-xl border border-[#163E4F] bg-[#163E4F] text-white font-semibold focus:outline-hidden"
               >
                 <option value="ALL">Semua Tahun</option>
                 <option value="2026">2026</option>
@@ -1001,21 +1003,21 @@ export default function ArisanPage() {
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-28 rounded-2xl bg-gray-100 dark:bg-slate-800 animate-pulse border border-taruna-border dark:border-slate-800"
+                  className="h-28 rounded-2xl bg-[#6A8578] border border-[#466060] animate-pulse"
                 />
               ))}
             </div>
           ) : filteredSchedule.length === 0 ? (
-            <div className="p-12 rounded-3xl bg-white dark:bg-slate-900 border border-dashed border-taruna-border dark:border-slate-800 text-center space-y-3">
-              <Gift className="w-12 h-12 text-gray-300 dark:text-slate-600 mx-auto" />
-              <h3 className="font-bold text-base text-taruna-dark dark:text-white">
+            <div className="p-12 rounded-3xl bg-[#6A8578] text-white border border-[#466060] text-center space-y-3 shadow-md">
+              <Gift className="w-12 h-12 text-[#D6DDD5] mx-auto" />
+              <h3 className="font-bold text-base text-white">
                 Tidak Ada Putaran Arisan Ditemukan
               </h3>
-              <p className="text-xs text-gray-500 dark:text-slate-400 max-w-sm mx-auto">
+              <p className="text-xs text-[#D6DDD5] max-w-sm mx-auto">
                 Silakan ubah filter pencarian atau tambahkan jadwal putaran arisan baru.
               </p>
               {isAdmin && (
-                <Button variant="primary" size="sm" onClick={openCreateModal}>
+                <Button variant="primary" size="sm" onClick={openCreateModal} className="bg-[#163E4F] hover:bg-[#466060] text-white border border-[#163E4F]">
                   Tambah Jadwal Baru
                 </Button>
               )}
@@ -1025,25 +1027,25 @@ export default function ArisanPage() {
               {filteredSchedule.map((item) => (
                 <div
                   key={item.id}
-                  className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 hover:border-amber-500/40 transition flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                  className="p-5 rounded-2xl bg-[#6A8578] text-white border border-[#466060] hover:border-amber-300 shadow-md hover:shadow-lg transition flex flex-col md:flex-row md:items-center justify-between gap-4 group"
                 >
                   {/* Left: Period Badge & Details */}
                   <div className="flex items-start gap-4">
-                    <div className="w-14 h-16 rounded-2xl bg-gradient-to-b from-amber-500/10 to-amber-500/5 dark:from-slate-800 dark:to-slate-800/80 border border-amber-500/20 dark:border-slate-700 flex flex-col items-center justify-center shrink-0">
-                      <span className="text-[10px] font-black uppercase text-amber-700 dark:text-amber-400 tracking-wider">
+                    <div className="w-14 h-16 rounded-2xl bg-[#466060] border border-[#163E4F] flex flex-col items-center justify-center shrink-0 shadow-xs">
+                      <span className="text-[10px] font-black uppercase text-amber-300 tracking-wider">
                         {item.monthName ? item.monthName.slice(0, 3) : 'BLN'}
                       </span>
-                      <span className="text-xl font-black text-taruna-dark dark:text-white leading-tight">
+                      <span className="text-xl font-black text-white leading-tight">
                         {item.month}
                       </span>
-                      <span className="text-[9px] font-bold text-gray-400">
+                      <span className="text-[9px] font-bold text-[#D6DDD5]">
                         {item.year}
                       </span>
                     </div>
 
                     <div className="space-y-1.5 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-base font-black text-taruna-dark dark:text-white">
+                        <span className="text-base font-black text-white">
                           {item.periodLabel}
                         </span>
                         {getStatusBadge(item.status)}
@@ -1054,20 +1056,20 @@ export default function ArisanPage() {
                         )}
                       </div>
 
-                      <div className="text-xs text-gray-600 dark:text-slate-300">
+                      <div className="text-xs text-[#D6DDD5]">
                         Penerima:{' '}
-                        <strong className="text-taruna-dark dark:text-white font-bold">
+                        <strong className="text-white font-bold">
                           {item.recipientName}
                         </strong>
                         {item.recipientNumber && (
-                          <span className="text-gray-400 dark:text-slate-500 ml-1.5 font-medium">
+                          <span className="text-[#D6DDD5]/80 ml-1.5 font-medium">
                             ({item.recipientNumber})
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-slate-400 flex-wrap pt-0.5">
-                        <span className="inline-flex items-center gap-1 font-semibold text-amber-700 dark:text-amber-400">
+                      <div className="flex items-center gap-3 text-xs text-[#D6DDD5] flex-wrap pt-0.5">
+                        <span className="inline-flex items-center gap-1 font-semibold text-amber-300">
                           <CalendarCheck2 className="w-3.5 h-3.5" />
                           {item.drawDate
                             ? new Date(item.drawDate).toLocaleDateString('id-ID', {
@@ -1077,9 +1079,9 @@ export default function ArisanPage() {
                               })
                             : 'Belum dijadwalkan'}
                         </span>
-                        <span className="text-gray-300 dark:text-slate-700">•</span>
-                        <span className="inline-flex items-center gap-1 text-gray-600 dark:text-slate-300">
-                          <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                        <span className="text-[#466060]">•</span>
+                        <span className="inline-flex items-center gap-1 text-[#D6DDD5]">
+                          <MapPin className="w-3.5 h-3.5 text-rose-300 shrink-0" />
                           {item.location}
                         </span>
                       </div>
@@ -1090,9 +1092,9 @@ export default function ArisanPage() {
                   <div className="flex items-center gap-2 self-end md:self-center shrink-0">
                     <button
                       onClick={() => setDetailItem(item)}
-                      className="px-3 py-1.5 rounded-xl border border-taruna-border dark:border-slate-700 bg-taruna-surface/60 dark:bg-slate-800 hover:bg-taruna-surface text-taruna-dark dark:text-slate-200 text-xs font-bold inline-flex items-center gap-1.5 transition"
+                      className="px-3 py-1.5 rounded-xl border border-[#163E4F] bg-[#466060] hover:bg-[#163E4F] text-[#D6DDD5] hover:text-white text-xs font-bold inline-flex items-center gap-1.5 transition"
                     >
-                      <Eye className="w-3.5 h-3.5 text-gray-500" />
+                      <Eye className="w-3.5 h-3.5 text-[#D6DDD5]" />
                       Detail
                     </button>
 
@@ -1100,22 +1102,22 @@ export default function ArisanPage() {
                       <>
                         <button
                           onClick={() => openWinnerModal(item)}
-                          className="px-3 py-1.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 hover:bg-amber-100 text-xs font-bold inline-flex items-center gap-1.5 transition"
+                          className="px-3 py-1.5 rounded-xl border border-[#163E4F] bg-[#466060] hover:bg-[#163E4F] text-amber-300 text-xs font-bold inline-flex items-center gap-1.5 transition"
                           title="Tentukan Anggota Penerima"
                         >
-                          <Crown className="w-3.5 h-3.5 text-amber-600" />
+                          <Crown className="w-3.5 h-3.5 text-amber-400" />
                           Penerima
                         </button>
                         <button
                           onClick={() => openEditModal(item)}
-                          className="px-3 py-1.5 rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-taruna-yellow-50 dark:hover:bg-slate-700 text-taruna-dark dark:text-slate-200 text-xs font-bold inline-flex items-center gap-1.5 transition"
+                          className="px-3 py-1.5 rounded-xl border border-[#163E4F] bg-[#466060] hover:bg-[#163E4F] text-amber-300 text-xs font-bold inline-flex items-center gap-1.5 transition"
                         >
-                          <Pencil className="w-3.5 h-3.5 text-taruna-yellow-600" />
+                          <Pencil className="w-3.5 h-3.5 text-amber-400" />
                           Edit
                         </button>
                         <button
                           onClick={() => confirmDelete(item)}
-                          className="p-1.5 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 transition"
+                          className="p-1.5 rounded-xl border border-[#163E4F] bg-[#466060] hover:bg-[#163E4F] text-rose-300 transition"
                           title="Hapus"
                         >
                           <Trash2 className="w-4 h-4" />

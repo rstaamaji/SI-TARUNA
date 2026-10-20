@@ -22,7 +22,8 @@ export class AuthController {
   public static async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
-      const user = await AuthService.getMe(userId);
+      const sessionRole = req.user!.role;
+      const user = await AuthService.getMe(userId, sessionRole);
 
       sendSuccess(res, 'Data sesi pengguna berhasil diambil', user, 200);
     } catch (error) {

@@ -8,6 +8,7 @@ async function main() {
 
   // 1. Password Hashing
   const hashedPasswordSuperadmin = await bcrypt.hash('superadmin', 10);
+  const hashedPasswordAdmin = await bcrypt.hash('admin', 10);
   const hashedPasswordTukuluhJaya = await bcrypt.hash('TukuluhJaya', 10);
 
   // 2. Create Users
@@ -28,11 +29,11 @@ async function main() {
     },
   });
 
-  // Admin: admin / TukuluhJaya (Disetujui oleh Superadmin rustaamaji)
+  // Admin: admin / admin (Disetujui oleh Superadmin rustaamaji)
   const adminUser = await prisma.user.upsert({
     where: { username: 'admin' },
     update: {
-      password: hashedPasswordTukuluhJaya,
+      password: hashedPasswordAdmin,
       role: Role.ADMIN,
       isApproved: true,
       approvedBy: 'rustaamaji',
@@ -41,7 +42,7 @@ async function main() {
     create: {
       username: 'admin',
       email: 'admin@taruna-setyabakti.id',
-      password: hashedPasswordTukuluhJaya,
+      password: hashedPasswordAdmin,
       role: Role.ADMIN,
       isApproved: true,
       approvedBy: 'rustaamaji',
@@ -49,19 +50,19 @@ async function main() {
     },
   });
 
-  // Super Admin Rustam Aji: Nama Lengkap sebagai username / TukuluhJaya
+  // Member Rustam Aji: Nama Lengkap sebagai username / TukuluhJaya
   const rustamAjiMemberUser = await prisma.user.upsert({
     where: { username: 'Rustam Aji' },
     update: {
       password: hashedPasswordTukuluhJaya,
-      role: Role.SUPERADMIN,
+      role: Role.MEMBER,
       isApproved: true,
     },
     create: {
       username: 'Rustam Aji',
       email: 'rustam.aji@taruna-setyabakti.id',
       password: hashedPasswordTukuluhJaya,
-      role: Role.SUPERADMIN,
+      role: Role.MEMBER,
       isApproved: true,
     },
   });

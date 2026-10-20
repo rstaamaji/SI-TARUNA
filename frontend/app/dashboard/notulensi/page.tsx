@@ -459,27 +459,27 @@ export default function NotulensiListPage() {
               {[1, 2, 3, 4].map((n) => (
                 <div
                   key={n}
-                  className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 animate-pulse space-y-4"
+                  className="p-6 rounded-3xl bg-[#6A8578] border border-[#466060] animate-pulse space-y-4"
                 >
-                  <div className="h-5 bg-gray-200 dark:bg-slate-800 rounded-md w-1/3" />
-                  <div className="h-6 bg-gray-200 dark:bg-slate-800 rounded-md w-3/4" />
-                  <div className="h-20 bg-gray-200 dark:bg-slate-800 rounded-md w-full" />
+                  <div className="h-5 bg-[#466060] rounded-md w-1/3" />
+                  <div className="h-6 bg-[#466060] rounded-md w-3/4" />
+                  <div className="h-20 bg-[#466060] rounded-md w-full" />
                 </div>
               ))}
             </div>
           ) : filteredMinutes.length === 0 ? (
-            <div className="p-12 text-center rounded-3xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 space-y-3">
-              <FileText className="w-10 h-10 text-gray-400 mx-auto" />
-              <p className="font-bold text-base text-taruna-dark dark:text-white">
+            <div className="p-12 text-center rounded-3xl bg-[#6A8578] text-white border border-[#466060] space-y-3 shadow-md">
+              <FileText className="w-10 h-10 text-[#D6DDD5] mx-auto" />
+              <p className="font-bold text-base text-white">
                 Belum ada notulensi rapat yang ditemukan
               </p>
-              <p className="text-xs text-gray-500 dark:text-slate-400 max-w-md mx-auto">
+              <p className="text-xs text-[#D6DDD5] max-w-md mx-auto">
                 {searchQuery
                   ? 'Tidak ada hasil yang sesuai dengan kata kunci pencarian Anda.'
                   : 'Pengurus belum mengarsipkan notulensi rapat. Klik "Tulis Notulensi Baru" untuk menambahkan.'}
               </p>
               {searchQuery && (
-                <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
+                <Button variant="outline" size="sm" onClick={() => setSearchQuery('')} className="bg-[#163E4F] hover:bg-[#466060] text-white border border-[#163E4F]">
                   Reset Pencarian
                 </Button>
               )}

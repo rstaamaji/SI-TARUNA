@@ -454,17 +454,17 @@ export default function PengumumanPage() {
       {/* ─────────────────────────────────────────────────────────────────────────────
           1. PAGE HEADER
       ───────────────────────────────────────────────────────────────────────────── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-taruna-border dark:border-slate-800 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#466060] text-white p-6 rounded-3xl border border-[#163E4F] shadow-md">
             <div>
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span className="w-2.5 h-2.5 rounded-full bg-taruna-yellow-500 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-taruna-yellow-700 dark:text-taruna-yellow-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#D6DDD5]">
                   Pusat Informasi &amp; Edaran Resmi
                 </span>
-                <Badge variant={isAdmin ? 'accent' : 'primary'} size="sm">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578]">
                   {isAdmin ? (
                     <>
-                      <ShieldCheck className="w-3 h-3 mr-1 inline" />
+                      <ShieldCheck className="w-3 h-3 mr-1 inline text-amber-300" />
                       ADMINISTRATOR
                     </>
                   ) : (
@@ -473,14 +473,14 @@ export default function PengumumanPage() {
                       MEMBER
                     </>
                   )}
-                </Badge>
+                </span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight flex items-center gap-2.5">
-                <Megaphone className="w-7 h-7 text-taruna-yellow-600 dark:text-taruna-yellow-400" />
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2.5">
+                <Megaphone className="w-7 h-7 text-amber-300" />
                 Pengumuman &amp; Attention System
               </h1>
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1">
                 Informasi penting, jadwal kegiatan, rapat, dan edaran resmi Karang Taruna Setya Bakti.
               </p>
             </div>
@@ -492,6 +492,7 @@ export default function PengumumanPage() {
                 leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
                 onClick={() => fetchAnnouncements(true)}
                 disabled={isRefreshing}
+                className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] transition shadow-xs"
               >
                 Segarkan
               </Button>
@@ -502,6 +503,7 @@ export default function PengumumanPage() {
                   size="sm"
                   leftIcon={<Plus className="w-4 h-4" />}
                   onClick={openCreateModal}
+                  className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] transition shadow-xs"
                 >
                   Buat Pengumuman
                 </Button>
@@ -538,14 +540,14 @@ export default function PengumumanPage() {
             </div>
 
             {attentionItems.length === 0 ? (
-              <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-dashed border-gray-300 dark:border-slate-800 text-center space-y-2">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
+              <div className="p-6 rounded-3xl bg-[#6A8578] text-white border border-dashed border-[#466060] text-center space-y-2 shadow-sm">
+                <div className="w-10 h-10 rounded-full bg-[#466060] text-emerald-300 flex items-center justify-center mx-auto border border-[#163E4F]">
                   <CheckCircle2 className="w-5 h-5" />
                 </div>
-                <p className="text-sm font-bold text-taruna-dark dark:text-white">
+                <p className="text-sm font-bold text-white">
                   Tidak ada pengumuman mendesak saat ini
                 </p>
-                <p className="text-xs text-gray-500 dark:text-slate-400 max-w-md mx-auto">
+                <p className="text-xs text-[#D6DDD5] max-w-md mx-auto">
                   Seluruh agenda rutin berjalan normal. Anda dapat melihat daftar pengumuman lengkap pada bagian di bawah ini.
                 </p>
               </div>
@@ -558,7 +560,7 @@ export default function PengumumanPage() {
                   return (
                     <div
                       key={item.id}
-                      className="relative p-6 rounded-3xl bg-[#466060] text-white border-2 border-red-400 shadow-md hover:shadow-lg transition-all flex flex-col justify-between gap-5 group"
+                      className="relative p-6 rounded-3xl bg-[#6A8578] text-white border-2 border-rose-400 shadow-md hover:shadow-lg transition-all flex flex-col justify-between gap-5 group"
                     >
                       {/* Priority Ribbon */}
                       <div className="flex items-center justify-between gap-2">
@@ -566,14 +568,14 @@ export default function PengumumanPage() {
                           <Badge variant="accent" size="sm" dot>
                             ATTENTION
                           </Badge>
-                          <Badge variant={cfg.badgeVariant} size="sm">
-                            <TypeIcon className="w-3 h-3 mr-1 inline" />
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#466060] text-white border border-[#163E4F] inline-flex items-center gap-1">
+                            <TypeIcon className="w-3 h-3" />
                             {cfg.label}
-                          </Badge>
+                          </span>
                         </div>
 
                         {item.eventDate && (
-                          <span className="text-[11px] font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-950/60 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                          <span className="text-[11px] font-bold text-amber-300 bg-[#466060] px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 border border-[#163E4F]">
                             <Clock className="w-3 h-3" />
                             {new Date(item.eventDate).toLocaleDateString('id-ID', {
                               day: 'numeric',
@@ -585,7 +587,7 @@ export default function PengumumanPage() {
 
                       {/* Content */}
                       <div className="space-y-2">
-                        <h3 className="text-base font-black text-white leading-snug group-hover:text-[#FDE047] transition-colors">
+                        <h3 className="text-base font-black text-white leading-snug group-hover:text-amber-300 transition-colors">
                           {item.title}
                         </h3>
                         <p className="text-xs text-[#D6DDD5] leading-relaxed line-clamp-3">
@@ -594,13 +596,13 @@ export default function PengumumanPage() {
                       </div>
 
                       {/* Metadata & Actions */}
-                      <div className="space-y-3 pt-3 border-t border-red-100 dark:border-slate-800">
+                      <div className="space-y-3 pt-3 border-t border-[#466060]">
                         {item.eventDate && (
-                          <div className="p-2.5 rounded-xl bg-[#163E4F] border border-[#6A8578] text-xs text-[#D6DDD5] flex items-start gap-2">
-                            <CalendarDays className="w-4 h-4 shrink-0 mt-0.5 text-taruna-red-600" />
+                          <div className="p-3 rounded-2xl bg-[#466060] border border-[#163E4F] text-xs text-[#D6DDD5] flex items-start gap-2">
+                            <CalendarDays className="w-4 h-4 shrink-0 mt-0.5 text-amber-300" />
                             <div>
-                              <span className="block font-bold">Jadwal Pelaksanaan:</span>
-                              <span>{formatDateTimeIndo(item.eventDate)}</span>
+                              <span className="block font-bold text-white">Jadwal Pelaksanaan:</span>
+                              <span className="text-amber-300 font-semibold">{formatDateTimeIndo(item.eventDate)}</span>
                             </div>
                           </div>
                         )}
@@ -617,7 +619,7 @@ export default function PengumumanPage() {
                         <div className="flex items-center justify-between pt-1">
                           <button
                             onClick={() => setDetailItem(item)}
-                            className="text-xs font-bold text-[#FDE047] hover:text-white inline-flex items-center gap-1 group-hover:translate-x-0.5 transition"
+                            className="text-xs font-bold text-amber-300 hover:text-white inline-flex items-center gap-1 group-hover:translate-x-0.5 transition"
                           >
                             <span>Baca Selengkapnya</span>
                             <ChevronRight className="w-3.5 h-3.5" />
@@ -627,14 +629,14 @@ export default function PengumumanPage() {
                             <div className="flex items-center gap-1.5">
                               <button
                                 onClick={() => openEditModal(item)}
-                                className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition"
+                                className="p-1.5 rounded-lg border border-[#163E4F] bg-[#466060] text-amber-300 hover:bg-[#163E4F] transition"
                                 title="Edit Pengumuman"
                               >
                                 <Pencil className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => confirmDelete(item)}
-                                className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-slate-800 transition"
+                                className="p-1.5 rounded-lg border border-[#163E4F] bg-[#466060] text-rose-300 hover:bg-[#163E4F] transition"
                                 title="Hapus Pengumuman"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -654,162 +656,164 @@ export default function PengumumanPage() {
               3. SECTION: SELURUH PENGUMUMAN & AGENDA
           ───────────────────────────────────────────────────────────────────────────── */}
           <section className="space-y-5">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-taruna-border dark:border-slate-800 pb-4">
-              <div>
-                <h2 className="text-xl font-black text-taruna-dark dark:text-white tracking-tight">
-                  Daftar Seluruh Pengumuman &amp; Agenda
-                </h2>
-                <p className="text-xs text-gray-500 dark:text-slate-400">
-                  Filter pengumuman berdasarkan kategori informasi atau cari judul agenda.
-                </p>
-              </div>
-
-              {/* Search Bar & Date Filter */}
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <div className="relative w-full sm:w-60">
-                  <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    placeholder="Cari pengumuman..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500/50"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
-                    >
-                      ×
-                    </button>
-                  )}
+            <div className="bg-[#466060] text-white p-5 sm:p-6 rounded-3xl border border-[#163E4F] shadow-md space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#163E4F] pb-4">
+                <div>
+                  <h2 className="text-xl font-black text-white tracking-tight">
+                    Daftar Seluruh Pengumuman &amp; Agenda
+                  </h2>
+                  <p className="text-xs font-semibold text-[#D6DDD5] mt-1">
+                    Filter pengumuman berdasarkan kategori informasi atau cari judul agenda.
+                  </p>
                 </div>
 
-                {/* Filter Tanggal & Periode */}
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    title="Filter Tanggal Pengumuman"
-                    className="px-3 py-1.5 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500/50"
-                  />
+                {/* Search Bar & Date Filter */}
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <div className="relative w-full sm:w-60">
+                    <Search className="w-4 h-4 text-[#D6DDD5] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Cari pengumuman..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-[#163E4F] bg-[#163E4F] text-white placeholder:text-[#D6DDD5]/70 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#D6DDD5] hover:text-white text-xs"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
 
-                  <select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                    title="Filter Bulan Pengumuman"
-                    className="px-2.5 py-1.5 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 font-semibold focus:outline-hidden"
-                  >
-                    <option value="ALL">Semua Bulan</option>
-                    <option value="1">Januari</option>
-                    <option value="2">Februari</option>
-                    <option value="3">Maret</option>
-                    <option value="4">April</option>
-                    <option value="5">Mei</option>
-                    <option value="6">Juni</option>
-                    <option value="7">Juli</option>
-                    <option value="8">Agustus</option>
-                    <option value="9">September</option>
-                    <option value="10">Oktober</option>
-                    <option value="11">November</option>
-                    <option value="12">Desember</option>
-                  </select>
+                  {/* Filter Tanggal & Periode */}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      title="Filter Tanggal Pengumuman"
+                      className="px-3 py-1.5 text-xs rounded-xl border border-[#163E4F] bg-[#163E4F] text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    />
 
-                  <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                    title="Filter Tahun Pengumuman"
-                    className="px-2.5 py-1.5 text-xs rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-200 font-semibold focus:outline-hidden"
-                  >
-                    <option value="ALL">Semua Tahun</option>
-                    <option value="2026">2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                  </select>
+                    <select
+                      value={selectedMonth}
+                      onChange={(e) => setSelectedMonth(e.target.value)}
+                      title="Filter Bulan Pengumuman"
+                      className="px-2.5 py-1.5 text-xs rounded-xl border border-[#163E4F] bg-[#163E4F] text-white font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    >
+                      <option value="ALL">Semua Bulan</option>
+                      <option value="1">Januari</option>
+                      <option value="2">Februari</option>
+                      <option value="3">Maret</option>
+                      <option value="4">April</option>
+                      <option value="5">Mei</option>
+                      <option value="6">Juni</option>
+                      <option value="7">Juli</option>
+                      <option value="8">Agustus</option>
+                      <option value="9">September</option>
+                      <option value="10">Oktober</option>
+                      <option value="11">November</option>
+                      <option value="12">Desember</option>
+                    </select>
 
-                  {(selectedDate || selectedMonth !== 'ALL' || selectedYear !== 'ALL') && (
+                    <select
+                      value={selectedYear}
+                      onChange={(e) => setSelectedYear(e.target.value)}
+                      title="Filter Tahun Pengumuman"
+                      className="px-2.5 py-1.5 text-xs rounded-xl border border-[#163E4F] bg-[#163E4F] text-white font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    >
+                      <option value="ALL">Semua Tahun</option>
+                      <option value="2026">2026</option>
+                      <option value="2025">2025</option>
+                      <option value="2024">2024</option>
+                    </select>
+
+                    {(selectedDate || selectedMonth !== 'ALL' || selectedYear !== 'ALL') && (
+                      <button
+                        onClick={() => {
+                          setSelectedDate('');
+                          setSelectedMonth('ALL');
+                          setSelectedYear('ALL');
+                        }}
+                        className="px-2.5 py-1 text-[11px] font-bold text-amber-300 hover:text-white bg-[#163E4F] border border-[#163E4F] rounded-lg transition-colors"
+                        title="Hapus filter tanggal dan periode"
+                      >
+                        Reset Tgl
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Filter Tabs by Category */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none flex-wrap">
+                <button
+                  onClick={() => {
+                    setSelectedType('ALL');
+                    setOnlyAttention(false);
+                  }}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    selectedType === 'ALL' && !onlyAttention
+                      ? 'bg-amber-400 text-[#163E4F] shadow-sm font-black'
+                      : 'bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578] hover:bg-[#6A8578] hover:text-white'
+                  }`}
+                >
+                  Semua ({announcements.length})
+                </button>
+
+                <button
+                  onClick={() => {
+                    setOnlyAttention(!onlyAttention);
+                    if (!onlyAttention) setSelectedType('ALL');
+                  }}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 ${
+                    onlyAttention
+                      ? 'bg-rose-500 text-white shadow-sm font-black'
+                      : 'bg-[#163E4F] text-rose-300 border border-rose-500/40 hover:bg-rose-950/60'
+                  }`}
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  Attention ({attentionItems.length})
+                </button>
+
+                {(
+                  [
+                    'PENGUMUMAN',
+                    'RAPAT',
+                    'KERJA_BAKTI',
+                    'ARISAN',
+                    'INFORMASI',
+                    'LAINNYA',
+                  ] as AnnouncementType[]
+                ).map((typeKey) => {
+                  const cfg = ANNOUNCEMENT_TYPE_CONFIG[typeKey];
+                  const TypeIcon = cfg.icon;
+                  const count = announcements.filter((a) => a.type === typeKey).length;
+                  const isActive = selectedType === typeKey && !onlyAttention;
+
+                  return (
                     <button
+                      key={typeKey}
                       onClick={() => {
-                        setSelectedDate('');
-                        setSelectedMonth('ALL');
-                        setSelectedYear('ALL');
+                        setSelectedType(typeKey);
+                        setOnlyAttention(false);
                       }}
-                      className="px-2 py-1 text-[11px] font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
-                      title="Hapus filter tanggal dan periode"
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 ${
+                        isActive
+                          ? 'bg-amber-400 text-[#163E4F] shadow-sm font-black'
+                          : 'bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578] hover:bg-[#6A8578] hover:text-white'
+                      }`}
                     >
-                      Reset Tgl
+                      <TypeIcon className="w-3.5 h-3.5" />
+                      <span>{cfg.label}</span>
+                      <span className="opacity-70 text-[10px]">({count})</span>
                     </button>
-                  )}
-                </div>
+                  );
+                })}
               </div>
-            </div>
-
-            {/* Filter Tabs by Category */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none flex-wrap">
-              <button
-                onClick={() => {
-                  setSelectedType('ALL');
-                  setOnlyAttention(false);
-                }}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  selectedType === 'ALL' && !onlyAttention
-                    ? 'bg-taruna-yellow-500 text-white shadow-xs'
-                    : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border border-taruna-border dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800'
-                }`}
-              >
-                Semua ({announcements.length})
-              </button>
-
-              <button
-                onClick={() => {
-                  setOnlyAttention(!onlyAttention);
-                  if (!onlyAttention) setSelectedType('ALL');
-                }}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 ${
-                  onlyAttention
-                    ? 'bg-taruna-red-600 text-white shadow-xs'
-                    : 'bg-red-50 dark:bg-red-950/40 text-taruna-red-700 dark:text-red-400 border border-red-200 dark:border-red-900/60 hover:bg-red-100'
-                }`}
-              >
-                <AlertTriangle className="w-3.5 h-3.5" />
-                Attention ({attentionItems.length})
-              </button>
-
-              {(
-                [
-                  'PENGUMUMAN',
-                  'RAPAT',
-                  'KERJA_BAKTI',
-                  'ARISAN',
-                  'INFORMASI',
-                  'LAINNYA',
-                ] as AnnouncementType[]
-              ).map((typeKey) => {
-                const cfg = ANNOUNCEMENT_TYPE_CONFIG[typeKey];
-                const TypeIcon = cfg.icon;
-                const count = announcements.filter((a) => a.type === typeKey).length;
-                const isActive = selectedType === typeKey && !onlyAttention;
-
-                return (
-                  <button
-                    key={typeKey}
-                    onClick={() => {
-                      setSelectedType(typeKey);
-                      setOnlyAttention(false);
-                    }}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 ${
-                      isActive
-                        ? 'bg-taruna-dark dark:bg-white text-white dark:text-taruna-dark shadow-xs'
-                        : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border border-taruna-border dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-800'
-                    }`}
-                  >
-                    <TypeIcon className="w-3.5 h-3.5" />
-                    <span>{cfg.label}</span>
-                    <span className="opacity-60 text-[10px]">({count})</span>
-                  </button>
-                );
-              })}
             </div>
 
             {/* List / Cards */}
@@ -818,21 +822,21 @@ export default function PengumumanPage() {
                 {[1, 2, 3, 4].map((n) => (
                   <div
                     key={n}
-                    className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 animate-pulse space-y-4"
+                    className="p-6 rounded-3xl bg-[#6A8578] border border-[#466060] animate-pulse space-y-4"
                   >
-                    <div className="h-5 bg-gray-200 dark:bg-slate-800 rounded-md w-1/3" />
-                    <div className="h-6 bg-gray-200 dark:bg-slate-800 rounded-md w-3/4" />
-                    <div className="h-16 bg-gray-200 dark:bg-slate-800 rounded-md w-full" />
+                    <div className="h-5 bg-[#466060] rounded-md w-1/3" />
+                    <div className="h-6 bg-[#466060] rounded-md w-3/4" />
+                    <div className="h-16 bg-[#466060] rounded-md w-full" />
                   </div>
                 ))}
               </div>
             ) : filteredAnnouncements.length === 0 ? (
-              <div className="p-12 text-center rounded-3xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 space-y-3">
-                <Info className="w-10 h-10 text-gray-400 mx-auto" />
-                <p className="font-bold text-base text-taruna-dark dark:text-white">
+              <div className="p-12 text-center rounded-3xl bg-[#6A8578] text-white border border-[#466060] space-y-3 shadow-md">
+                <Info className="w-10 h-10 text-[#D6DDD5] mx-auto" />
+                <p className="font-bold text-base text-white">
                   Tidak ada pengumuman yang sesuai filter
                 </p>
-                <p className="text-xs text-gray-500 dark:text-slate-400">
+                <p className="text-xs text-[#D6DDD5]">
                   Coba ubah kata kunci pencarian atau pilih tab kategori lain.
                 </p>
                 <Button
@@ -843,6 +847,7 @@ export default function PengumumanPage() {
                     setOnlyAttention(false);
                     setSearchQuery('');
                   }}
+                  className="bg-[#163E4F] hover:bg-[#466060] text-white border border-[#163E4F]"
                 >
                   Reset Filter
                 </Button>
@@ -856,20 +861,20 @@ export default function PengumumanPage() {
                   return (
                     <div
                       key={item.id}
-                      className={`p-6 rounded-3xl bg-white dark:bg-slate-900 border transition-all flex flex-col justify-between gap-4 group hover:shadow-md ${
+                      className={`p-6 rounded-3xl bg-[#6A8578] text-white border transition-all flex flex-col justify-between gap-4 group shadow-md hover:shadow-lg ${
                         item.isAttention
-                          ? 'border-red-300 dark:border-red-900/60 ring-1 ring-red-400/20'
-                          : 'border-taruna-border dark:border-slate-800 hover:border-taruna-yellow-300 dark:hover:border-taruna-yellow-500/50'
+                          ? 'border-2 border-rose-400 ring-1 ring-rose-400/20'
+                          : 'border-[#466060] hover:border-amber-300'
                       }`}
                     >
                       <div>
                         {/* Badges Header */}
                         <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
                           <div className="flex items-center gap-2">
-                            <Badge variant={cfg.badgeVariant} size="sm">
-                              <TypeIcon className="w-3 h-3 mr-1 inline" />
+                            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#466060] text-white border border-[#163E4F] inline-flex items-center gap-1">
+                              <TypeIcon className="w-3 h-3" />
                               {cfg.label}
-                            </Badge>
+                            </span>
                             {item.isAttention && (
                               <Badge variant="accent" size="sm" dot>
                                 ATTENTION
@@ -877,40 +882,40 @@ export default function PengumumanPage() {
                             )}
                           </div>
 
-                          <span className="text-[11px] text-gray-400 dark:text-slate-500 flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
+                          <span className="text-[11px] text-[#D6DDD5] flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-amber-300" />
                             {formatDateIndo(item.announcementDate) || '-'}
                           </span>
                         </div>
 
                         {/* Title & Body */}
-                        <h3 className="text-base font-bold text-taruna-dark dark:text-white leading-snug group-hover:text-taruna-yellow-800 dark:group-hover:text-taruna-yellow-400 transition-colors">
+                        <h3 className="text-base font-black text-white leading-snug group-hover:text-amber-300 transition-colors">
                           {item.title}
                         </h3>
 
-                        <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed mt-2 line-clamp-3">
+                        <p className="text-xs text-[#D6DDD5] leading-relaxed mt-2 line-clamp-3">
                           {item.content}
                         </p>
                       </div>
 
                       {/* Event Date Info Box if present */}
                       {item.eventDate && (
-                        <div className="p-3 rounded-2xl bg-taruna-surface dark:bg-slate-800/60 border border-taruna-border/60 dark:border-slate-700/60 flex items-start gap-2.5 text-xs text-gray-600 dark:text-slate-300">
-                          <Calendar className="w-4 h-4 text-taruna-yellow-600 shrink-0 mt-0.5" />
+                        <div className="p-3.5 rounded-2xl bg-[#466060] border border-[#163E4F] flex items-start gap-2.5 text-xs text-[#D6DDD5]">
+                          <Calendar className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
                           <div>
-                            <span className="font-bold text-taruna-dark dark:text-white block">
+                            <span className="font-bold text-white block">
                               Jadwal Agenda / Kegiatan:
                             </span>
-                            <span>{formatDateTimeIndo(item.eventDate)}</span>
+                            <span className="text-amber-300 font-semibold">{formatDateTimeIndo(item.eventDate)}</span>
                           </div>
                         </div>
                       )}
 
                       {/* Footer & Admin Actions */}
-                      <div className="pt-3 border-t border-taruna-border/60 dark:border-slate-800 flex items-center justify-between text-xs">
-                        <span className="text-[11px] text-gray-400 dark:text-slate-500">
+                      <div className="pt-3 border-t border-[#466060] flex items-center justify-between text-xs">
+                        <span className="text-[11px] text-[#D6DDD5]">
                           Oleh:{' '}
-                          <strong className="text-gray-700 dark:text-slate-300">
+                          <strong className="text-white">
                             {item.createdBy?.member?.name || item.createdBy?.username || 'Admin'}
                           </strong>
                         </span>
@@ -918,23 +923,23 @@ export default function PengumumanPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setDetailItem(item)}
-                            className="text-xs font-bold text-taruna-yellow-800 dark:text-taruna-yellow-400 hover:underline inline-flex items-center gap-0.5"
+                            className="text-xs font-bold text-amber-300 hover:text-white inline-flex items-center gap-0.5"
                           >
                             Detail <ChevronRight className="w-3.5 h-3.5" />
                           </button>
 
                           {isAdmin && (
-                            <div className="flex items-center gap-1 pl-2 border-l border-taruna-border dark:border-slate-800">
+                            <div className="flex items-center gap-1 pl-2 border-l border-[#466060]">
                               <button
                                 onClick={() => openEditModal(item)}
-                                className="p-1 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 transition"
+                                className="p-1.5 rounded-lg border border-[#163E4F] bg-[#466060] text-amber-300 hover:bg-[#163E4F] transition"
                                 title="Edit Pengumuman"
                               >
                                 <Pencil className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => confirmDelete(item)}
-                                className="p-1 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-slate-800 transition"
+                                className="p-1.5 rounded-lg border border-[#163E4F] bg-[#466060] text-rose-300 hover:bg-[#163E4F] transition"
                                 title="Hapus Pengumuman"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1089,7 +1094,7 @@ export default function PengumumanPage() {
                   placeholder="Tuliskan isi pengumuman, instruksi kehadiran, peralatan yang harus dibawa, atau rincian penting lainnya..."
                   value={formContent}
                   onChange={(e) => setFormContent(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 text-sm text-taruna-dark dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-taruna-yellow-500/50"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#466060] bg-[#163E4F] text-sm text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-400"
                   required
                 />
               </div>

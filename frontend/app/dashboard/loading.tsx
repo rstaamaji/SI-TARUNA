@@ -5,7 +5,7 @@ export default function DashboardLoading() {
   return (
     <div className="space-y-6 animate-fadeIn pb-12">
       {/* Header Skeleton */}
-      <div className="p-6 rounded-3xl border border-taruna-border dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs flex flex-col sm:flex-row justify-between gap-4">
+      <div className="p-6 rounded-3xl border border-[#163E4F] bg-[#466060] shadow-xs flex flex-col sm:flex-row justify-between gap-4">
         <div className="space-y-2.5 max-w-lg w-full">
           <Skeleton className="h-4 w-28 rounded-full" />
           <Skeleton className="h-8 w-64 rounded-xl" />

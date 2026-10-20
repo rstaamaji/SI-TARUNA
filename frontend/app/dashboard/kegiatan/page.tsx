@@ -635,10 +635,10 @@ export default function KegiatanPage() {
               </Badge>
             )}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Jadwal &amp; Agenda Kegiatan
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#D6DDD5] mt-1 max-w-2xl leading-relaxed">
             Pusat manajemen jadwal kegiatan Karang Taruna Setya Bakti Dusun Tuk Uluh. Meliputi rapat pleno, kerja bakti, pertemuan arisan, dan kegiatan sosial pemuda.
           </p>
         </div>
@@ -650,6 +650,7 @@ export default function KegiatanPage() {
             onClick={() => fetchEvents(true)}
             isLoading={isRefreshing}
             leftIcon={<RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />}
+            className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] transition shadow-xs"
           >
             Segarkan
           </Button>
@@ -660,6 +661,7 @@ export default function KegiatanPage() {
               size="sm"
               onClick={openCreateModal}
               leftIcon={<Plus className="w-4 h-4" />}
+              className="bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578] transition shadow-xs"
             >
               Tambah Kegiatan
             </Button>
@@ -700,12 +702,12 @@ export default function KegiatanPage() {
             ))}
           </div>
         ) : upcomingEvents.length === 0 ? (
-          <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-dashed border-taruna-border dark:border-slate-800 text-center space-y-2">
-            <CalendarCheck2 className="w-10 h-10 text-gray-300 dark:text-slate-600 mx-auto" />
-            <p className="text-sm font-bold text-gray-600 dark:text-slate-300">
+          <div className="p-8 rounded-3xl bg-[#6A8578] text-white border border-dashed border-[#466060] text-center space-y-2 shadow-sm">
+            <CalendarCheck2 className="w-10 h-10 text-[#D6DDD5] mx-auto" />
+            <p className="text-sm font-bold text-white">
               Belum Ada Kegiatan Terdekat
             </p>
-            <p className="text-xs text-gray-400 dark:text-slate-500">
+            <p className="text-xs text-[#D6DDD5]">
               Saat ini belum ada jadwal kegiatan mendatang yang tercatat dalam agenda.
             </p>
           </div>
@@ -1003,16 +1005,16 @@ export default function KegiatanPage() {
             ))}
           </div>
         ) : filteredEvents.length === 0 ? (
-          <div className="p-12 rounded-3xl bg-white dark:bg-slate-900 border border-dashed border-taruna-border dark:border-slate-800 text-center space-y-3">
-            <CalendarDays className="w-12 h-12 text-gray-300 dark:text-slate-600 mx-auto" />
-            <h3 className="font-bold text-base text-taruna-dark dark:text-white">
+          <div className="p-12 rounded-3xl bg-[#6A8578] text-white border border-dashed border-[#466060] text-center space-y-3 shadow-md">
+            <CalendarDays className="w-12 h-12 text-[#D6DDD5] mx-auto" />
+            <h3 className="font-bold text-base text-white">
               Tidak Ada Kegiatan Ditemukan
             </h3>
-            <p className="text-xs text-gray-500 dark:text-slate-400 max-w-sm mx-auto">
+            <p className="text-xs text-[#D6DDD5] max-w-sm mx-auto">
               Tidak ada jadwal kegiatan yang cocok dengan kriteria filter atau pencarian Anda.
             </p>
             {isAdmin && (
-              <Button variant="primary" size="sm" onClick={openCreateModal} className="mt-2">
+              <Button variant="primary" size="sm" onClick={openCreateModal} className="mt-2 bg-[#163E4F] hover:bg-[#466060] text-white border border-[#163E4F]">
                 Buat Kegiatan Baru
               </Button>
             )}
@@ -1026,28 +1028,28 @@ export default function KegiatanPage() {
               return (
                 <div
                   key={item.id}
-                  className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 hover:border-taruna-yellow-500/40 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+                  className="p-5 rounded-2xl bg-[#6A8578] text-white border border-[#466060] hover:border-amber-300 shadow-md hover:shadow-lg transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group"
                 >
                   {/* Left Column: Date Stamp & Main Info */}
                   <div className="flex items-start gap-4">
                     {/* Calendar Badge Icon */}
-                    <div className="w-14 h-16 rounded-2xl bg-gradient-to-b from-taruna-yellow-500/10 to-taruna-yellow-500/5 dark:from-slate-800 dark:to-slate-800/80 border border-taruna-yellow-500/20 dark:border-slate-700 flex flex-col items-center justify-center shrink-0">
-                      <span className="text-[10px] font-black uppercase text-taruna-yellow-700 dark:text-taruna-yellow-400 tracking-wider">
+                    <div className="w-14 h-16 rounded-2xl bg-[#466060] border border-[#163E4F] flex flex-col items-center justify-center shrink-0 shadow-xs">
+                      <span className="text-[10px] font-black uppercase text-amber-300 tracking-wider">
                         {item.dayOfWeek ? item.dayOfWeek.slice(0, 3) : 'HRI'}
                       </span>
-                      <span className="text-xl font-black text-taruna-dark dark:text-white leading-tight">
+                      <span className="text-xl font-black text-white leading-tight">
                         {new Date(item.eventDate).getDate()}
                       </span>
-                      <span className="text-[9px] font-bold text-gray-400 uppercase">
+                      <span className="text-[9px] font-bold text-[#D6DDD5] uppercase">
                         {new Date(item.eventDate).toLocaleDateString('id-ID', { month: 'short' })}
                       </span>
                     </div>
 
                     <div className="space-y-1.5 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <Badge variant={cfg.variant} size="sm">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#466060] text-white border border-[#163E4F]">
                           {cfg.label}
-                        </Badge>
+                        </span>
                         <Badge variant={timing.badgeVariant} size="sm" dot>
                           {timing.label}
                         </Badge>
@@ -1055,26 +1057,26 @@ export default function KegiatanPage() {
 
                       <h3
                         onClick={() => setDetailEvent(item)}
-                        className="text-base font-black text-taruna-dark dark:text-white hover:text-taruna-yellow-600 dark:hover:text-taruna-yellow-400 cursor-pointer transition"
+                        className="text-base font-black text-white hover:text-amber-300 cursor-pointer transition"
                       >
                         {item.title}
                       </h3>
 
                       {item.description && (
-                        <p className="text-xs text-gray-500 dark:text-slate-400 line-clamp-1 max-w-2xl leading-relaxed">
+                        <p className="text-xs text-[#D6DDD5] line-clamp-1 max-w-2xl leading-relaxed">
                           {item.description}
                         </p>
                       )}
 
                       {/* Detail Chips */}
-                      <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-slate-400 flex-wrap pt-1">
-                        <span className="inline-flex items-center gap-1 font-semibold text-blue-700 dark:text-blue-300">
+                      <div className="flex items-center gap-3 text-xs text-[#D6DDD5] flex-wrap pt-1">
+                        <span className="inline-flex items-center gap-1 font-semibold text-amber-300">
                           <Clock className="w-3.5 h-3.5" />
                           {item.time || '19:30 WIB'}
                         </span>
-                        <span className="text-gray-300 dark:text-slate-700">•</span>
-                        <span className="inline-flex items-center gap-1 text-gray-600 dark:text-slate-300">
-                          <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                        <span className="text-[#466060]">•</span>
+                        <span className="inline-flex items-center gap-1 text-[#D6DDD5]">
+                          <MapPin className="w-3.5 h-3.5 text-rose-300 shrink-0" />
                           {item.location}
                         </span>
                       </div>
@@ -1085,9 +1087,9 @@ export default function KegiatanPage() {
                   <div className="flex items-center gap-2 self-end md:self-center shrink-0">
                     <button
                       onClick={() => setDetailEvent(item)}
-                      className="px-3 py-1.5 rounded-xl border border-taruna-border dark:border-slate-700 bg-taruna-surface/60 dark:bg-slate-800 hover:bg-taruna-surface text-taruna-dark dark:text-slate-200 text-xs font-bold inline-flex items-center gap-1.5 transition"
+                      className="px-3 py-1.5 rounded-xl border border-[#163E4F] bg-[#466060] hover:bg-[#163E4F] text-[#D6DDD5] hover:text-white text-xs font-bold inline-flex items-center gap-1.5 transition"
                     >
-                      <Eye className="w-3.5 h-3.5 text-gray-500" />
+                      <Eye className="w-3.5 h-3.5 text-[#D6DDD5]" />
                       Detail
                     </button>
 
@@ -1095,14 +1097,14 @@ export default function KegiatanPage() {
                       <>
                         <button
                           onClick={() => openEditModal(item)}
-                          className="px-3 py-1.5 rounded-xl border border-taruna-border dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-taruna-yellow-50 dark:hover:bg-slate-700 text-taruna-yellow-700 dark:text-taruna-yellow-400 text-xs font-bold inline-flex items-center gap-1.5 transition"
+                          className="px-3 py-1.5 rounded-xl border border-[#163E4F] bg-[#466060] hover:bg-[#163E4F] text-amber-300 text-xs font-bold inline-flex items-center gap-1.5 transition"
                         >
                           <Pencil className="w-3.5 h-3.5" />
                           Edit
                         </button>
                         <button
                           onClick={() => confirmDelete(item)}
-                          className="p-1.5 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 transition"
+                          className="p-1.5 rounded-xl border border-[#163E4F] bg-[#466060] hover:bg-[#163E4F] text-rose-300 transition"
                           title="Hapus Kegiatan"
                         >
                           <Trash2 className="w-4 h-4" />

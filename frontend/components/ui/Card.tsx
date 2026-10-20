@@ -88,7 +88,7 @@ export const CardFooter = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'p-5 sm:p-6 pt-0 flex items-center border-t border-taruna-border/60 mt-4',
+      'p-5 sm:p-6 pt-0 flex items-center border-t border-[#466060] mt-4',
       className
     )}
     {...props}

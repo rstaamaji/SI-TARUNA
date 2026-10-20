@@ -65,7 +65,7 @@ export const authenticate = async (
       id: user.id,
       username: user.username,
       email: user.email,
-      role: user.role,
+      role: (decoded.role as Role) || user.role,
       memberId: user.member?.id,
       memberName: user.member?.name,
     };

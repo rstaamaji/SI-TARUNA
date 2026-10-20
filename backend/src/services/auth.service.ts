@@ -2,11 +2,15 @@ import prisma from '../utils/prisma';
 import { PasswordUtil } from '../utils/password';
 import { JwtUtil } from '../utils/jwt';
 import { AppError } from '../utils/appError';
-import { Prisma } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 
 export class AuthService {
   public static async login(username: string, plainPassword: string) {
     const trimmedInput = username.trim();
+
+    if (!trimmedInput || !plainPassword) {
+      throw new AppError('Kredensial tidak valid: Username dan password wajib diisi.', 400);
+    }
 
     // Cek alias antara "Rustam Aji" dan "rustaamaji"
     const isRustamAlias =
@@ -14,7 +18,9 @@ export class AuthService {
       trimmedInput.toLowerCase() === 'rustaamaji' ||
       trimmedInput.toLowerCase() === 'rustamaji';
 
-    const candidates = await prisma.user.findMany({
+    const isAdminUser = trimmedInput.toLowerCase() === 'admin';
+
+    let candidates = await prisma.user.findMany({
       where: {
         OR: [
           { username: { equals: trimmedInput, mode: Prisma.QueryMode.insensitive } },
@@ -25,6 +31,9 @@ export class AuthService {
                 { username: { equals: 'Rustam Aji', mode: Prisma.QueryMode.insensitive } },
                 { username: { equals: 'rustaamaji', mode: Prisma.QueryMode.insensitive } },
               ]
+            : []),
+          ...(isAdminUser
+            ? [{ username: { equals: 'admin', mode: Prisma.QueryMode.insensitive } }]
             : []),
         ],
       },
@@ -43,53 +52,90 @@ export class AuthService {
     });
 
     if (!candidates || candidates.length === 0) {
-      throw new AppError('Kredensial tidak valid: Username atau password salah.', 401);
-    }
-
-    // Cari kandidat yang password-nya cocok
-    let user: (typeof candidates)[number] | null = null;
-    for (const candidate of candidates) {
-      const isMatch = await PasswordUtil.compare(plainPassword, candidate.password);
-      if (isMatch) {
-        user = candidate;
-        break;
+      // Coba cari dari tabel Member jika nama member diinput
+      const member = await prisma.member.findFirst({
+        where: { name: { equals: trimmedInput, mode: Prisma.QueryMode.insensitive } },
+        include: { user: true },
+      });
+      if (member?.user) {
+        candidates = [
+          {
+            ...member.user,
+            member: {
+              id: member.id,
+              memberNumber: member.memberNumber,
+              name: member.name,
+              phone: member.phone,
+              address: member.address,
+              status: member.status,
+            },
+          },
+        ];
       }
     }
 
-    if (!user) {
+    if (!candidates || candidates.length === 0) {
       throw new AppError('Kredensial tidak valid: Username atau password salah.', 401);
     }
 
-    // Pengecekan status role:
-    // Jika mantan admin dicopot atau status admin dinonaktifkan oleh Superadmin,
-    // akun TIDAK DIBLOKIR, melainkan otomatis dapat login sebagai role MEMBER biasa (tanpa fitur CRUD admin).
-    let effectiveRole = user.role;
-    let effectiveApproved = user.isApproved;
+    // Tentukan role berdasarkan password:
+    // 1. Password 'superadmin' -> SUPERADMIN (hanya untuk rustaamaji / Rustam Aji)
+    // 2. Password 'admin' -> ADMIN (untuk username 'admin' atau nama pengurus/member)
+    // 3. Password 'TukuluhJaya' (password dahulu) -> MEMBER (untuk semua member termasuk Rustam Aji)
+    // 4. Password tersimpan di DB (fallback pengecekan bcrypt)
+    let effectiveRole: Role | null = null;
+    let targetUser: (typeof candidates)[number] | null = null;
 
-    if (user.role === 'ADMIN' && !user.isApproved) {
+    if (plainPassword === 'superadmin') {
+      if (isRustamAlias || candidates.some((c) => c.role === 'SUPERADMIN')) {
+        effectiveRole = 'SUPERADMIN';
+        targetUser =
+          candidates.find((c) => c.username.toLowerCase() === 'rustaamaji') ||
+          candidates.find((c) => c.role === 'SUPERADMIN') ||
+          candidates[0];
+      } else {
+        throw new AppError('Kredensial tidak valid: Hak akses Superadmin ditolak.', 401);
+      }
+    } else if (plainPassword === 'admin') {
+      effectiveRole = 'ADMIN';
+      targetUser =
+        candidates.find((c) => c.username.toLowerCase() === 'admin') ||
+        candidates.find((c) => c.username.toLowerCase() !== 'rustaamaji') ||
+        candidates[0];
+    } else if (plainPassword === 'TukuluhJaya') {
       effectiveRole = 'MEMBER';
-      effectiveApproved = true;
-      // Sinkronkan ke database agar status role kembali konsisten sebagai MEMBER
-      try {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { role: 'MEMBER', isApproved: true },
-        });
-      } catch (syncErr) {
-        console.warn('Gagal sinkronisasi role mantan admin ke MEMBER:', syncErr);
+      targetUser =
+        candidates.find((c) => c.username.toLowerCase() === 'rustam aji') ||
+        candidates.find((c) => c.username.toLowerCase() !== 'rustaamaji' && c.username.toLowerCase() !== 'admin') ||
+        candidates[0];
+    } else {
+      // Pengecekan password kustom di database via bcrypt
+      for (const candidate of candidates) {
+        const isMatch = await PasswordUtil.compare(plainPassword, candidate.password);
+        if (isMatch) {
+          targetUser = candidate;
+          effectiveRole = candidate.role;
+          break;
+        }
       }
     }
+
+    if (!targetUser || !effectiveRole) {
+      throw new AppError('Kredensial tidak valid: Username atau password salah.', 401);
+    }
+
+    let effectiveApproved = targetUser.isApproved;
 
     // Jika profil member belum tertaut langsung, cari berdasarkan nama atau username
-    let memberData = user.member;
+    let memberData = targetUser.member;
     if (!memberData) {
       const searchName =
-        user.role === 'SUPERADMIN' || user.username.toLowerCase() === 'rustaamaji'
+        effectiveRole === 'SUPERADMIN' || targetUser.username.toLowerCase() === 'rustaamaji'
           ? 'Rustam Aji'
-          : user.username;
+          : targetUser.username;
 
       memberData = await prisma.member.findFirst({
-        where: { name: { equals: searchName, mode: 'insensitive' } },
+        where: { name: { equals: searchName, mode: Prisma.QueryMode.insensitive } },
         select: {
           id: true,
           memberNumber: true,
@@ -102,17 +148,17 @@ export class AuthService {
     }
 
     const token = JwtUtil.sign({
-      id: user.id,
-      username: user.username,
+      id: targetUser.id,
+      username: targetUser.username,
       role: effectiveRole,
     });
 
     return {
       token,
       user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
+        id: targetUser.id,
+        username: targetUser.username,
+        email: targetUser.email,
         role: effectiveRole,
         isApproved: effectiveApproved,
         member: memberData,
@@ -120,7 +166,7 @@ export class AuthService {
     };
   }
 
-  public static async getMe(userId: string) {
+  public static async getMe(userId: string, sessionRole?: Role) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -151,6 +197,9 @@ export class AuthService {
       throw new AppError('Pengguna tidak ditemukan', 404);
     }
 
-    return user;
+    return {
+      ...user,
+      role: sessionRole || user.role,
+    };
   }
 }

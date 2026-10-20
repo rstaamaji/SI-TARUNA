@@ -649,40 +649,40 @@ export default function AdminSettingsPage() {
                     {auditReport.results.map((item: any, idx: number) => (
                       <div
                         key={idx}
-                        className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 space-y-1 text-xs"
+                        className="p-3 rounded-xl bg-[#466060] text-white border border-[#163E4F] space-y-1 text-xs"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <span className="font-bold text-white flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
                             {item.name}
                           </span>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800">
                             {item.status}
                           </span>
                         </div>
-                        <p className="text-gray-600 dark:text-slate-400 text-[11px] leading-relaxed">
+                        <p className="text-[#D6DDD5] text-[11px] leading-relaxed">
                           {item.detail}
                         </p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-taruna-border dark:border-slate-800 space-y-2 text-xs">
+                  <div className="p-3 rounded-xl bg-[#466060] text-white border border-[#163E4F] space-y-2 text-xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-700 dark:text-slate-300">Penyimpanan di Database Biasa:</span>
+                      <span className="font-semibold text-[#D6DDD5]">Penyimpanan di Database Biasa:</span>
                       <Badge variant="accent" size="sm" className="bg-emerald-600 text-white font-mono text-[10px]">
                         TIDAK ADA / DIBLOKIR
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-700 dark:text-slate-300">Metode Penyimpanan Secret:</span>
-                      <span className="font-mono text-gray-600 dark:text-slate-300 text-[11px]">
+                      <span className="font-semibold text-[#D6DDD5]">Metode Penyimpanan Secret:</span>
+                      <span className="font-mono text-white text-[11px]">
                         {securityStatus?.storagePolicy || 'Environment Variables (.env)'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-gray-700 dark:text-slate-300">Status JWT Secret:</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-[11px] flex items-center gap-1">
+                      <span className="font-semibold text-[#D6DDD5]">Status JWT Secret:</span>
+                      <span className="text-emerald-300 font-semibold text-[11px] flex items-center gap-1">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         {securityStatus?.jwtSecretStatus || 'Terkonfigurasi Aman di .env'}
                       </span>
@@ -692,8 +692,8 @@ export default function AdminSettingsPage() {
               </div>
 
               {/* Penjelasan Arsitektur */}
-              <div className="p-3.5 rounded-xl bg-gray-50 dark:bg-slate-900/60 border border-gray-200 dark:border-slate-800 text-xs text-gray-600 dark:text-slate-400 leading-relaxed">
-                <p className="font-semibold text-gray-800 dark:text-slate-200 mb-1">
+              <div className="p-3.5 rounded-xl bg-[#466060] border border-[#163E4F] text-xs text-[#D6DDD5] leading-relaxed">
+                <p className="font-semibold text-white mb-1">
                   Komitmen Keamanan & Perlindungan Privasi Warga
                 </p>
                 SI-TARUNA menerapkan prinsip pertahanan berlapis (<em>defense-in-depth</em>). Data pribadi warga Karang Taruna terlindungi, kata sandi dienkripsi searah dengan bcrypt, akses dibatasi secara ketat di backend, dan seluruh kunci rahasia terisolasi dari database dan repository source code Git.

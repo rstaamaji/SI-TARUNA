@@ -926,9 +926,9 @@ export default function AdminAttendancePage() {
           </Card>
 
           {/* ── STICKY SAVE BAR ── */}
-          <div className="sticky bottom-4 z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 rounded-2xl border border-taruna-border dark:border-slate-800 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="sticky bottom-4 z-20 bg-[#466060]/95 backdrop-blur-md p-4 rounded-2xl border border-[#163E4F] shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
             <div className="flex items-center gap-3 text-xs">
-              <span className="font-bold text-taruna-dark dark:text-white">Rekapitulasi:</span>
+              <span className="font-bold text-white">Rekapitulasi:</span>
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" /> {liveStats.present} Hadir
               </span>
