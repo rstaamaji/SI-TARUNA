@@ -109,19 +109,22 @@ export const navigationItems: NavItem[] = [
     name: 'Pengumuman',
     href: '/dashboard/pengumuman',
     icon: Megaphone,
-    badge: 'Baru',
+    badge: 'Admin',
+    adminOnly: true, // Untuk member ditampilkan langsung sebagai informasi di dashboard utama
   },
   {
     name: 'Notulensi',
     href: '/dashboard/notulensi',
     icon: FileText,
-    badge: null,
+    badge: 'Admin',
+    adminOnly: true, // Untuk member ditampilkan langsung sebagai informasi di dashboard utama
   },
   {
     name: 'Kegiatan',
     href: '/dashboard/kegiatan',
     icon: CalendarDays,
-    badge: null,
+    badge: 'Admin',
+    adminOnly: true, // Untuk member ditampilkan langsung sebagai informasi di dashboard utama
   },
   {
     name: 'Arisan',
