@@ -1,36 +1,74 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-  Users,
-  Wallet,
   CalendarCheck2,
-  AlertTriangle,
   Clock,
   MapPin,
-  ChevronRight,
   CheckCircle2,
-  ExternalLink,
   BadgeCheck,
   Building2,
-  Check,
   FileText,
   BookOpen,
+  CalendarDays,
+  Gift,
+  Eye,
+  Shovel,
+  Sparkles,
+  Info,
+  Calendar,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/ui/Logo';
+import { Modal } from '@/components/ui/Modal';
 
-export interface AttentionItem {
+export interface CommunityServiceItem {
   id: string;
   title: string;
-  description: string;
-  badge: string;
-  badgeVariant: 'accent' | 'warning' | 'primary' | 'info';
-  dueDate?: string;
-  actionLabel?: string;
-  actionUrl?: string;
+  description: string | null;
+  eventDate: string;
+  dayOfWeek?: string | null;
+  time?: string | null;
+  location: string;
+  equipment?: string;
+  status?: string;
+}
+
+export interface ArisanSummaryData {
+  monthlyFee: number;
+  totalPot: number;
+  currentCycleMonth: number;
+  currentCycleYear: number;
+  nextDrawDate: string;
+  nextDrawLocation: string;
+  recipientName: string;
+  recipientNumber?: string;
+  memberStatus: string;
+  notes?: string;
+  recentDraws: {
+    id: string;
+    month: number;
+    year: number;
+    drawDate: string | null;
+    status: string;
+    winnerName: string;
+    winnerNumber: string;
+  }[];
+}
+
+export interface MeetingMinuteItem {
+  id: string;
+  title: string;
+  meetingDate: string;
+  dayOfWeek: string | null;
+  location: string;
+  meetingLeader: string;
+  noteTaker: string;
+  content: string;
+  conclusion: string | null;
+  followUp: string | null;
+  author: string;
+  agendaConnection?: string;
 }
 
 export interface MemberDashboardData {
@@ -44,92 +82,12 @@ export interface MemberDashboardData {
     status: string;
     joinDate: string;
   };
-  stats: {
-    totalMembers: number;
-    activeMembers: number;
-    inactiveMembers: number;
-    totalCashBalance: number;
-  };
-  attentionItems: AttentionItem[];
-  announcements: {
-    id: string;
-    title: string;
-    content: string;
-    type?: string;
-    isAttention?: boolean;
-    date: string;
-    eventDate: string | null;
-    author: string;
-  }[];
-  upcomingEvents: {
-    id: string;
-    title: string;
-    description: string | null;
-    eventDate: string;
-    dayOfWeek?: string | null;
-    time?: string | null;
-    location: string;
-    type: string;
-    myAttendance: string | null;
-  }[];
-  arisanSummary: {
-    monthlyFee: number;
-    totalPot: number;
-    currentCycleMonth: number;
-    currentCycleYear: number;
-    nextDrawDate: string;
-    nextDrawLocation: string;
-    memberStatus: string;
-    nearestArisan?: any;
-    recentDraws: {
-      id: string;
-      month: number;
-      year: number;
-      drawDate: string | null;
-      status: string;
-      winnerName: string;
-      winnerNumber: string;
-    }[];
-  };
-  personalAttendance: {
-    totalAttended: number;
-    totalEvents: number;
-    attendancePercentage: number;
-    lastStatus: string;
-    history: {
-      id: string;
-      eventId: string;
-      eventTitle: string;
-      eventDate: string;
-      status: string;
-      notes: string | null;
-    }[];
-  };
-  notifications: {
-    id: string;
-    title: string;
-    message: string;
-    type: string;
-    isRead: boolean;
-    createdAt: string;
-  }[];
-  unreadNotificationsCount: number;
-  latestMeetingMinute?: {
-    id: string;
-    title: string;
-    meetingDate: string;
-    dayOfWeek: string | null;
-    location: string;
-    meetingLeader: string;
-    noteTaker: string;
-    content: string;
-    conclusion: string | null;
-    followUp: string | null;
-    author: string;
-  } | null;
+  communityServiceEvents: CommunityServiceItem[];
+  arisanInfo: ArisanSummaryData;
+  meetingMinutes: MeetingMinuteItem[];
 }
 
-// Fallback data realistis untuk Dusun Tuk Uluh, Desa Sringin, Jumantono
+// Fallback data realistis Dusun Tuk Uluh, Desa Sringin, Jumantono
 const FALLBACK_DASHBOARD: MemberDashboardData = {
   memberProfile: {
     id: 'm-04',
@@ -141,106 +99,43 @@ const FALLBACK_DASHBOARD: MemberDashboardData = {
     status: 'ACTIVE',
     joinDate: '2023-02-15T00:00:00.000Z',
   },
-  stats: {
-    totalMembers: 25,
-    activeMembers: 23,
-    inactiveMembers: 2,
-    totalCashBalance: 6420000,
-  },
-  attentionItems: [
+  communityServiceEvents: [
     {
-      id: 'att-1',
-      title: 'Batas Penyetoran Iuran Kas Wajib Oktober 2026',
+      id: 'cs-1',
+      title: 'Kerja Bakti Bersih Saluran Air & Selokan Dusun',
       description:
-        'Iuran kas pemuda sebesar Rp 10.000 wajib diserahkan kepada Bendahara Setya Bakti paling lambat tanggal 10 Oktober 2026.',
-      badge: 'PENTING - KAS',
-      badgeVariant: 'accent',
-      dueDate: '10 Oktober 2026',
-      actionLabel: 'Konfirmasi Bendahara',
-      actionUrl: 'https://wa.me/6281234567801?text=Halo%20Bendahara%20Setya%20Bakti,%20saya%20ingin%20konfirmasi%20iuran%20kas',
-    },
-    {
-      id: 'att-2',
-      title: 'Pertemuan Rutin & Undian Arisan Pemuda',
-      description:
-        'Diharapkan hadir tepat waktu pada Minggu malam di Balai Dusun Tuk Uluh pukul 19:30 WIB. Undian arisan putaran ke-9 akan dikocok.',
-      badge: 'KEGIATAN UTAMA',
-      badgeVariant: 'warning',
-      dueDate: '05 Oktober 2026, 19:30 WIB',
-      actionLabel: 'Konfirmasi Hadir',
-      actionUrl: '#kegiatan',
-    },
-    {
-      id: 'att-3',
-      title: 'Kerja Bakti Gotong Royong Dusun Tuk Uluh',
-      description:
-        'Pembersihan saluran air dan pengecatan gapura dusun menjelang musim hujan. Harap membawa cangkul atau sabit.',
-      badge: 'GOTONG ROYONG',
-      badgeVariant: 'primary',
-      dueDate: '12 Oktober 2026, 06:30 WIB',
-      actionLabel: 'Lihat Lokasi',
-      actionUrl: '#kegiatan',
-    },
-  ],
-  announcements: [
-    {
-      id: 'ann-1',
-      title: 'Iuran Wajib Bulanan Periode Oktober 2026',
-      content:
-        'Diberitahukan kepada seluruh anggota Karang Taruna Setya Bakti bahwa iuran wajib sebesar Rp 10.000 dapat disetorkan kepada bendahara dusun paling lambat tanggal 10 Oktober 2026.',
-      date: '2026-09-29T00:00:00.000Z',
-      eventDate: '2026-10-10T00:00:00.000Z',
-      author: 'Bendahara Setya Bakti',
-    },
-    {
-      id: 'ann-2',
-      title: 'Pelaksanaan Kerja Bakti Dusun Tuk Uluh',
-      content:
-        'Dalam rangka menjaga kebersihan lingkungan dan mengantisipasi musim penghujan, seluruh pemuda diharapkan hadir pada kerja bakti hari Minggu, 12 Oktober 2026 pukul 06.30 WIB dengan membawa alat kerja bakti.',
-      date: '2026-09-24T00:00:00.000Z',
+        'Pembersihan sedimentasi lumpur saluran air irigasi dusun dan pemotongan rumput liar sepanjang jalan utama Dusun Tuk Uluh guna mengantisipasi genangan musim penghujan. Seluruh pemuda diharapkan hadir membawa alat kerja.',
       eventDate: '2026-10-12T06:30:00.000Z',
-      author: 'Rustam Aji (Super Admin)',
+      dayOfWeek: 'Minggu',
+      time: '06:30 WIB - Selesai',
+      location: 'Area Saluran Air & Jalan Utama Dusun Tuk Uluh',
+      equipment: 'Cangkul, sabit, karung goni, dan gerobak dorong',
+      status: 'UPCOMING',
+    },
+    {
+      id: 'cs-2',
+      title: 'Kerja Bakti Pengecatan Gapura & Peremajaan Pos Ronda RT 02',
+      description:
+        'Pengecatan ulang gapura batas dusun dan perbaikan atap pos kamling RT 02 demi kenyamanan ronda malam dan keamanan lingkungan warga Dusun Tuk Uluh.',
+      eventDate: '2026-10-19T07:00:00.000Z',
+      dayOfWeek: 'Minggu',
+      time: '07:00 WIB',
+      location: 'Gapura Utama & Pos Ronda RT 02',
+      equipment: 'Kuas, amplas, sapu lidi, ember',
+      status: 'UPCOMING',
     },
   ],
-  upcomingEvents: [
-    {
-      id: 'ev-1',
-      title: 'Pertemuan Rutin & Arisan Pemuda Oktober 2026',
-      description:
-        'Pertemuan rutin bulanan Karang Taruna Setya Bakti, evaluasi kas, dan penarikan undian arisan.',
-      eventDate: '2026-10-05T12:30:00.000Z',
-      location: 'Balai Dusun Tuk Uluh',
-      type: 'MEETING',
-      myAttendance: 'PRESENT',
-    },
-    {
-      id: 'ev-2',
-      title: 'Kerja Bakti Bersih Lingkungan Dusun',
-      description:
-        'Pembersihan saluran air dan pengecatan gapura Dusun Tuk Uluh menjelang musim hujan.',
-      eventDate: '2026-10-12T06:30:00.000Z',
-      location: 'Area Lapangan & Gapura Tuk Uluh',
-      type: 'COMMUNITY_SERVICE',
-      myAttendance: null,
-    },
-    {
-      id: 'ev-3',
-      title: 'Turnamen Bola Voli Antar RT Sringin',
-      description: 'Pertandingan persahabatan bola voli pemuda antar RT se-Desa Sringin.',
-      eventDate: '2026-10-25T15:30:00.000Z',
-      location: 'Lapangan Olahraga Sringin',
-      type: 'SPORTS',
-      myAttendance: null,
-    },
-  ],
-  arisanSummary: {
+  arisanInfo: {
     monthlyFee: 20000,
     totalPot: 500000,
     currentCycleMonth: 10,
     currentCycleYear: 2026,
-    nextDrawDate: '2026-10-05T12:30:00.000Z',
+    nextDrawDate: '2026-10-05T19:30:00.000Z',
     nextDrawLocation: 'Balai Dusun Tuk Uluh',
+    recipientName: 'Eko Prasetyo',
+    recipientNumber: 'KT-SB-004',
     memberStatus: 'BELUM_DAPAT',
+    notes: 'Kocokan putaran ke-9 akan diadakan bersamaan dengan silaturahmi rutin bulanan.',
     recentDraws: [
       {
         id: 'ar-1',
@@ -271,85 +166,52 @@ const FALLBACK_DASHBOARD: MemberDashboardData = {
       },
     ],
   },
-  personalAttendance: {
-    totalAttended: 3,
-    totalEvents: 3,
-    attendancePercentage: 100,
-    lastStatus: 'PRESENT',
-    history: [
-      {
-        id: 'att-h-1',
-        eventId: 'ev-1',
-        eventTitle: 'Pertemuan Rutin & Arisan Pemuda Oktober',
-        eventDate: '2026-10-05T19:30:00.000Z',
-        status: 'PRESENT',
-        notes: 'Hadir tepat waktu',
-      },
-      {
-        id: 'att-h-2',
-        eventId: 'ev-prev-1',
-        eventTitle: 'Rapat Pleno Penyusunan Rencana Kerja September',
-        eventDate: '2026-09-10T19:30:00.000Z',
-        status: 'PRESENT',
-        notes: null,
-      },
-      {
-        id: 'att-h-3',
-        eventId: 'ev-prev-2',
-        eventTitle: 'Peringatan HUT Kemerdekaan RI di Balai Dusun',
-        eventDate: '2026-08-17T08:00:00.000Z',
-        status: 'PRESENT',
-        notes: 'Panitia Lomba',
-      },
-    ],
-  },
-  notifications: [
+  meetingMinutes: [
     {
-      id: 'notif-1',
-      title: 'Pengingat Iuran Kas Oktober',
-      message: 'Jangan lupa untuk melunasi iuran wajib kas bulanan sebelum tanggal 10 Oktober 2026.',
-      type: 'FINANCE',
-      isRead: false,
-      createdAt: '2026-09-30T10:00:00.000Z',
+      id: 'mm-1',
+      title: 'Rapat Pleno: Evaluasi Kas & Kesepakatan Jadwal Kerja Bakti Saluran Air',
+      meetingDate: '2026-09-10T19:30:00.000Z',
+      dayOfWeek: 'Kamis',
+      location: 'Balai Dusun Tuk Uluh, Desa Sringin',
+      meetingLeader: 'Rustam Aji (Super Admin)',
+      noteTaker: 'Siti Nurhaliza (Sekretaris)',
+      content:
+        'Rapat pleno membahas transparansi kas bulanan, persiapan kerja bakti lingkungan menyongsong musim hujan, serta pembagian jadwal arisan putaran ke-9. Seluruh pemuda yang hadir menyetujui laporan kas dan menyepakati kerja bakti dilaksanakan serentak.',
+      conclusion:
+        '1. Laporan keuangan kas disetujui tanpa catatan perbaikan.\n2. Disepakati kerja bakti pembersihan saluran air dilaksanakan pada Minggu, 12 Oktober 2026 pukul 06.30 WIB.\n3. Kas mengalokasikan anggaran konsumsi kerja bakti sebesar Rp 150.000.',
+      followUp:
+        'Seksi perlengkapan (Sdr. Bambang) mengecek kesiapan cangkul dusun, dan bendahara mengumumkan rincian kas di papan info.',
+      author: 'Siti Nurhaliza',
+      agendaConnection: 'Berkaitan langsung dengan agenda Kerja Bakti 12 Oktober 2026',
     },
     {
-      id: 'notif-2',
-      title: 'Pertemuan Rutin Minggu Ini',
-      message: 'Pertemuan bulanan Karang Taruna Setya Bakti dijadwalkan pada hari Minggu, 05 Oktober 2026 di Balai Dusun.',
-      type: 'EVENT',
-      isRead: false,
-      createdAt: '2026-09-29T14:30:00.000Z',
-    },
-    {
-      id: 'notif-3',
-      title: 'Selamat! Pemenang Arisan September',
-      message: 'Arisan periode September 2026 telah diserahkan kepada Anggota 3. Terima kasih atas partisipasinya.',
-      type: 'INFO',
-      isRead: true,
-      createdAt: '2026-09-15T20:00:00.000Z',
+      id: 'mm-2',
+      title: 'Rapat Koordinasi: Mekanisme Giliran Arisan & Iuran Pemuda Dusun',
+      meetingDate: '2026-08-10T19:30:00.000Z',
+      dayOfWeek: 'Senin',
+      location: 'Kediaman Sdr. Bambang (RT 01 Dusun Tuk Uluh)',
+      meetingLeader: 'Rustam Aji (Super Admin)',
+      noteTaker: 'Dewi Lestari',
+      content:
+        'Koordinasi penetapan batas waktu penyetoran arisan tiap tanggal 10 dan ketentuan tuan rumah tempat pertemuan arisan agar bergilir secara adil antar RT 01, 02, dan 03.',
+      conclusion:
+        '1. Iuran wajib arisan diserahkan sebelum tanggal 10 tiap bulan.\n2. Putaran arisan berikutnya bertempat di Balai Dusun Tuk Uluh dengan tuan rumah Sdr. Eko Prasetyo.',
+      followUp:
+        'Penyampaian undangan melalui grup pemuda dan penyiapan kupon arisan.',
+      author: 'Dewi Lestari',
+      agendaConnection: 'Berkaitan dengan pelaksanaan Arisan Pemuda Oktober 2026',
     },
   ],
-  unreadNotificationsCount: 2,
-  latestMeetingMinute: {
-    id: 'mm-1',
-    title: 'Rapat Pleno & Evaluasi Program Kerja September 2026',
-    meetingDate: '2026-09-10T19:30:00.000Z',
-    dayOfWeek: 'Kamis',
-    location: 'Balai Dusun Tuk Uluh, Desa Sringin',
-    meetingLeader: 'Rustam Aji (Super Admin)',
-    noteTaker: 'Siti Nurhaliza (Sekretaris)',
-    content: 'Pembahasan evaluasi kas keuangan, kesepakatan jadwal kerja bakti saluran air, dan partisipasi turnamen voli antardusun.',
-    conclusion: 'Laporan kas disetujui, kerja bakti disepakati 12 Oktober 2026, dan subsidi tim voli disetujui.',
-    followUp: 'Seksi perlengkapan menyiapkan alat kerja bakti, seksi olahraga mengadakan seleksi pemain.',
-    author: 'Siti Nurhaliza',
-  },
 };
 
 export const MemberDashboard: React.FC = () => {
   const [data, setData] = useState<MemberDashboardData>(FALLBACK_DASHBOARD);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Dynamic API base and token retrieval
+  // Modals
+  const [activeEvent, setActiveEvent] = useState<CommunityServiceItem | null>(null);
+  const [activeMinute, setActiveMinute] = useState<MeetingMinuteItem | null>(null);
+
   const getApiBase = () => {
     return typeof window !== 'undefined' && window.location.hostname
       ? `http://${window.location.hostname}:5000/api`
@@ -374,13 +236,68 @@ export const MemberDashboard: React.FC = () => {
       const json = await res.json();
 
       if (res.ok && json.success && json.data) {
-        setData(json.data);
+        const raw = json.data;
+
+        // Map events to community service
+        const eventsList: CommunityServiceItem[] = Array.isArray(raw.upcomingEvents) && raw.upcomingEvents.length > 0
+          ? raw.upcomingEvents.map((e: any) => ({
+              id: e.id,
+              title: e.title,
+              description: e.description,
+              eventDate: e.eventDate,
+              dayOfWeek: e.dayOfWeek,
+              time: e.time,
+              location: e.location,
+              equipment: e.type === 'COMMUNITY_SERVICE' ? 'Cangkul, sabit, karung sampah dusun' : 'Peralatan gotong royong',
+              status: 'UPCOMING',
+            }))
+          : FALLBACK_DASHBOARD.communityServiceEvents;
+
+        // Map arisan info
+        const arisanInfo: ArisanSummaryData = raw.arisanSummary
+          ? {
+              monthlyFee: raw.arisanSummary.monthlyFee || 20000,
+              totalPot: raw.arisanSummary.totalPot || 500000,
+              currentCycleMonth: raw.arisanSummary.currentCycleMonth || 10,
+              currentCycleYear: raw.arisanSummary.currentCycleYear || 2026,
+              nextDrawDate: raw.arisanSummary.nextDrawDate || '2026-10-05T19:30:00.000Z',
+              nextDrawLocation: raw.arisanSummary.nextDrawLocation || 'Balai Dusun Tuk Uluh',
+              recipientName: raw.arisanSummary.nearestArisan?.recipientName || 'Eko Prasetyo',
+              recipientNumber: raw.arisanSummary.nearestArisan?.recipientNumber || 'KT-SB-004',
+              memberStatus: raw.arisanSummary.memberStatus || 'BELUM_DAPAT',
+              notes: 'Pertemuan arisan rutin dan silaturahmi pemuda dusun.',
+              recentDraws: Array.isArray(raw.arisanSummary.recentDraws) ? raw.arisanSummary.recentDraws : FALLBACK_DASHBOARD.arisanInfo.recentDraws,
+            }
+          : FALLBACK_DASHBOARD.arisanInfo;
+
+        // Map meeting minutes
+        const minutesList: MeetingMinuteItem[] = Array.isArray(raw.meetingMinutes) && raw.meetingMinutes.length > 0
+          ? raw.meetingMinutes.map((m: any, idx: number) => ({
+              id: m.id,
+              title: m.title,
+              meetingDate: m.meetingDate,
+              dayOfWeek: m.dayOfWeek,
+              location: m.location,
+              meetingLeader: m.meetingLeader,
+              noteTaker: m.noteTaker,
+              content: m.content,
+              conclusion: m.conclusion,
+              followUp: m.followUp,
+              author: m.author,
+              agendaConnection: idx === 0 ? 'Membahas agenda kerja bakti & arisan mendatang' : 'Evaluasi program kerja sebelumnya',
+            }))
+          : FALLBACK_DASHBOARD.meetingMinutes;
+
+        setData({
+          memberProfile: raw.memberProfile || FALLBACK_DASHBOARD.memberProfile,
+          communityServiceEvents: eventsList,
+          arisanInfo,
+          meetingMinutes: minutesList,
+        });
       } else {
-        // Use fallback if response not success
         setData(FALLBACK_DASHBOARD);
       }
     } catch {
-      // Offline / network fallback
       setData(FALLBACK_DASHBOARD);
     } finally {
       setIsLoading(false);
@@ -391,13 +308,25 @@ export const MemberDashboard: React.FC = () => {
     fetchDashboard();
   }, [fetchDashboard]);
 
-  // Format currency IDR
   const formatRupiah = (val: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(val);
+  };
+
+  const formatDateIndo = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+    } catch {
+      return dateStr;
+    }
   };
 
   return (
@@ -408,7 +337,6 @@ export const MemberDashboard: React.FC = () => {
       <div className="bg-[#466060] text-white p-6 sm:p-8 rounded-3xl border border-[#163E4F] shadow-lg transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-start sm:items-center gap-4 sm:gap-5">
-            {/* Logo Karang Taruna ASLI & TIDAK DIRUBAH */}
             <Logo size={60} showText={false} />
             <div>
               <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -421,7 +349,7 @@ export const MemberDashboard: React.FC = () => {
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#6A8578] text-white border border-[#163E4F] inline-flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  {data.memberProfile.status === 'ACTIVE' ? 'Aktif' : 'Non-Aktif'}
+                  {data.memberProfile.status === 'ACTIVE' ? 'Anggota Aktif' : 'Non-Aktif'}
                 </span>
               </div>
 
@@ -437,7 +365,7 @@ export const MemberDashboard: React.FC = () => {
                 <span className="hidden sm:inline text-[#D6DDD5]/60">•</span>
                 <span className="inline-flex items-center gap-1 text-[#D6DDD5]">
                   <BadgeCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  Karang Taruna Setya Bakti
+                  Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono
                 </span>
               </div>
             </div>
@@ -451,86 +379,107 @@ export const MemberDashboard: React.FC = () => {
               onClick={fetchDashboard}
               className="bg-[#6A8578] hover:bg-[#163E4F] text-white border-[#163E4F] hover:border-[#6A8578] transition shadow-sm"
             >
-              Segarkan
+              Segarkan Data
             </Button>
           </div>
         </div>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          2. SECTION "ATTENTION / INFORMASI PENTING"
-          (Isinya menggunakan warna #6A8578)
+          2. PENGUMUMAN KEGIATAN: KERJA BAKTI & GOTONG ROYONG WARGA
       ───────────────────────────────────────────────────────────────────────────── */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F] shadow-sm">
-              <AlertTriangle className="w-5 h-5 text-amber-300 animate-pulse" />
+      <section className="space-y-4">
+        <div className="bg-[#466060] text-white p-5 sm:p-6 rounded-3xl border border-[#163E4F] shadow-md flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-[#163E4F] text-amber-300 border border-[#6A8578] shadow-sm">
+              <Shovel className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-[#163E4F] tracking-tight">
-                Attention / Informasi Penting
+              <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
+                Pengumuman Kegiatan Kerja Bakti &amp; Gotong Royong
               </h2>
-              <p className="text-xs text-[#163E4F]/80">
-                Pemberitahuan mendesak yang memerlukan tindakan atau kehadiran Anda
+              <p className="text-xs font-semibold text-[#D6DDD5]">
+                Jadwal pembersihan lingkungan, saluran air, dan kerja bakti bersama warga pemuda Dusun Tuk Uluh
               </p>
             </div>
           </div>
-          <span className="text-xs font-bold text-white bg-[#466060] px-3 py-1 rounded-full border border-[#163E4F] shadow-sm">
-            {data.attentionItems.length} Perlu Diperhatikan
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578]">
+            {data.communityServiceEvents.length} Agenda Terjadwal
           </span>
         </div>
 
-        {data.attentionItems.length === 0 ? (
-          <div className="p-6 rounded-2xl border border-[#466060] bg-[#6A8578] text-white text-center flex flex-col items-center justify-center shadow-md">
-            <CheckCircle2 className="w-8 h-8 text-[#D6DDD5] mb-1.5" />
-            <p className="text-sm font-bold text-white">Tidak Ada Pemberitahuan Penting</p>
-            <p className="text-xs text-[#D6DDD5] mt-0.5">Semua kewajiban, arisan, dan kegiatan Anda telah terselesaikan dengan baik.</p>
+        {data.communityServiceEvents.length === 0 ? (
+          <div className="p-8 rounded-3xl bg-[#6A8578] text-white border border-[#466060] text-center">
+            <Info className="w-8 h-8 text-[#D6DDD5] mx-auto mb-2" />
+            <p className="font-bold text-sm text-white">Belum ada jadwal kerja bakti baru</p>
+            <p className="text-xs text-[#D6DDD5] mt-1">Pengumuman kerja bakti berikutnya akan segera diumumkan di sini.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            {data.attentionItems.map((item) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {data.communityServiceEvents.map((event) => (
               <div
-                key={item.id}
-                className="relative p-5 rounded-2xl bg-[#6A8578] text-white border border-[#466060] hover:border-[#163E4F] shadow-md hover:shadow-lg transition-all flex flex-col justify-between gap-4 group"
+                key={event.id}
+                className="p-5 rounded-3xl bg-[#6A8578] text-white border border-[#466060] hover:border-amber-300 shadow-md transition-all flex flex-col justify-between gap-4 group"
               >
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#466060] text-white border border-[#163E4F]">
-                      {item.badge}
-                    </span>
-                    {item.dueDate && (
-                      <span className="text-[11px] font-semibold text-[#D6DDD5] inline-flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-[#D6DDD5]" />
-                        {item.dueDate}
+                <div className="space-y-3">
+                  <div className="p-3 rounded-2xl bg-[#466060] border border-[#163E4F] flex items-center justify-between gap-2">
+                    <div>
+                      <span className="text-xs font-extrabold text-amber-300 uppercase tracking-wide block">
+                        {event.dayOfWeek || 'Hari Pelaksanaan'}
+                      </span>
+                      <span className="text-sm font-black text-white">
+                        {formatDateIndo(event.eventDate)}
+                      </span>
+                    </div>
+                    {event.time && (
+                      <span className="px-2.5 py-1 rounded-xl text-xs font-bold bg-[#163E4F] text-amber-300 border border-[#6A8578] shrink-0">
+                        {event.time}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="font-bold text-sm text-white group-hover:text-[#D6DDD5] transition-colors leading-snug">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-[#D6DDD5] mt-1.5 leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-[#163E4F] text-amber-300 border border-[#6A8578]">
+                        KERJA BAKTI
+                      </span>
+                    </div>
+                    <h3 className="text-base font-black text-white group-hover:text-amber-300 transition-colors leading-snug">
+                      {event.title}
+                    </h3>
+                  </div>
 
-                {item.actionLabel && (
-                  <div className="pt-3 border-t border-[#466060] flex items-center justify-between">
-                    <a
-                      href={item.actionUrl || '#'}
-                      target={item.actionUrl?.startsWith('http') ? '_blank' : '_self'}
-                      rel="noreferrer"
-                      className="text-xs font-bold text-white hover:text-[#D6DDD5] inline-flex items-center gap-1.5 group-hover:translate-x-0.5 transition"
-                    >
-                      <span>{item.actionLabel}</span>
-                      <ChevronRight className="w-3.5 h-3.5 text-[#D6DDD5]" />
-                    </a>
-                    {item.actionUrl?.startsWith('http') && (
-                      <ExternalLink className="w-3.5 h-3.5 text-[#D6DDD5]" />
+                  <div className="space-y-1.5 text-xs text-[#D6DDD5]">
+                    <p className="inline-flex items-center gap-1.5 font-semibold text-white">
+                      <MapPin className="w-3.5 h-3.5 text-rose-300 shrink-0" />
+                      <span>{event.location}</span>
+                    </p>
+                    {event.description && (
+                      <p className="leading-relaxed line-clamp-3 text-[#D6DDD5]">
+                        {event.description}
+                      </p>
+                    )}
+                    {event.equipment && (
+                      <div className="p-2.5 rounded-xl bg-[#466060] border border-[#163E4F] text-[11px] text-[#D6DDD5]">
+                        <strong className="text-amber-300 block mb-0.5">Alat yang dibawa:</strong>
+                        <span>{event.equipment}</span>
+                      </div>
                     )}
                   </div>
-                )}
+                </div>
+
+                <div className="pt-3 border-t border-[#466060] flex items-center justify-between text-xs">
+                  <span className="text-[11px] text-[#D6DDD5]/80">
+                    Wajib Hadir Pemuda Dusun
+                  </span>
+                  <button
+                    onClick={() => setActiveEvent(event)}
+                    className="px-3.5 py-1.5 rounded-xl bg-[#163E4F] hover:bg-[#466060] text-white font-bold transition inline-flex items-center gap-1.5 border border-[#6A8578] shadow-xs"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Rincian Kegiatan</span>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -538,233 +487,401 @@ export const MemberDashboard: React.FC = () => {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          3. STATISTIK UTAMA RINGKAS (ISINYA #6A8578)
+          3. PENGUMUMAN & INFORMASI ARISAN PEMUDA
       ───────────────────────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
-        {/* Card 1: Total Anggota */}
-        <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
-          <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-            <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
-              Total Anggota
-            </span>
-            <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
-              <Users className="w-5 h-5" />
+      <section className="space-y-4">
+        <div className="bg-[#466060] text-white p-5 sm:p-6 rounded-3xl border border-[#163E4F] shadow-md flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-[#163E4F] text-amber-300 border border-[#6A8578] shadow-sm">
+              <Gift className="w-5 h-5" />
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              {data.stats.totalMembers} Pemuda
+            <div>
+              <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
+                Pengumuman &amp; Informasi Arisan Pemuda
+              </h2>
+              <p className="text-xs font-semibold text-[#D6DDD5]">
+                Jadwal putaran terdekat, lokasi pertemuan tuan rumah, dan rekapitulasi penarikan arisan
+              </p>
             </div>
-            <p className="text-xs font-semibold text-[#D6DDD5] mt-1 inline-flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
-              {data.stats.activeMembers} Anggota Aktif Dusun
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#163E4F] text-amber-300 border border-[#6A8578]">
+            Putaran Bulan ke-{data.arisanInfo.currentCycleMonth} ({data.arisanInfo.currentCycleYear})
+          </span>
+        </div>
 
-        {/* Card 2: Saldo Kas */}
-        <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
-          <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-            <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
-              Saldo Kas Organisasi
-            </span>
-            <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
-              <Wallet className="w-5 h-5" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              {formatRupiah(data.stats.totalCashBalance)}
-            </div>
-            <p className="text-xs font-semibold text-[#D6DDD5] mt-1">
-              Transparan &amp; Terbuka untuk Anggota
-            </p>
-          </CardContent>
-        </Card>
+        {/* Kartu Utama Arisan Terdekat */}
+        <div className="p-6 sm:p-7 rounded-3xl bg-[#6A8578] text-white border border-[#466060] shadow-md relative overflow-hidden">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            {/* Info Kiri: Tuan Rumah, Tanggal, Tempat */}
+            <div className="space-y-4 flex-1">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#466060] text-white border border-[#163E4F]">
+                  <Gift className="w-3.5 h-3.5 mr-1 inline text-amber-300" />
+                  Arisan Periode Oktober 2026
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#163E4F] text-amber-300 border border-[#6A8578]">
+                  Menunggu Undian
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
+                  {data.arisanInfo.memberStatus.includes('SUDAH') ? 'Status: Sudah Menang' : 'Status: Belum Menang'}
+                </span>
+              </div>
 
-        {/* Card 3: Status Absensi Pribadi */}
-        <Card hoverable className="!bg-[#6A8578] text-white border-[#466060] shadow-md hover:shadow-lg">
-          <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-            <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider">
-              Kehadiran Pribadi
-            </span>
-            <div className="p-2.5 rounded-2xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
-              <CalendarCheck2 className="w-5 h-5" />
+              <div>
+                <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider block">
+                  Penerima / Tuan Rumah Arisan Putaran Ini:
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-black text-white mt-1 leading-tight flex items-center gap-2.5 flex-wrap">
+                  <span>{data.arisanInfo.recipientName}</span>
+                  {data.arisanInfo.recipientNumber && (
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#163E4F] text-amber-300 border border-[#6A8578]">
+                      {data.arisanInfo.recipientNumber}
+                    </span>
+                  )}
+                </h3>
+              </div>
+
+              {/* Grid Tanggal & Tempat Pertemuan */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2 border-t border-[#466060]">
+                <div className="flex items-center gap-2.5 text-white p-2.5 rounded-2xl bg-[#466060] border border-[#163E4F]">
+                  <div className="p-2 rounded-xl bg-[#163E4F] text-amber-300 shrink-0">
+                    <CalendarDays className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#D6DDD5] block font-medium">Tanggal Pertemuan Arisan:</span>
+                    <strong className="text-white font-bold">
+                      {formatDateIndo(data.arisanInfo.nextDrawDate)} (19:30 WIB)
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 text-white p-2.5 rounded-2xl bg-[#466060] border border-[#163E4F]">
+                  <div className="p-2 rounded-xl bg-[#163E4F] text-rose-300 shrink-0">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-[#D6DDD5] block font-medium">Tempat Pertemuan:</span>
+                    <strong className="text-white font-bold">
+                      {data.arisanInfo.nextDrawLocation}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+
+              {data.arisanInfo.notes && (
+                <p className="text-xs text-[#D6DDD5] italic">
+                  Catatan: {data.arisanInfo.notes}
+                </p>
+              )}
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              {data.personalAttendance.attendancePercentage}%
+
+            {/* Kolom Kanan: Total Dana Tarikan & Rincian Iuran */}
+            <div className="p-5 rounded-2xl bg-[#466060] text-white border border-[#163E4F] flex flex-col justify-between gap-4 shrink-0 lg:w-72 shadow-md">
+              <div>
+                <span className="text-[11px] font-bold text-[#D6DDD5] uppercase tracking-wider block">
+                  Total Dana Arisan / Putaran
+                </span>
+                <div className="text-2xl font-black text-amber-300 mt-1">
+                  {formatRupiah(data.arisanInfo.totalPot)}
+                </div>
+                <span className="text-xs text-[#D6DDD5] block mt-1">
+                  Iuran bulanan wajib: <strong>{formatRupiah(data.arisanInfo.monthlyFee)} / anggota</strong>
+                </span>
+                <span className="text-[11px] text-[#D6DDD5]/80 block mt-0.5">
+                  Batas setor: Sebelum tanggal 10 tiap bulan
+                </span>
+              </div>
+
+              <div className="pt-3 border-t border-[#163E4F]">
+                <span className="text-[11px] font-bold text-amber-300 block mb-1.5 uppercase tracking-wide">
+                  Pemenang Putaran Sebelumnya:
+                </span>
+                <div className="space-y-1 text-xs">
+                  {data.arisanInfo.recentDraws.slice(0, 2).map((draw) => (
+                    <div key={draw.id} className="flex items-center justify-between text-[#D6DDD5]">
+                      <span>Bulan {draw.month}/{draw.year}:</span>
+                      <strong className="text-white">{draw.winnerName}</strong>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-            <p className="text-xs font-semibold text-[#D6DDD5] mt-1 inline-flex items-center gap-1">
-              <Check className="w-3.5 h-3.5 text-emerald-300" />
-              {data.personalAttendance.totalAttended} dari {data.personalAttendance.totalEvents} Kegiatan Diikuti
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </section>
 
       {/* ─────────────────────────────────────────────────────────────────────────────
-          4. STATUS ABSENSI PRIBADI & DOKUMENTASI NOTULENSI (ISINYA #6A8578)
+          4. NOTULENSI HASIL RAPAT YANG TELAH DIBAHAS / TERKAIT AGENDA BERIKUTNYA
       ───────────────────────────────────────────────────────────────────────────── */}
-      <div className={`grid grid-cols-1 ${data.latestMeetingMinute ? 'lg:grid-cols-2' : ''} gap-6`}>
-        {/* Card: Status Absensi Pribadi */}
-        <Card className="!bg-[#6A8578] text-white border-[#466060] shadow-md">
-          <CardHeader className="flex-row items-center justify-between pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
-                <CalendarCheck2 className="w-5 h-5" />
-              </div>
-              <div>
-                <CardTitle className="text-white">Status Absensi Pribadi</CardTitle>
-                <CardDescription className="text-[#D6DDD5]">Riwayat kehadiran Anda pada kegiatan pemuda</CardDescription>
-              </div>
+      <section className="space-y-4">
+        <div className="bg-[#466060] text-white p-5 sm:p-6 rounded-3xl border border-[#163E4F] shadow-md flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-[#163E4F] text-cyan-300 border border-[#6A8578] shadow-sm">
+              <FileText className="w-5 h-5" />
             </div>
-            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[#466060] text-white border border-[#163E4F]">
-              {data.personalAttendance.attendancePercentage}% Kehadiran
-            </span>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-3 gap-2 text-center p-3 rounded-2xl bg-[#466060] border border-[#163E4F] text-white">
-              <div>
-                <span className="text-xs text-[#D6DDD5] block">Total Agenda</span>
-                <span className="text-lg font-black text-white">
-                  {data.personalAttendance.totalEvents}
-                </span>
-              </div>
-              <div>
-                <span className="text-xs text-[#D6DDD5] block">Hadir</span>
-                <span className="text-lg font-black text-emerald-300">
-                  {data.personalAttendance.totalAttended}
-                </span>
-              </div>
-              <div>
-                <span className="text-xs text-[#D6DDD5] block">Izin / Alpha</span>
-                <span className="text-lg font-black text-amber-300">
-                  {data.personalAttendance.totalEvents - data.personalAttendance.totalAttended}
-                </span>
-              </div>
+            <div>
+              <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
+                Notulensi &amp; Hasil Keputusan Rapat Pleno
+              </h2>
+              <p className="text-xs font-semibold text-[#D6DDD5]">
+                Catatan resmi keputusan musyawarah rapat hari sebelumnya dan tindak lanjut rencana kegiatan berikutnya
+              </p>
             </div>
+          </div>
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578]">
+            {data.meetingMinutes.length} Catatan Resmi
+          </span>
+        </div>
 
-            <div className="space-y-2 mt-2">
-              <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider block">
-                Riwayat Terakhir
-              </span>
-              {data.personalAttendance.history.map((hist) => (
-                <div
-                  key={hist.id}
-                  className="p-3 rounded-xl border border-[#163E4F] bg-[#466060] flex items-center justify-between text-xs"
-                >
-                  <div>
-                    <p className="font-bold text-white">{hist.eventTitle}</p>
-                    <p className="text-[11px] text-[#D6DDD5]">
-                      {new Date(hist.eventDate).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                      {hist.notes ? ` • ${hist.notes}` : ''}
-                    </p>
-                  </div>
-                  <span
-                    className={`px-2.5 py-0.5 rounded-full font-bold text-[10px] ${
-                      hist.status === 'PRESENT'
-                        ? 'bg-[#163E4F] text-emerald-300 border border-emerald-500/40'
-                        : hist.status === 'EXCUSED'
-                        ? 'bg-[#163E4F] text-amber-300 border border-amber-500/40'
-                        : 'bg-[#163E4F] text-rose-300 border border-rose-500/40'
-                    }`}
-                  >
-                    {hist.status === 'PRESENT' ? 'HADIR' : hist.status === 'EXCUSED' ? 'IZIN' : 'ALPHA'}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Card: Dokumentasi & Notulensi Rapat Terbaru */}
-        {data.latestMeetingMinute && (
-          <Card className="!bg-[#6A8578] text-white border-[#466060] shadow-md">
-            <CardHeader className="flex-row items-center justify-between pb-3 flex-wrap gap-2">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-[#466060] text-[#D6DDD5] border border-[#163E4F]">
-                  <FileText className="w-5 h-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-white">Notulensi Rapat Terbaru</CardTitle>
-                  <CardDescription className="text-[#D6DDD5]">Catatan resmi keputusan pleno dan tindak lanjut kegiatan</CardDescription>
-                </div>
-              </div>
-              <Link
-                href="/dashboard/notulensi"
-                className="text-xs font-bold text-[#D6DDD5] hover:text-white hover:underline inline-flex items-center gap-1"
+        {data.meetingMinutes.length === 0 ? (
+          <div className="p-8 rounded-3xl bg-[#6A8578] text-white border border-[#466060] text-center">
+            <FileText className="w-8 h-8 text-[#D6DDD5] mx-auto mb-2" />
+            <p className="font-bold text-sm text-white">Belum ada dokumen notulensi rapat</p>
+            <p className="text-xs text-[#D6DDD5] mt-1">Dokumen hasil rapat resmi akan ditampilkan di sini.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {data.meetingMinutes.map((minute) => (
+              <div
+                key={minute.id}
+                className="p-5 rounded-3xl bg-[#6A8578] text-white border border-[#466060] hover:border-cyan-300 shadow-md transition-all flex flex-col justify-between gap-4 group"
               >
-                Lihat Seluruh Arsip Notulensi <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </CardHeader>
-            <CardContent>
-              <div className="p-5 rounded-2xl bg-[#466060] border border-[#163E4F] space-y-4">
-                <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578]">
-                        {data.latestMeetingMinute.dayOfWeek || 'Rapat Pleno'}
-                      </span>
-                      <span className="text-xs text-[#D6DDD5] flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-[#D6DDD5]" />
-                        {new Date(data.latestMeetingMinute.meetingDate).toLocaleDateString('id-ID', {
-                          day: 'numeric',
-                          month: 'long',
-                          year: 'numeric',
-                        })}
-                      </span>
-                      <span className="text-[#D6DDD5]/60">•</span>
-                      <span className="text-xs text-[#D6DDD5] flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-[#D6DDD5]" />
-                        {data.latestMeetingMinute.location}
-                      </span>
-                    </div>
-                    <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
-                      {data.latestMeetingMinute.title}
-                    </h3>
-                  </div>
-
-                  <Link
-                    href={`/dashboard/notulensi/${data.latestMeetingMinute.id}`}
-                    className="px-3.5 py-1.5 rounded-xl bg-[#163E4F] hover:bg-[#6A8578] text-white text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5 shrink-0 border border-[#6A8578]"
-                  >
-                    <BookOpen className="w-3.5 h-3.5" />
-                    Buka Dokumen Lengkap
-                  </Link>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-[#163E4F]/60 p-3.5 rounded-xl border border-[#6A8578]/40 text-[#D6DDD5]">
-                  <div>
-                    <span className="text-[#D6DDD5]/70 block">Pimpinan Rapat:</span>
-                    <strong className="text-white">{data.latestMeetingMinute.meetingLeader}</strong>
-                  </div>
-                  <div>
-                    <span className="text-[#D6DDD5]/70 block">Notulis:</span>
-                    <strong className="text-white">{data.latestMeetingMinute.noteTaker}</strong>
-                  </div>
-                </div>
-
-                {data.latestMeetingMinute.conclusion && (
-                  <div className="p-3 rounded-xl bg-[#163E4F]/60 border border-[#6A8578]/40 text-xs text-[#D6DDD5]">
-                    <span className="font-bold flex items-center gap-1 mb-0.5 text-[11px] uppercase tracking-wider text-emerald-300">
-                      <CheckCircle2 className="w-3 h-3" /> Kesimpulan Rapat:
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#466060] text-white border border-[#163E4F]">
+                      {minute.dayOfWeek || 'Rapat Pleno'}
                     </span>
-                    <p className="line-clamp-2 leading-relaxed opacity-95 text-[#D6DDD5]">
-                      {data.latestMeetingMinute.conclusion}
-                    </p>
+                    <span className="text-xs font-semibold text-[#D6DDD5] inline-flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-[#D6DDD5]" />
+                      {formatDateIndo(minute.meetingDate)}
+                    </span>
                   </div>
+
+                  {minute.agendaConnection && (
+                    <span className="inline-block px-2.5 py-1 rounded-xl text-[11px] font-bold bg-[#163E4F] text-amber-300 border border-[#6A8578]">
+                      📌 {minute.agendaConnection}
+                    </span>
+                  )}
+
+                  <h3 className="text-base sm:text-lg font-black text-white group-hover:text-cyan-300 transition-colors leading-snug">
+                    {minute.title}
+                  </h3>
+
+                  <div className="p-3 rounded-2xl bg-[#466060] border border-[#163E4F] space-y-1.5 text-xs text-[#D6DDD5]">
+                    <div className="flex items-center justify-between gap-2">
+                      <span>Pimpinan Rapat: <strong className="text-white">{minute.meetingLeader}</strong></span>
+                      <span>Notulis: <strong className="text-white">{minute.noteTaker}</strong></span>
+                    </div>
+                    <div className="text-[11px] text-[#D6DDD5]/80 flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-rose-300 shrink-0" />
+                      <span>{minute.location}</span>
+                    </div>
+                  </div>
+
+                  {minute.conclusion && (
+                    <div className="p-3 rounded-2xl bg-[#163E4F]/70 border border-[#6A8578]/50 text-xs text-[#D6DDD5]">
+                      <span className="font-bold flex items-center gap-1 mb-1 text-[11px] uppercase tracking-wider text-emerald-300">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Hasil Keputusan / Kesepakatan:
+                      </span>
+                      <p className="line-clamp-2 leading-relaxed text-[#D6DDD5] whitespace-pre-line">
+                        {minute.conclusion}
+                      </p>
+                    </div>
+                  )}
+
+                  {minute.followUp && (
+                    <div className="p-2.5 rounded-xl bg-[#466060] border border-[#163E4F] text-[11px] text-[#D6DDD5]">
+                      <strong className="text-amber-300 block mb-0.5">Tindak Lanjut Agenda Berikutnya:</strong>
+                      <p className="line-clamp-2 text-[#D6DDD5] leading-relaxed">
+                        {minute.followUp}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-3 border-t border-[#466060] flex items-center justify-between text-xs">
+                  <span className="text-[11px] text-[#D6DDD5]/80">
+                    Dokumen Sah Pleno Pemuda
+                  </span>
+                  <button
+                    onClick={() => setActiveMinute(minute)}
+                    className="px-3.5 py-1.5 rounded-xl bg-[#163E4F] hover:bg-[#466060] text-white font-bold transition inline-flex items-center gap-1.5 border border-[#6A8578] shadow-xs"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-cyan-300" />
+                    <span>Buka Notulensi Lengkap</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          MODAL DETAIL KEGIATAN KERJA BAKTI
+      ───────────────────────────────────────────────────────────────────────────── */}
+      {activeEvent && (
+        <Modal
+          isOpen={!!activeEvent}
+          onClose={() => setActiveEvent(null)}
+          title={
+            <div className="flex items-center gap-2">
+              <Shovel className="w-5 h-5 text-amber-300" />
+              <span className="text-base font-black text-white">Rincian Kegiatan Kerja Bakti</span>
+            </div>
+          }
+          size="lg"
+        >
+          <div className="space-y-4 text-white">
+            <div className="p-4 rounded-2xl bg-[#466060] border border-[#163E4F] space-y-2">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#163E4F] text-amber-300 border border-[#6A8578]">
+                  KERJA BAKTI
+                </span>
+                {activeEvent.time && (
+                  <span className="px-2.5 py-1 rounded-xl text-xs font-bold bg-[#163E4F] text-white border border-[#6A8578]">
+                    Waktu: {activeEvent.time}
+                  </span>
                 )}
               </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+              <h2 className="text-xl font-black text-white leading-snug">
+                {activeEvent.title}
+              </h2>
+              <div className="flex items-center gap-2 text-xs text-[#D6DDD5]">
+                <Calendar className="w-3.5 h-3.5 text-amber-300" />
+                <span>{activeEvent.dayOfWeek || 'Hari'}, {formatDateIndo(activeEvent.eventDate)}</span>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-[#163E4F] border border-[#466060] flex items-center gap-2.5 text-xs text-white">
+              <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
+              <div>
+                <span className="text-[#D6DDD5]/80 block">Lokasi Kumpul &amp; Pelaksanaan:</span>
+                <strong className="text-sm text-white">{activeEvent.location}</strong>
+              </div>
+            </div>
+
+            {activeEvent.description && (
+              <div className="p-4 rounded-2xl bg-[#466060]/70 border border-[#163E4F] text-xs text-[#D6DDD5] leading-relaxed whitespace-pre-line">
+                <span className="font-bold text-white block mb-1 text-xs uppercase tracking-wider">Keterangan Kegiatan:</span>
+                {activeEvent.description}
+              </div>
+            )}
+
+            {activeEvent.equipment && (
+              <div className="p-3.5 rounded-2xl bg-[#163E4F] border border-[#6A8578] text-xs text-white">
+                <span className="font-bold text-amber-300 block mb-1 uppercase tracking-wider text-[11px]">
+                  Peralatan yang Perlu Dibawa:
+                </span>
+                <p className="text-[#D6DDD5]">{activeEvent.equipment}</p>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between text-xs text-[#D6DDD5] pt-2 border-t border-[#466060]">
+              <span>Diharapkan Seluruh Pemuda Hadir Tepat Waktu</span>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setActiveEvent(null)}
+                className="bg-[#163E4F] hover:bg-[#6A8578] text-white border-[#6A8578]"
+              >
+                Tutup
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────────────────────
+          MODAL DETAIL NOTULENSI LENGKAP
+      ───────────────────────────────────────────────────────────────────────────── */}
+      {activeMinute && (
+        <Modal
+          isOpen={!!activeMinute}
+          onClose={() => setActiveMinute(null)}
+          title={
+            <div className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-cyan-300" />
+              <span className="text-base font-black text-white">Dokumen Notulensi Rapat Pleno</span>
+            </div>
+          }
+          size="xl"
+        >
+          <div className="space-y-4 text-white">
+            <div className="p-4 rounded-2xl bg-[#466060] border border-[#163E4F] space-y-2">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#163E4F] text-[#D6DDD5] border border-[#6A8578]">
+                  {activeMinute.dayOfWeek || 'Rapat Pleno'}
+                </span>
+                <span className="text-xs text-[#D6DDD5]">
+                  Tanggal: {formatDateIndo(activeMinute.meetingDate)}
+                </span>
+              </div>
+              <h2 className="text-xl font-black text-white leading-snug">
+                {activeMinute.title}
+              </h2>
+              <div className="flex items-center gap-1.5 text-xs text-[#D6DDD5]">
+                <MapPin className="w-3.5 h-3.5 text-rose-300" />
+                <span>Lokasi: {activeMinute.location}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-[#163E4F] p-3.5 rounded-2xl border border-[#466060] text-[#D6DDD5]">
+              <div>
+                <span className="text-[#D6DDD5]/70 block">Pimpinan Rapat:</span>
+                <strong className="text-white text-sm">{activeMinute.meetingLeader}</strong>
+              </div>
+              <div>
+                <span className="text-[#D6DDD5]/70 block">Notulis / Pencatat:</span>
+                <strong className="text-white text-sm">{activeMinute.noteTaker}</strong>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="text-xs font-black uppercase tracking-wider text-white block">
+                Isi Pembahasan Musyawarah:
+              </span>
+              <div className="p-4 rounded-2xl bg-[#466060] border border-[#163E4F] text-xs text-[#D6DDD5] leading-relaxed whitespace-pre-line">
+                {activeMinute.content}
+              </div>
+            </div>
+
+            {activeMinute.conclusion && (
+              <div className="p-4 rounded-2xl bg-[#163E4F] border border-[#6A8578] text-xs text-[#D6DDD5] space-y-1">
+                <span className="font-bold flex items-center gap-1.5 text-emerald-300 uppercase tracking-wider text-xs">
+                  <CheckCircle2 className="w-4 h-4" /> Hasil Kesimpulan &amp; Keputusan Rapat:
+                </span>
+                <p className="leading-relaxed whitespace-pre-line text-[#D6DDD5]">
+                  {activeMinute.conclusion}
+                </p>
+              </div>
+            )}
+
+            {activeMinute.followUp && (
+              <div className="p-3.5 rounded-2xl bg-[#466060] border border-[#163E4F] text-xs text-[#D6DDD5] space-y-1">
+                <span className="font-bold text-amber-300 block uppercase tracking-wider text-[11px]">
+                  Rencana Tindak Lanjut Terkait Agenda Berikutnya:
+                </span>
+                <p className="leading-relaxed text-[#D6DDD5]">
+                  {activeMinute.followUp}
+                </p>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between text-xs text-[#D6DDD5] pt-2 border-t border-[#466060]">
+              <span>Arsip Sah Sekretariat Karang Taruna</span>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setActiveMinute(null)}
+                className="bg-[#163E4F] hover:bg-[#6A8578] text-white border-[#6A8578]"
+              >
+                Tutup Dokumen
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
