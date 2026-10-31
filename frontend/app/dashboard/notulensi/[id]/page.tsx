@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   FileText,
   Clock,
@@ -47,6 +47,7 @@ interface MeetingMinuteDetail {
 
 export default function NotulensiDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const toast = useToast();
   const minuteId = params?.id as string;
 
@@ -63,6 +64,7 @@ export default function NotulensiDetailPage() {
       const u = getStoredUser();
       if (u) {
         setUserRole(u.role);
+        if (u.role === 'MEMBER') router.replace('/dashboard');
       }
     } catch {
       // fallback
