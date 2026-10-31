@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Megaphone,
   AlertTriangle,
@@ -163,6 +164,7 @@ export default function PengumumanPage() {
 
   // ── Modal Detail State ──
   const [detailItem, setDetailItem] = useState<AnnouncementItem | null>(null);
+  const router = useRouter();
 
   // Read auth user
   useEffect(() => {
@@ -170,6 +172,7 @@ export default function PengumumanPage() {
       const u = getStoredUser();
       if (u) {
         setUserRole(u.role);
+        if (u.role === 'MEMBER') router.replace('/dashboard');
       }
     } catch {
       // fallback
