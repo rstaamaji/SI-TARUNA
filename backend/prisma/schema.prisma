@@ -208,7 +208,7 @@ model MeetingMinute {
   dayOfWeek     String?  // Hari pelaksanaan: Senin, Selasa, dll
   title         String   // Judul rapat
   location      String   @default("Balai Dusun Tuk Uluh") // Tempat pelaksanaan
-  meetingLeader String   @default("Ketua Karang Taruna")  // Pimpinan rapat
+  meetingLeader String   @default("Super Admin")          // Pimpinan rapat
   noteTaker     String   @default("Sekretaris")          // Notulis
   content       String   @db.Text                         // Isi notulensi
   conclusion    String?  @db.Text                         // Kesimpulan rapat
