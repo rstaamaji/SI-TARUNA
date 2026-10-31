@@ -535,29 +535,44 @@ Seluruh endpoint REST API menggunakan prefix `/api`. Header otentikasi menggunak
 
 ---
 
-## 13. User Roles
+## 13. User Roles & Hak Akses
 
-Aplikasi menerapkan sistem pembagian hak akses (*Role-Based Access Control*):
+Aplikasi menerapkan sistem pembagian hak akses (*Role-Based Access Control* / RBAC):
 
-| Fitur / Modul | Administrator (`ADMIN`) | Anggota (`MEMBER`) |
-| :--- | :---: | :---: |
-| Masuk ke Sistem (Login) | ✅ | ✅ |
-| Dashboard Ringkasan & Status Arisan Terdekat | ✅ | ✅ |
-| Melihat Saldo Kas & Riwayat Pemasukan / Pengeluaran | ✅ | ✅ |
-| Menambah / Mengubah / Menghapus Transaksi Keuangan | ✅ | ❌ |
-| Mencatat & Mengelola Pengambilan Kas Tunai | ✅ | ❌ |
-| Melihat Rekapitulasi Jimpitan 7 Kelompok | ✅ | ✅ |
-| Input & Edit Iuran Jimpitan Bulanan | ✅ | ❌ |
-| Mengikuti Jadwal Arisan & Melihat Pemenang | ✅ | ✅ |
-| Menentukan Pemenang Kocokan Arisan | ✅ | ❌ |
-| Melihat Jadwal & Notulensi Rapat | ✅ | ✅ |
-| Membuat Agenda Kegiatan & Mengisi Lembar Absensi | ✅ | ❌ |
-| Melihat Statistik Keaktifan Warga | ✅ (Seluruh Warga) | ✅ (Diri Sendiri) |
-| Menyiarkan Notifikasi Realtime / Pengumuman Penting | ✅ | ❌ |
-| Menerima Toast & Badge Notifikasi Realtime | ✅ | ✅ |
-| Mengubah Profil Kontak & Alamat Pribadi | ✅ | ✅ |
-| Mengubah Role Akun Sendiri atau Anggota Lain | ✅ | ❌ (Diblokir API) |
-| Mengatur Konfigurasi Organisasi & Sekretariat | ✅ | ❌ |
+- **Super Administrator (`SUPERADMIN`) - Sdr. Rustam Aji:** Pemegang otoritas tertinggi sistem dengan hak akses menyeluruh ke seluruh modul (manajemen pengurus, pengaturan sekretariat, ekspor laporan keuangan, audit mutasi kas, penetapan arisan, dan monitoring keaktifan warga).
+- **Administrator (`ADMIN`):** Pengurus organisasi dengan akses pengelolaan operasional (input transaksi kas, agenda absensi, notulensi rapat, dan verifikasi anggota).
+- **Anggota Pemuda (`MEMBER`):** Anggota aktif Dusun Tuk Uluh dengan dashboard terpadu yang menampilkan pengumuman kerja bakti gotong royong, informasi jadwal arisan pemuda, serta notulensi rapat pleno resmi. Fitur manipulasi data (CRUD) dibatasi secara ketat demi integritas data organisasi.
+
+| Fitur / Modul | Super Admin (`SUPERADMIN`) | Administrator (`ADMIN`) | Anggota (`MEMBER`) |
+| :--- | :---: | :---: | :---: |
+| Masuk ke Sistem (Login Multi-Role) | ✅ | ✅ | ✅ |
+| Dashboard Terpadu (Kerja Bakti, Arisan, Notulensi) | ✅ | ✅ | ✅ |
+| Melihat Saldo Kas & Buku Kas Umum | ✅ | ✅ | ✅ |
+| Menambah / Mengubah / Menghapus Transaksi Keuangan | ✅ | ✅ | ❌ |
+| Mencatat & Mengelola Pengeluaran Kas | ✅ | ✅ | ❌ |
+| Akses Laporan & Pembukuan Keuangan | ✅ | ✅ | ❌ |
+| Melihat Rekapitulasi Jimpitan 7 Kelompok | ✅ | ✅ | ✅ |
+| Input & Edit Iuran Jimpitan Bulanan | ✅ | ✅ | ❌ |
+| Jadwal Arisan & Riwayat Pemenang | ✅ | ✅ | ✅ |
+| Menentukan Pemenang Kocokan Arisan | ✅ | ✅ | ❌ |
+| Melihat Notulensi Keputusan Rapat Pleno | ✅ | ✅ | ✅ |
+| Membuat Agenda Kegiatan & Mengisi Absensi | ✅ | ✅ | ❌ |
+| Melihat Statistik & Skor Keaktifan Warga | ✅ (Seluruh Warga) | ✅ (Seluruh Warga) | ✅ (Personal) |
+| Menyiarkan Notifikasi Realtime / Pengumuman | ✅ | ✅ | ❌ |
+| Menerima Toast & Badge Notifikasi Realtime | ✅ | ✅ | ✅ |
+| Manajemen Akun Pengurus & Hak Akses | ✅ | ❌ | ❌ |
+
+---
+
+## 14. Panduan Desain & Palet Warna Resmi
+
+Antarmuka SI-TARUNA mengadopsi palet warna tematik yang seragam, elegan, dan berorientasi kenyamanan visual pengguna:
+
+- **Sidebar & Elemen Aksen:** `#163E4F` (Deep Teal / Blue Navy)
+- **Header & Bagian Utama:** `#466060` (Muted Slate / Forest Slate)
+- **Background Utama Halaman:** `#D6DDD5` (Soft Pale Sage)
+- **Kartu Konten & Container:** `#6A8578` (Earthy Moss Green)
+- **Teks Kontras & Aksen Khusus:** Putih murni (`text-white`), Soft Pale Sage (`text-[#D6DDD5]`), Amber Gold (`text-amber-300`), dan Emerald Green (`text-emerald-300`).
 
 ---
 
