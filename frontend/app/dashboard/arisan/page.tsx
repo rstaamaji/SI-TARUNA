@@ -699,7 +699,7 @@ export default function ArisanPage() {
       <div className="space-y-3">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-300">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
@@ -732,7 +732,7 @@ export default function ArisanPage() {
             </p>
           </div>
         ) : (
-          <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-amber-500/10 via-white to-amber-500/5 dark:from-amber-950/40 dark:via-slate-900 dark:to-slate-900 border border-amber-300 dark:border-amber-700/60 shadow-xs relative overflow-hidden">
+          <div className="p-6 sm:p-7 rounded-3xl bg-[#6A8578] text-white border border-[#466060] shadow-md relative overflow-hidden">
             {/* Background Decorative Icon */}
             <div className="absolute right-4 -bottom-6 opacity-5 dark:opacity-10 pointer-events-none">
               <Trophy className="w-48 h-48" />
@@ -763,13 +763,13 @@ export default function ArisanPage() {
                 </div>
 
                 <div>
-                  <span className="text-xs font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider block">
+                  <span className="text-xs font-bold text-[#D6DDD5] uppercase tracking-wider block">
                     Penerima / Tuan Rumah Arisan:
                   </span>
-                  <h3 className="text-2xl sm:text-3xl font-black text-taruna-dark dark:text-white mt-1 leading-tight flex items-center gap-2.5 flex-wrap">
+                  <h3 className="text-2xl sm:text-3xl font-black text-white mt-1 leading-tight flex items-center gap-2.5 flex-wrap">
                     <span>{nearestArisan.recipientName}</span>
                     {nearestArisan.recipientNumber && (
-                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300">
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#163E4F] text-amber-300 border border-[#6A8578]">
                         {nearestArisan.recipientNumber}
                       </span>
                     )}
@@ -777,14 +777,14 @@ export default function ArisanPage() {
                 </div>
 
                 {/* Grid info: Tanggal & Tempat */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2 border-t border-amber-200/60 dark:border-slate-800">
-                  <div className="flex items-center gap-2.5 text-gray-600 dark:text-slate-300">
-                    <div className="p-2 rounded-xl bg-amber-100 dark:bg-slate-800 text-amber-700 dark:text-amber-400 shrink-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2 border-t border-[#466060]">
+                  <div className="flex items-center gap-2.5 text-white p-2 rounded-xl bg-[#466060] border border-[#163E4F]">
+                    <div className="p-2 rounded-xl bg-[#163E4F] text-amber-300 shrink-0">
                       <CalendarDays className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[11px] text-gray-400 block font-medium">Tanggal Arisan:</span>
-                      <strong className="text-taruna-dark dark:text-white font-bold">
+                      <span className="text-[11px] text-[#D6DDD5] block font-medium">Tanggal Arisan:</span>
+                      <strong className="text-white font-bold">
                         {nearestArisan.drawDate
                           ? new Date(nearestArisan.drawDate).toLocaleDateString('id-ID', {
                               day: 'numeric',
@@ -796,13 +796,13 @@ export default function ArisanPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2.5 text-gray-600 dark:text-slate-300">
-                    <div className="p-2 rounded-xl bg-red-100 dark:bg-slate-800 text-red-600 dark:text-red-400 shrink-0">
+                  <div className="flex items-center gap-2.5 text-white p-2 rounded-xl bg-[#466060] border border-[#163E4F]">
+                    <div className="p-2 rounded-xl bg-[#163E4F] text-rose-300 shrink-0">
                       <MapPin className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[11px] text-gray-400 block font-medium">Tempat Pertemuan:</span>
-                      <strong className="text-taruna-dark dark:text-white font-bold">
+                      <span className="text-[11px] text-[#D6DDD5] block font-medium">Tempat Pertemuan:</span>
+                      <strong className="text-white font-bold">
                         {nearestArisan.location}
                       </strong>
                     </div>
@@ -810,34 +810,35 @@ export default function ArisanPage() {
                 </div>
 
                 {nearestArisan.notes && (
-                  <p className="text-xs text-gray-500 dark:text-slate-400 italic">
+                  <p className="text-xs text-[#D6DDD5] italic">
                     Catatan: {nearestArisan.notes}
                   </p>
                 )}
               </div>
 
               {/* Right Column: Pot Amount Card & Actions */}
-              <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-slate-800 flex flex-col justify-between gap-4 shrink-0 lg:w-72 shadow-xs">
+              <div className="p-5 rounded-2xl bg-[#466060] text-white border border-[#163E4F] flex flex-col justify-between gap-4 shrink-0 lg:w-72 shadow-md">
                 <div>
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
+                  <span className="text-[11px] font-bold text-[#D6DDD5] uppercase tracking-wider block">
                     Total Dana Arisan / Putaran
                   </span>
-                  <div className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">
+                  <div className="text-2xl font-black text-amber-300 mt-1">
                     Rp {formatRupiah(nearestArisan.amount)}
                   </div>
-                  <span className="text-xs text-gray-500 dark:text-slate-400 block mt-0.5">
+                  <span className="text-xs text-[#D6DDD5] block mt-0.5">
                     Iuran bulanan: Rp 20.000 / anggota
                   </span>
                 </div>
 
                 {isAdmin && (
-                  <div className="pt-3 border-t border-taruna-border/60 dark:border-slate-800 space-y-2">
+                  <div className="pt-3 border-t border-[#163E4F] space-y-2">
                     <Button
                       variant="primary"
                       size="sm"
                       className="w-full"
                       onClick={() => openWinnerModal(nearestArisan)}
-                      leftIcon={<Crown className="w-4 h-4 text-amber-900" />}
+                      className="w-full bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578]"
+                      leftIcon={<Crown className="w-4 h-4 text-amber-300" />}
                     >
                       Tentukan Penerima
                     </Button>
@@ -873,56 +874,56 @@ export default function ArisanPage() {
       ───────────────────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
-          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-[#D6DDD5] uppercase tracking-wider block">
             Total Putaran
           </span>
-          <span className="text-2xl font-black text-taruna-dark dark:text-white mt-1 block">
+          <span className="text-2xl font-black text-white mt-1 block">
             {arisans.length}
           </span>
-          <span className="text-[11px] text-gray-400 mt-0.5 block">Tercatat di sistem</span>
+          <span className="text-[11px] text-[#D6DDD5] mt-0.5 block">Tercatat di sistem</span>
         </div>
 
         <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
-          <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block">
             Akan Datang
           </span>
-          <span className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 block">
+          <span className="text-2xl font-black text-amber-300 mt-1 block">
             {arisans.filter((a) => a.status === 'UPCOMING' || a.status === 'PENDING').length}
           </span>
-          <span className="text-[11px] text-gray-400 mt-0.5 block">Putaran terjadwal</span>
+          <span className="text-[11px] text-[#D6DDD5] mt-0.5 block">Putaran terjadwal</span>
         </div>
 
         <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
-          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-emerald-300 uppercase tracking-wider block">
             Penerima / Selesai
           </span>
-          <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 block">
+          <span className="text-2xl font-black text-emerald-300 mt-1 block">
             {arisans.filter((a) => a.status === 'WON' || a.status === 'PAID').length}
           </span>
-          <span className="text-[11px] text-gray-400 mt-0.5 block">Telah mendapatkan arisan</span>
+          <span className="text-[11px] text-[#D6DDD5] mt-0.5 block">Telah mendapatkan arisan</span>
         </div>
 
         <div className="p-4 rounded-2xl bg-[#6A8578] text-white border border-[#466060]">
-          <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-cyan-300 uppercase tracking-wider block">
             Belum Dapat
           </span>
-          <span className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1 block">
+          <span className="text-2xl font-black text-cyan-300 mt-1 block">
             {members.filter((m) => !m.hasWon).length}
           </span>
-          <span className="text-[11px] text-gray-400 mt-0.5 block">Menunggu giliran kocokan</span>
+          <span className="text-[11px] text-[#D6DDD5] mt-0.5 block">Menunggu giliran kocokan</span>
         </div>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────────────────
           4. TAB NAVIGATION: JADWAL ARISAN vs HISTORY vs STATUS ANGGOTA
       ───────────────────────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 border-b border-taruna-border dark:border-slate-800 pb-2">
+      <div className="flex items-center gap-2 border-b border-[#466060] pb-2">
         <button
           onClick={() => setActiveTab('SCHEDULE')}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 ${
             activeTab === 'SCHEDULE'
-              ? 'bg-amber-500 text-white shadow-xs'
-              : 'text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800'
+              ? 'bg-[#163E4F] text-white border border-[#466060] shadow-sm'
+              : 'bg-[#6A8578] text-[#D6DDD5] hover:bg-[#466060] hover:text-white border border-[#466060]'
           }`}
         >
           <CalendarDays className="w-4 h-4" />
@@ -933,8 +934,8 @@ export default function ArisanPage() {
           onClick={() => setActiveTab('HISTORY')}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 ${
             activeTab === 'HISTORY'
-              ? 'bg-amber-500 text-white shadow-xs'
-              : 'text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800'
+              ? 'bg-[#163E4F] text-white border border-[#466060] shadow-sm'
+              : 'bg-[#6A8578] text-[#D6DDD5] hover:bg-[#466060] hover:text-white border border-[#466060]'
           }`}
         >
           <History className="w-4 h-4" />
@@ -945,8 +946,8 @@ export default function ArisanPage() {
           onClick={() => setActiveTab('MEMBERS')}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 ${
             activeTab === 'MEMBERS'
-              ? 'bg-amber-500 text-white shadow-xs'
-              : 'text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800'
+              ? 'bg-[#163E4F] text-white border border-[#466060] shadow-sm'
+              : 'bg-[#6A8578] text-[#D6DDD5] hover:bg-[#466060] hover:text-white border border-[#466060]'
           }`}
         >
           <User className="w-4 h-4" />
@@ -1139,10 +1140,10 @@ export default function ArisanPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-black text-taruna-dark dark:text-white">
+              <h3 className="text-base font-black text-[#163E4F]">
                 Riwayat Pemenang &amp; Penerima Arisan
               </h3>
-              <p className="text-xs text-gray-500 dark:text-slate-400">
+              <p className="text-xs text-[#163E4F]/80 font-medium">
                 Daftar anggota yang telah menerima dana arisan pada putaran-putaran sebelumnya.
               </p>
             </div>
@@ -1165,7 +1166,7 @@ export default function ArisanPage() {
             <div className="bg-[#6A8578] text-white rounded-3xl border border-[#466060] overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-taruna-surface/70 dark:bg-slate-800/80 border-b border-taruna-border dark:border-slate-800 text-gray-500 dark:text-slate-400 font-bold uppercase tracking-wider">
+                  <thead className="bg-[#466060] border-b border-[#163E4F] text-[#D6DDD5] font-bold uppercase tracking-wider">
                     <tr>
                       <th className="py-3.5 px-4">Periode</th>
                       <th className="py-3.5 px-4">Nama Penerima</th>
@@ -1176,9 +1177,9 @@ export default function ArisanPage() {
                       <th className="py-3.5 px-4 text-right">Aksi</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-taruna-border/60 dark:divide-slate-800">
+                  <tbody className="divide-y divide-[#466060]">
                     {historyList.map((hist) => (
-                      <tr key={hist.id} className="hover:bg-taruna-surface/40 dark:hover:bg-slate-800/50 transition">
+                      <tr key={hist.id} className="hover:bg-[#466060]/50 transition">
                         <td className="py-3.5 px-4 font-black text-taruna-dark dark:text-white whitespace-nowrap">
                           {hist.periodLabel}
                         </td>
@@ -1204,7 +1205,7 @@ export default function ArisanPage() {
                         <td className="py-3.5 px-4 text-gray-600 dark:text-slate-300 max-w-xs truncate" title={hist.location}>
                           {hist.location}
                         </td>
-                        <td className="py-3.5 px-4 font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                        <td className="py-3.5 px-4 font-bold text-emerald-300 whitespace-nowrap">
                           Rp {formatRupiah(hist.amount)}
                         </td>
                         <td className="py-3.5 px-4 whitespace-nowrap">
@@ -1236,10 +1237,10 @@ export default function ArisanPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <h3 className="text-base font-black text-taruna-dark dark:text-white">
+              <h3 className="text-base font-black text-[#163E4F]">
                 Status Giliran Anggota Tahun {selectedYear}
               </h3>
-              <p className="text-xs text-gray-500 dark:text-slate-400">
+              <p className="text-xs text-[#163E4F]/80 font-medium">
                 Memantau anggota yang sudah mendapatkan undian vs yang masih menunggu giliran dalam siklus arisan.
               </p>
             </div>
@@ -1259,20 +1260,20 @@ export default function ArisanPage() {
                 key={m.id}
                 className={`p-4 rounded-2xl border transition flex items-center justify-between gap-3 ${
                   m.hasWon
-                    ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/40'
-                    : 'bg-white dark:bg-slate-900 border-taruna-border dark:border-slate-800'
+                    ? 'bg-[#6A8578] text-white border border-emerald-400 shadow-sm'
+                    : 'bg-[#6A8578] text-white border border-[#466060] shadow-sm'
                 }`}
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-taruna-dark dark:text-white">
+                    <span className="font-bold text-sm text-white">
                       {m.name}
                     </span>
-                    <span className="text-[10px] font-semibold text-gray-400">
+                    <span className="text-[10px] font-semibold text-[#D6DDD5]">
                       {m.memberNumber}
                     </span>
                   </div>
-                  <span className="text-xs text-gray-500 dark:text-slate-400 block mt-0.5 truncate max-w-[200px]">
+                  <span className="text-xs text-[#D6DDD5] block mt-0.5 truncate max-w-[200px]">
                     {m.address || 'Dusun Tuk Uluh'}
                   </span>
                 </div>
@@ -1356,7 +1357,7 @@ export default function ArisanPage() {
 
               <div>
                 <span className="text-gray-400 block font-medium">Nominal Pot:</span>
-                <strong className="text-emerald-600 dark:text-emerald-400 font-bold">
+                <strong className="text-emerald-300 font-bold">
                   Rp {formatRupiah(detailItem.amount)}
                 </strong>
               </div>
