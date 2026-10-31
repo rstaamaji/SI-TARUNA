@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   FileText,
@@ -52,6 +53,7 @@ interface MeetingMinuteItem {
 
 export default function NotulensiListPage() {
   const toast = useToast();
+  const router = useRouter();
 
   // Layout & Auth State
   const [userRole, setUserRole] = useState<UserRole>('MEMBER');
@@ -87,6 +89,7 @@ export default function NotulensiListPage() {
       const u = getStoredUser();
       if (u) {
         setUserRole(u.role);
+        if (u.role === 'MEMBER') router.replace('/dashboard');
       }
     } catch {
       // fallback
