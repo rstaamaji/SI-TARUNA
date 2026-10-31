@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   CalendarDays,
   CalendarCheck2,
@@ -122,6 +123,7 @@ const INDO_DAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu
 
 export default function KegiatanPage() {
   const toast = useToast();
+  const router = useRouter();
 
   // Role & User
   const [userRole, setUserRole] = useState<UserRole>('MEMBER');
@@ -178,6 +180,7 @@ export default function KegiatanPage() {
       const u = getStoredUser();
       if (u) {
         setUserRole(u.role);
+        if (u.role === 'MEMBER') router.replace('/dashboard');
       }
     } catch {
       // fallback
