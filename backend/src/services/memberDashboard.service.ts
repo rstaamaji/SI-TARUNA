@@ -53,7 +53,7 @@ export class MemberDashboardService {
         { isAttention: 'desc' },
         { announcementDate: 'desc' },
       ],
-      take: 6,
+      take: 8,
       include: {
         createdBy: {
           select: {
@@ -82,10 +82,10 @@ export class MemberDashboardService {
         7 * 60 * 60 * 1000
     );
 
-    const rawEvents = await prisma.event.findMany({
+    let rawEvents = await prisma.event.findMany({
       where: { eventDate: { gte: startOfTodayUtc } },
       orderBy: { eventDate: 'asc' },
-      take: 6,
+      take: 8,
       include: {
         attendances: user.member
           ? {
@@ -94,6 +94,20 @@ export class MemberDashboardService {
           : false,
       },
     });
+
+    if (rawEvents.length === 0) {
+      rawEvents = await prisma.event.findMany({
+        orderBy: { eventDate: 'desc' },
+        take: 8,
+        include: {
+          attendances: user.member
+            ? {
+                where: { memberId: user.member.id },
+              }
+            : false,
+        },
+      });
+    }
 
     const daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     const upcomingEvents = rawEvents.map((e) => {
@@ -271,7 +285,7 @@ export class MemberDashboardService {
             })
           : undefined,
         actionLabel: 'Lihat Pengumuman',
-        actionUrl: '/dashboard/pengumuman',
+        actionUrl: '#pengumuman-section',
       });
     });
 
@@ -322,9 +336,10 @@ export class MemberDashboardService {
       actionUrl: 'https://wa.me/6281234567801?text=Halo%20Bendahara%20Setya%20Bakti,%20saya%20ingin%20konfirmasi%20iuran%20kas',
     });
 
-    // 11. Notulensi Rapat Terbaru
-    const rawMinute = await prisma.meetingMinute.findFirst({
+    // 11. Notulensi & Catatan Rapat Resmi Pemuda
+    const rawMinutes = await prisma.meetingMinute.findMany({
       orderBy: { meetingDate: 'desc' },
+      take: 6,
       include: {
         createdBy: {
           select: {
@@ -335,21 +350,21 @@ export class MemberDashboardService {
       },
     });
 
-    const latestMeetingMinute = rawMinute
-      ? {
-          id: rawMinute.id,
-          title: rawMinute.title,
-          meetingDate: rawMinute.meetingDate.toISOString(),
-          dayOfWeek: rawMinute.dayOfWeek,
-          location: rawMinute.location,
-          meetingLeader: rawMinute.meetingLeader,
-          noteTaker: rawMinute.noteTaker,
-          content: rawMinute.content,
-          conclusion: rawMinute.conclusion,
-          followUp: rawMinute.followUp,
-          author: rawMinute.createdBy.member?.name || rawMinute.createdBy.username,
-        }
-      : null;
+    const meetingMinutes = rawMinutes.map((m) => ({
+      id: m.id,
+      title: m.title,
+      meetingDate: m.meetingDate.toISOString(),
+      dayOfWeek: m.dayOfWeek,
+      location: m.location,
+      meetingLeader: m.meetingLeader,
+      noteTaker: m.noteTaker,
+      content: m.content,
+      conclusion: m.conclusion,
+      followUp: m.followUp,
+      author: m.createdBy.member?.name || m.createdBy.username,
+    }));
+
+    const latestMeetingMinute = meetingMinutes[0] || null;
 
     return {
       memberProfile: {
@@ -371,6 +386,8 @@ export class MemberDashboardService {
       attentionItems,
       announcements,
       upcomingEvents,
+      meetingMinutes,
+      latestMeetingMinute,
       arisanSummary,
       personalAttendance,
       notifications: notifications.map((n) => ({
@@ -382,7 +399,6 @@ export class MemberDashboardService {
         createdAt: n.createdAt.toISOString(),
       })),
       unreadNotificationsCount,
-      latestMeetingMinute,
     };
   }
 
