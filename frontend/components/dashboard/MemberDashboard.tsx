@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  CalendarCheck2,
   Clock,
   MapPin,
   CheckCircle2,
@@ -14,7 +13,6 @@ import {
   Gift,
   Eye,
   Shovel,
-  Sparkles,
   Info,
   Calendar,
 } from 'lucide-react';

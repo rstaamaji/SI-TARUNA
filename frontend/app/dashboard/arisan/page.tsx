@@ -835,7 +835,6 @@ export default function ArisanPage() {
                     <Button
                       variant="primary"
                       size="sm"
-                      className="w-full"
                       onClick={() => openWinnerModal(nearestArisan)}
                       className="w-full bg-[#163E4F] hover:bg-[#6A8578] text-white border border-[#6A8578]"
                       leftIcon={<Crown className="w-4 h-4 text-amber-300" />}
