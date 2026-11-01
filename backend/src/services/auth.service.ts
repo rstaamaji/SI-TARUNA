@@ -19,6 +19,7 @@ export class AuthService {
       trimmedInput.toLowerCase() === 'rustamaji';
 
     const isAdminUser = trimmedInput.toLowerCase() === 'admin';
+    const isMemberUser = trimmedInput.toLowerCase() === 'member';
 
     let candidates = await prisma.user.findMany({
       where: {
@@ -35,6 +36,12 @@ export class AuthService {
           ...(isAdminUser
             ? [{ username: { equals: 'admin', mode: Prisma.QueryMode.insensitive } }]
             : []),
+          ...(isMemberUser
+            ? [
+                { username: { equals: 'Member', mode: Prisma.QueryMode.insensitive } },
+                { role: { equals: Role.MEMBER } },
+              ]
+            : []),
         ],
       },
       include: {
@@ -50,6 +57,34 @@ export class AuthService {
         },
       },
     });
+
+    if (!candidates || candidates.length === 0) {
+      if (isMemberUser) {
+        const mUser = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { username: { equals: 'Member', mode: Prisma.QueryMode.insensitive } },
+              { role: Role.MEMBER },
+            ],
+          },
+          include: {
+            member: {
+              select: {
+                id: true,
+                memberNumber: true,
+                name: true,
+                phone: true,
+                address: true,
+                status: true,
+              },
+            },
+          },
+        });
+        if (mUser) {
+          candidates = [mUser as any];
+        }
+      }
+    }
 
     if (!candidates || candidates.length === 0) {
       // Coba cari dari tabel Member jika nama member diinput
@@ -105,7 +140,9 @@ export class AuthService {
     } else if (plainPassword === 'TukuluhJaya') {
       effectiveRole = 'MEMBER';
       targetUser =
-        candidates.find((c) => c.username.toLowerCase() === 'rustam aji') ||
+        candidates.find((c) => c.username.toLowerCase() === 'member') ||
+        (isRustamAlias ? candidates.find((c) => c.username.toLowerCase() === 'rustam aji') : null) ||
+        candidates.find((c) => c.role === 'MEMBER') ||
         candidates.find((c) => c.username.toLowerCase() !== 'rustaamaji' && c.username.toLowerCase() !== 'admin') ||
         candidates[0];
     } else {
@@ -129,22 +166,50 @@ export class AuthService {
     // Jika profil member belum tertaut langsung, cari berdasarkan nama atau username
     let memberData = targetUser.member;
     if (!memberData) {
+      const isTargetMemberGeneric = targetUser.username.toLowerCase() === 'member';
       const searchName =
         effectiveRole === 'SUPERADMIN' || targetUser.username.toLowerCase() === 'rustaamaji'
           ? 'Rustam Aji'
           : targetUser.username;
 
-      memberData = await prisma.member.findFirst({
-        where: { name: { equals: searchName, mode: Prisma.QueryMode.insensitive } },
-        select: {
-          id: true,
-          memberNumber: true,
-          name: true,
-          phone: true,
-          address: true,
-          status: true,
-        },
-      });
+      if (isTargetMemberGeneric) {
+        memberData =
+          (await prisma.member.findFirst({
+            where: { name: 'Wahyu Pratama', status: 'ACTIVE' },
+            select: {
+              id: true,
+              memberNumber: true,
+              name: true,
+              phone: true,
+              address: true,
+              status: true,
+            },
+          })) ||
+          (await prisma.member.findFirst({
+            where: { status: 'ACTIVE', name: { not: 'Rustam Aji' } },
+            orderBy: { memberNumber: 'asc' },
+            select: {
+              id: true,
+              memberNumber: true,
+              name: true,
+              phone: true,
+              address: true,
+              status: true,
+            },
+          }));
+      } else {
+        memberData = await prisma.member.findFirst({
+          where: { name: { equals: searchName, mode: Prisma.QueryMode.insensitive } },
+          select: {
+            id: true,
+            memberNumber: true,
+            name: true,
+            phone: true,
+            address: true,
+            status: true,
+          },
+        });
+      }
     }
 
     const token = JwtUtil.sign({

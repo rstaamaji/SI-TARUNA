@@ -84,6 +84,23 @@ async function main() {
     },
   });
 
+  // Akun default Member: Username 'Member' / Password 'TukuluhJaya'
+  const defaultMemberUser = await prisma.user.upsert({
+    where: { username: 'Member' },
+    update: {
+      password: hashedPasswordTukuluhJaya,
+      role: Role.MEMBER,
+      isApproved: true,
+    },
+    create: {
+      username: 'Member',
+      email: 'member@taruna-setyabakti.id',
+      password: hashedPasswordTukuluhJaya,
+      role: Role.MEMBER,
+      isApproved: true,
+    },
+  });
+
   // 3. Create 25 realistic members (Dusun Tuk Uluh, Desa Sringin, Jumantono)
   const dummyMembersData = [
     {
@@ -318,9 +335,6 @@ async function main() {
   // Unlink legacy users from members before re-linking
   await prisma.member.updateMany({
     data: { userId: null },
-  });
-  await prisma.user.deleteMany({
-    where: { username: 'member' },
   });
 
   const createdMembers: any[] = [];

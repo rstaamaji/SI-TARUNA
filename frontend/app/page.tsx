@@ -152,10 +152,10 @@ export default function UnifiedMainPage() {
           localStorage.setItem('si_taruna_user', JSON.stringify(user));
         }
         toast.success('Login sebagai ADMIN');
-      } else if (passwordInput === 'TukuluhJaya' && trimmedUser.length > 2) {
+      } else if (passwordInput === 'TukuluhJaya' && (trimmedUser === 'member' || trimmedUser.length > 2)) {
         const user: CurrentUser = {
           id: 'member-local-id',
-          name: usernameInput.trim(),
+          name: trimmedUser === 'member' ? 'Member' : usernameInput.trim(),
           role: 'MEMBER',
           username: usernameInput.trim(),
         };
