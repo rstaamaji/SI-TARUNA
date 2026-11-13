@@ -13,7 +13,6 @@ import {
   Eye,
   ShieldCheck,
   Phone,
-  MapPin,
   ChevronLeft,
   ChevronRight,
   ArrowLeft,
@@ -45,7 +44,7 @@ export interface MemberItem {
   name: string;
   gender: 'MALE' | 'FEMALE';
   phone: string | null;
-  address: string;
+  address?: string;
   status: 'ACTIVE' | 'INACTIVE';
   joinDate?: string;
   createdAt?: string;
@@ -58,22 +57,22 @@ export interface MemberItem {
 
 // Data dummy realistis Karang Taruna Setya Bakti (Dusun Tuk Uluh, Desa Sringin)
 const DUMMY_MEMBERS: MemberItem[] = [
-  { id: 'm-01', memberNumber: 'KT-SB-001', name: 'Rustam Aji', gender: 'MALE', phone: '081234567801', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-01-10T00:00:00.000Z', user: { id: 'u-01', username: 'rustamaji', role: 'SUPERADMIN' } },
-  { id: 'm-02', memberNumber: 'KT-SB-002', name: 'Eko Prasetyo', gender: 'MALE', phone: '081234567802', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-01-15T00:00:00.000Z', user: { id: 'u-02', username: 'ekoprasetyo', role: 'ADMIN' } },
-  { id: 'm-03', memberNumber: 'KT-SB-003', name: 'Bambang Setyawan', gender: 'MALE', phone: '081234567803', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-02-01T00:00:00.000Z', user: { id: 'u-03', username: 'bambangsetyawan', role: 'ADMIN' } },
-  { id: 'm-04', memberNumber: 'KT-SB-004', name: 'Wahyu Pratama', gender: 'MALE', phone: '081234567804', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-02-15T00:00:00.000Z', user: { id: 'u-04', username: 'wahyu', role: 'MEMBER' } },
-  { id: 'm-05', memberNumber: 'KT-SB-005', name: 'Siti Rahmawati', gender: 'FEMALE', phone: '081234567805', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-03-01T00:00:00.000Z', user: { id: 'u-05', username: 'sitirahma', role: 'MEMBER' } },
-  { id: 'm-06', memberNumber: 'KT-SB-006', name: 'Dwi Astuti', gender: 'FEMALE', phone: '081234567806', address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-03-15T00:00:00.000Z', user: { id: 'u-06', username: 'dwiastuti', role: 'MEMBER' } },
-  { id: 'm-07', memberNumber: 'KT-SB-007', name: 'Hendra Gunawan', gender: 'MALE', phone: '081234567807', address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-04-01T00:00:00.000Z', user: { id: 'u-07', username: 'hendragunawan', role: 'MEMBER' } },
-  { id: 'm-08', memberNumber: 'KT-SB-008', name: 'Rina Wijaya', gender: 'FEMALE', phone: '081234567808', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-04-10T00:00:00.000Z', user: { id: 'u-08', username: 'rinawijaya', role: 'MEMBER' } },
-  { id: 'm-09', memberNumber: 'KT-SB-009', name: 'Agus Santoso', gender: 'MALE', phone: '081234567809', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-05-01T00:00:00.000Z' },
-  { id: 'm-10', memberNumber: 'KT-SB-010', name: 'Nur Hidayah', gender: 'FEMALE', phone: '081234567810', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-05-15T00:00:00.000Z' },
-  { id: 'm-11', memberNumber: 'KT-SB-011', name: 'Fajar Nugroho', gender: 'MALE', phone: '081234567811', address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-06-01T00:00:00.000Z' },
-  { id: 'm-12', memberNumber: 'KT-SB-012', name: 'Budi Utomo', gender: 'MALE', phone: '081234567812', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-06-20T00:00:00.000Z' },
-  { id: 'm-13', memberNumber: 'KT-SB-013', name: 'Dewi Lestari', gender: 'FEMALE', phone: '081234567813', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-07-01T00:00:00.000Z' },
-  { id: 'm-14', memberNumber: 'KT-SB-014', name: 'Arif Kurniawan', gender: 'MALE', phone: '081234567814', address: 'RT 03 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-07-15T00:00:00.000Z' },
-  { id: 'm-15', memberNumber: 'KT-SB-015', name: 'Tri Wahyuni', gender: 'FEMALE', phone: '081234567815', address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-08-01T00:00:00.000Z' },
-  { id: 'm-16', memberNumber: 'KT-SB-016', name: 'Bayu Saputra', gender: 'MALE', phone: '081234567816', address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin', status: 'ACTIVE', joinDate: '2023-08-20T00:00:00.000Z' },
+  { id: 'm-01', memberNumber: 'KT-SB-001', name: 'Rustam Aji', gender: 'MALE', phone: '081234567801', status: 'ACTIVE', joinDate: '2023-01-10T00:00:00.000Z', user: { id: 'u-01', username: 'rustamaji', role: 'SUPERADMIN' } },
+  { id: 'm-02', memberNumber: 'KT-SB-002', name: 'Eko Prasetyo', gender: 'MALE', phone: '081234567802', status: 'ACTIVE', joinDate: '2023-01-15T00:00:00.000Z', user: { id: 'u-02', username: 'ekoprasetyo', role: 'ADMIN' } },
+  { id: 'm-03', memberNumber: 'KT-SB-003', name: 'Bambang Setyawan', gender: 'MALE', phone: '081234567803', status: 'ACTIVE', joinDate: '2023-02-01T00:00:00.000Z', user: { id: 'u-03', username: 'bambangsetyawan', role: 'ADMIN' } },
+  { id: 'm-04', memberNumber: 'KT-SB-004', name: 'Wahyu Pratama', gender: 'MALE', phone: '081234567804', status: 'ACTIVE', joinDate: '2023-02-15T00:00:00.000Z', user: { id: 'u-04', username: 'wahyu', role: 'MEMBER' } },
+  { id: 'm-05', memberNumber: 'KT-SB-005', name: 'Siti Rahmawati', gender: 'FEMALE', phone: '081234567805', status: 'ACTIVE', joinDate: '2023-03-01T00:00:00.000Z', user: { id: 'u-05', username: 'sitirahma', role: 'MEMBER' } },
+  { id: 'm-06', memberNumber: 'KT-SB-006', name: 'Dwi Astuti', gender: 'FEMALE', phone: '081234567806', status: 'ACTIVE', joinDate: '2023-03-15T00:00:00.000Z', user: { id: 'u-06', username: 'dwiastuti', role: 'MEMBER' } },
+  { id: 'm-07', memberNumber: 'KT-SB-007', name: 'Hendra Gunawan', gender: 'MALE', phone: '081234567807', status: 'ACTIVE', joinDate: '2023-04-01T00:00:00.000Z', user: { id: 'u-07', username: 'hendragunawan', role: 'MEMBER' } },
+  { id: 'm-08', memberNumber: 'KT-SB-008', name: 'Rina Wijaya', gender: 'FEMALE', phone: '081234567808', status: 'ACTIVE', joinDate: '2023-04-10T00:00:00.000Z', user: { id: 'u-08', username: 'rinawijaya', role: 'MEMBER' } },
+  { id: 'm-09', memberNumber: 'KT-SB-009', name: 'Agus Santoso', gender: 'MALE', phone: '081234567809', status: 'ACTIVE', joinDate: '2023-05-01T00:00:00.000Z' },
+  { id: 'm-10', memberNumber: 'KT-SB-010', name: 'Nur Hidayah', gender: 'FEMALE', phone: '081234567810', status: 'ACTIVE', joinDate: '2023-05-15T00:00:00.000Z' },
+  { id: 'm-11', memberNumber: 'KT-SB-011', name: 'Fajar Nugroho', gender: 'MALE', phone: '081234567811', status: 'ACTIVE', joinDate: '2023-06-01T00:00:00.000Z' },
+  { id: 'm-12', memberNumber: 'KT-SB-012', name: 'Budi Utomo', gender: 'MALE', phone: '081234567812', status: 'ACTIVE', joinDate: '2023-06-20T00:00:00.000Z' },
+  { id: 'm-13', memberNumber: 'KT-SB-013', name: 'Dewi Lestari', gender: 'FEMALE', phone: '081234567813', status: 'ACTIVE', joinDate: '2023-07-01T00:00:00.000Z' },
+  { id: 'm-14', memberNumber: 'KT-SB-014', name: 'Arif Kurniawan', gender: 'MALE', phone: '081234567814', status: 'ACTIVE', joinDate: '2023-07-15T00:00:00.000Z' },
+  { id: 'm-15', memberNumber: 'KT-SB-015', name: 'Tri Wahyuni', gender: 'FEMALE', phone: '081234567815', status: 'ACTIVE', joinDate: '2023-08-01T00:00:00.000Z' },
+  { id: 'm-16', memberNumber: 'KT-SB-016', name: 'Bayu Saputra', gender: 'MALE', phone: '081234567816', status: 'ACTIVE', joinDate: '2023-08-20T00:00:00.000Z' },
 ];
 
 export default function AdminMembersPage() {
@@ -124,7 +123,7 @@ export default function AdminMembersPage() {
   const [formName, setFormName] = useState('');
   const [formGender, setFormGender] = useState<'MALE' | 'FEMALE'>('MALE');
   const [formPhone, setFormPhone] = useState('');
-  const [formAddress, setFormAddress] = useState('RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin');
+  const [formAddress, setFormAddress] = useState('Dusun Tuk Uluh, Desa Sringin');
   const [formStatus, setFormStatus] = useState<'ACTIVE' | 'INACTIVE'>('ACTIVE');
   const [formNumber, setFormNumber] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -172,8 +171,7 @@ export default function AdminMembersPage() {
           (m) =>
             m.name.toLowerCase().includes(q) ||
             m.memberNumber.toLowerCase().includes(q) ||
-            (m.phone && m.phone.includes(q)) ||
-            m.address.toLowerCase().includes(q)
+            (m.phone && m.phone.includes(q))
         );
       }
       if (statusFilter !== 'ALL') {
@@ -203,7 +201,7 @@ export default function AdminMembersPage() {
     setFormName('');
     setFormGender('MALE');
     setFormPhone('');
-    setFormAddress('RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin');
+    setFormAddress('Dusun Tuk Uluh, Desa Sringin');
     setFormStatus('ACTIVE');
     setFormNumber('');
     setIsAddModalOpen(true);
@@ -274,7 +272,7 @@ export default function AdminMembersPage() {
     setFormName(member.name);
     setFormGender(member.gender);
     setFormPhone(member.phone || '');
-    setFormAddress(member.address);
+    setFormAddress(member.address || 'Dusun Tuk Uluh, Desa Sringin');
     setFormStatus(member.status);
     setFormNumber(member.memberNumber);
     setIsEditModalOpen(true);
@@ -613,7 +611,6 @@ export default function AdminMembersPage() {
                       <TableHead className="text-white font-semibold">Nama Anggota</TableHead>
                       <TableHead className="w-28 text-center text-white font-semibold">Jenis Kelamin</TableHead>
                       <TableHead className="w-36 text-white font-semibold">Nomor HP</TableHead>
-                      <TableHead className="hidden md:table-cell text-white font-semibold">Alamat</TableHead>
                       <TableHead className="w-28 text-center text-white font-semibold">Status</TableHead>
                       <TableHead className="w-28 text-right text-white font-semibold">Aksi</TableHead>
                     </TableRow>
@@ -667,11 +664,6 @@ export default function AdminMembersPage() {
                           ) : (
                             <span className="text-[#D6DDD5]/60 italic">-</span>
                           )}
-                        </TableCell>
-
-                        {/* Alamat */}
-                        <TableCell className="hidden md:table-cell text-xs text-[#D6DDD5] max-w-xs truncate">
-                          {member.address}
                         </TableCell>
 
                         {/* Status Anggota */}
@@ -862,14 +854,7 @@ export default function AdminMembersPage() {
               leftIcon={<Phone className="w-4 h-4" />}
             />
 
-            <Input
-              label="Alamat Domisili *"
-              placeholder="Contoh: RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin"
-              value={formAddress}
-              onChange={(e) => setFormAddress(e.target.value)}
-              leftIcon={<MapPin className="w-4 h-4" />}
-              required
-            />
+            
           </form>
         </Modal>
       )}
@@ -948,13 +933,7 @@ export default function AdminMembersPage() {
               leftIcon={<Phone className="w-4 h-4" />}
             />
 
-            <Input
-              label="Alamat Domisili *"
-              value={formAddress}
-              onChange={(e) => setFormAddress(e.target.value)}
-              leftIcon={<MapPin className="w-4 h-4" />}
-              required
-            />
+            
           </form>
         </Modal>
       )}
@@ -1019,13 +998,7 @@ export default function AdminMembersPage() {
               </div>
             </div>
 
-            <div className="p-3 rounded-xl border border-taruna-border dark:border-slate-800 bg-[#466060] text-white text-xs space-y-1">
-              <span className="text-gray-400 font-medium">Alamat Domisili Dusun:</span>
-              <p className="font-semibold text-taruna-dark dark:text-white flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-taruna-red-600 shrink-0" />
-                {selectedMember.address}
-              </p>
-            </div>
+            
 
             <div className="p-3 rounded-xl border border-taruna-border dark:border-slate-800 bg-[#466060] text-white text-xs space-y-1">
               <span className="text-gray-400 font-medium">Organisasi:</span>

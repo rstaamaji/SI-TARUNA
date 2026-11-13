@@ -11,7 +11,6 @@ import {
   MapPin,
   Phone,
   Mail,
-  Home,
   CheckCircle2,
   Clock,
   XCircle,
@@ -105,7 +104,7 @@ const FALLBACK_PROFILE: MemberProfileData = {
     name: 'Bagus Prakoso',
     gender: 'MALE',
     phone: '081234567802',
-    address: 'RT 01 / RW 01, Dusun Tuk Uluh, Desa Sringin, Karanganyar',
+    address: 'Dusun Tuk Uluh, Desa Sringin',
     joinDate: '2023-01-15T00:00:00.000Z',
     status: 'ACTIVE',
   },
@@ -469,16 +468,7 @@ export default function MemberProfilePage() {
               </div>
             </div>
 
-            {/* Alamat */}
-            <div className="flex items-start gap-2.5 text-gray-600 dark:text-slate-300">
-              <Home className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-              <div>
-                <span className="text-[10px] text-gray-400 uppercase font-bold block">Alamat Tempat Tinggal</span>
-                <span className="font-semibold text-taruna-dark dark:text-white leading-relaxed block">
-                  {profile.member.address}
-                </span>
-              </div>
-            </div>
+            
 
             {/* Tanggal Bergabung */}
             <div className="flex items-start gap-2.5 text-gray-600 dark:text-slate-300">
@@ -875,18 +865,7 @@ export default function MemberProfilePage() {
             </div>
           </div>
 
-          {/* Alamat Tempat Tinggal */}
-          <div>
-            <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">
-              Alamat Lengkap <span className="text-red-500">*</span>
-            </label>
-            <Input
-              value={formAddress}
-              onChange={(e) => setFormAddress(e.target.value)}
-              placeholder="Contoh: RT 01 / RW 01 Dusun Tuk Uluh, Desa Sringin"
-              required
-            />
-          </div>
+          
 
           {/* Email Akun */}
           <div>

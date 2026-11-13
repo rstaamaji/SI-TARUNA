@@ -6,7 +6,6 @@ import {
   MapPin,
   CheckCircle2,
   BadgeCheck,
-  Building2,
   FileText,
   BookOpen,
   CalendarDays,
@@ -93,7 +92,7 @@ const FALLBACK_DASHBOARD: MemberDashboardData = {
     memberNumber: 'KT-SB-004',
     role: 'MEMBER',
     gender: 'MALE',
-    address: 'RT 02 / RW 01, Dusun Tuk Uluh, Desa Sringin',
+    address: 'Dusun Tuk Uluh, Desa Sringin',
     status: 'ACTIVE',
     joinDate: '2023-02-15T00:00:00.000Z',
   },
@@ -356,11 +355,7 @@ export const MemberDashboard: React.FC = () => {
               </h1>
 
               <div className="flex items-center gap-3 mt-1.5 text-xs text-[#D6DDD5] flex-wrap">
-                <span className="inline-flex items-center gap-1">
-                  <Building2 className="w-3.5 h-3.5 text-[#D6DDD5]" />
-                  {data.memberProfile.address}
-                </span>
-                <span className="hidden sm:inline text-[#D6DDD5]/60">•</span>
+                
                 <span className="inline-flex items-center gap-1 text-[#D6DDD5]">
                   <BadgeCheck className="w-3.5 h-3.5 text-emerald-400" />
                   Karang Taruna Dusun Tuk Uluh, Sringin, Jumantono

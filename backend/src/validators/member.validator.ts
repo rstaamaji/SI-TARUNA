@@ -16,9 +16,11 @@ export const createMemberSchema = z.object({
       .nullable()
       .or(z.literal('')),
     address: z
-      .string({ required_error: 'Alamat anggota wajib diisi' })
+      .string()
       .min(3, 'Alamat minimal 3 karakter')
-      .max(255, 'Alamat maksimal 255 karakter'),
+      .max(255, 'Alamat maksimal 255 karakter')
+      .default('Dusun Tuk Uluh, Desa Sringin')
+      .optional(),
     status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE').optional(),
     memberNumber: z.string().optional(),
     joinDate: z.string().optional(),

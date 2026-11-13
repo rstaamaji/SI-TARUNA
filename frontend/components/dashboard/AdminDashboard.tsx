@@ -374,7 +374,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
             <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-300">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Dusun Tuk Uluh (RT 01 - RT 03)</span>
+              <span>Dusun Tuk Uluh</span>
             </div>
           </CardContent>
         </Card>

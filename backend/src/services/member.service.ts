@@ -17,7 +17,7 @@ export interface CreateMemberInput {
   name: string;
   gender: Gender;
   phone?: string | null;
-  address: string;
+  address?: string;
   status?: MemberStatus;
   memberNumber?: string;
   joinDate?: string;
@@ -193,7 +193,7 @@ export class MemberService {
         name: data.name.trim(),
         gender: data.gender,
         phone: data.phone?.trim() || null,
-        address: data.address.trim(),
+        address: (data.address && data.address.trim()) || 'Dusun Tuk Uluh, Desa Sringin',
         status: data.status || MemberStatus.ACTIVE,
         joinDate,
       },

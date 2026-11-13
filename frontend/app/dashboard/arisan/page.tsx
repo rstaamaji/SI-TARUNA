@@ -248,7 +248,7 @@ export default function ArisanPage() {
         recipientName: 'Siti Rahmawati',
         recipientNumber: 'KT-SB-005',
         recipientPhone: '081234567805',
-        recipientAddress: 'RT 02 / RW 01, Dusun Tuk Uluh',
+        
         drawDate: '2026-10-15T19:30:00.000Z',
         location: 'Kediaman Sdri. Siti Rahmawati (RT 02)',
         status: 'UPCOMING',
@@ -378,18 +378,18 @@ export default function ArisanPage() {
     ];
 
     const demoMembers: ArisanMember[] = [
-      { id: 'm-01', memberNumber: 'KT-SB-001', name: 'Rustam Aji', phone: '081234567801', address: 'RT 01 / RW 01', hasWon: true, winMonth: 7, winMonthName: 'Juli', winYear: 2026 },
-      { id: 'm-02', memberNumber: 'KT-SB-002', name: 'Eko Prasetyo', phone: '081234567802', address: 'RT 02 / RW 01', hasWon: true, winMonth: 8, winMonthName: 'Agustus', winYear: 2026 },
-      { id: 'm-03', memberNumber: 'KT-SB-003', name: 'Bambang Setyawan', phone: '081234567803', address: 'RT 01 / RW 01', hasWon: true, winMonth: 9, winMonthName: 'September', winYear: 2026 },
-      { id: 'm-04', memberNumber: 'KT-SB-004', name: 'Wahyu Pratama', phone: '081234567804', address: 'RT 02 / RW 01', hasWon: true, winMonth: 6, winMonthName: 'Juni', winYear: 2026 },
-      { id: 'm-05', memberNumber: 'KT-SB-005', name: 'Siti Rahmawati', phone: '081234567805', address: 'RT 02 / RW 01', hasWon: true, winMonth: 10, winMonthName: 'Oktober', winYear: 2026 },
-      { id: 'm-06', memberNumber: 'KT-SB-006', name: 'Dwi Astuti', phone: '081234567806', address: 'RT 03 / RW 01', hasWon: true, winMonth: 5, winMonthName: 'Mei', winYear: 2026 },
-      { id: 'm-07', memberNumber: 'KT-SB-007', name: 'Hendra Gunawan', phone: '081234567807', address: 'RT 03 / RW 01', hasWon: false },
-      { id: 'm-08', memberNumber: 'KT-SB-008', name: 'Rina Wijaya', phone: '081234567808', address: 'RT 01 / RW 01', hasWon: false },
-      { id: 'm-09', memberNumber: 'KT-SB-009', name: 'Agus Santoso', phone: '081234567809', address: 'RT 02 / RW 01', hasWon: false },
-      { id: 'm-10', memberNumber: 'KT-SB-010', name: 'Nur Hidayah', phone: '081234567810', address: 'RT 01 / RW 01', hasWon: false },
-      { id: 'm-11', memberNumber: 'KT-SB-011', name: 'Fajar Nugroho', phone: '081234567811', address: 'RT 03 / RW 01', hasWon: false },
-      { id: 'm-12', memberNumber: 'KT-SB-012', name: 'Budi Utomo', phone: '081234567812', address: 'RT 02 / RW 01', hasWon: false },
+      { id: 'm-01', memberNumber: 'KT-SB-001', name: 'Rustam Aji', phone: '081234567801', hasWon: true, winMonth: 7, winMonthName: 'Juli', winYear: 2026 },
+      { id: 'm-02', memberNumber: 'KT-SB-002', name: 'Eko Prasetyo', phone: '081234567802', hasWon: true, winMonth: 8, winMonthName: 'Agustus', winYear: 2026 },
+      { id: 'm-03', memberNumber: 'KT-SB-003', name: 'Bambang Setyawan', phone: '081234567803', hasWon: true, winMonth: 9, winMonthName: 'September', winYear: 2026 },
+      { id: 'm-04', memberNumber: 'KT-SB-004', name: 'Wahyu Pratama', phone: '081234567804', hasWon: true, winMonth: 6, winMonthName: 'Juni', winYear: 2026 },
+      { id: 'm-05', memberNumber: 'KT-SB-005', name: 'Siti Rahmawati', phone: '081234567805', hasWon: true, winMonth: 10, winMonthName: 'Oktober', winYear: 2026 },
+      { id: 'm-06', memberNumber: 'KT-SB-006', name: 'Dwi Astuti', phone: '081234567806', hasWon: true, winMonth: 5, winMonthName: 'Mei', winYear: 2026 },
+      { id: 'm-07', memberNumber: 'KT-SB-007', name: 'Hendra Gunawan', phone: '081234567807', hasWon: false },
+      { id: 'm-08', memberNumber: 'KT-SB-008', name: 'Rina Wijaya', phone: '081234567808', hasWon: false },
+      { id: 'm-09', memberNumber: 'KT-SB-009', name: 'Agus Santoso', phone: '081234567809', hasWon: false },
+      { id: 'm-10', memberNumber: 'KT-SB-010', name: 'Nur Hidayah', phone: '081234567810', hasWon: false },
+      { id: 'm-11', memberNumber: 'KT-SB-011', name: 'Fajar Nugroho', phone: '081234567811', hasWon: false },
+      { id: 'm-12', memberNumber: 'KT-SB-012', name: 'Budi Utomo', phone: '081234567812', hasWon: false },
     ];
 
     setArisans(demoItems);
@@ -1272,9 +1272,7 @@ export default function ArisanPage() {
                       {m.memberNumber}
                     </span>
                   </div>
-                  <span className="text-xs text-[#D6DDD5] block mt-0.5 truncate max-w-[200px]">
-                    {m.address || 'Dusun Tuk Uluh'}
-                  </span>
+                  
                 </div>
 
                 <div className="shrink-0 text-right">
@@ -1433,7 +1431,7 @@ export default function ArisanPage() {
                     .filter((m) => !m.hasWon)
                     .map((m) => (
                       <option key={m.id} value={m.id}>
-                        {m.name} ({m.memberNumber}) - {m.address || 'Tuk Uluh'}
+                        {m.name} ({m.memberNumber})
                       </option>
                     ))}
                 </optgroup>
